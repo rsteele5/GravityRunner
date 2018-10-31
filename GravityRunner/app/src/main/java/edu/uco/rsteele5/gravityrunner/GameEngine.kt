@@ -1,18 +1,15 @@
-package edu.uco.rsteele5.simplegameengine
+package edu.uco.rsteele5.gravityrunner
+
 import android.app.Activity
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
+import android.graphics.*
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 
-class SimpleGameEngine : Activity() {
+class GameEngine : Activity() {
 
     // gameView will be the view of the game
     // It will also hold the logic of the game
@@ -34,7 +31,7 @@ class SimpleGameEngine : Activity() {
     // A thread and can override the run method.
     internal inner class GameView// When the we initialize (call new()) on gameView
     // This special constructor method runs
-    (context: Context) : SurfaceView(context), Runnable {
+        (context: Context) : SurfaceView(context), Runnable {
 
         // This is our thread
         var gameThread: Thread? = null
@@ -119,7 +116,7 @@ class SimpleGameEngine : Activity() {
             // If bob is moving (the player is touching the screen)
             // then move him to the right based on his target speed and the current fps.
             if (isMoving) {
-                bobXPosition = bobXPosition + walkSpeedPerSecond / fps
+                bobXPosition += walkSpeedPerSecond / fps
             }
 
         }

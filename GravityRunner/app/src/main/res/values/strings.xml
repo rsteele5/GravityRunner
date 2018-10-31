@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Gravity Runner</string>
+    <string name="label_playButton">Play</string>
+</resources>
