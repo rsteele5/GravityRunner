@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1052343881372",
+    "firebase_url": "https://gravityrunner-f4f2b.firebaseio.com",
+    "project_id": "gravityrunner-f4f2b",
+    "storage_bucket": "gravityrunner-f4f2b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1052343881372:android:2ab8d013ef0ee158",
+        "android_client_info": {
+          "package_name": "edu.uco.rsteele5.gravityrunner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1052343881372-kdg07cle8ek256i089qk2ihs8fhrp3ef.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.uco.rsteele5.gravityrunner",
+            "certificate_hash": "ad606ef75a270a96e7a1fee7fe2fad76c5992e07"
+          }
+        },
+        {
+          "client_id": "1052343881372-0ic7p53vgpvbtqg9stl46a7c1dvgf34f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYRYCTD62Ux6SIl1hBDPMzPSwLktb22kI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1052343881372-0ic7p53vgpvbtqg9stl46a7c1dvgf34f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
