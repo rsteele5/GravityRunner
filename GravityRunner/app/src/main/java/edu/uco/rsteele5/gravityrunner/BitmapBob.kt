@@ -14,7 +14,7 @@ class BitmapBob(engine: GameEngine) : GameObject(engine) {
         xPos = 10f
         yPos = 10f
 
-        deltaX = 0f
+        deltaX = 1f
         deltaY = 3f
     }
 
@@ -27,10 +27,10 @@ class BitmapBob(engine: GameEngine) : GameObject(engine) {
                     deltaX = deltaY * -1
                     deltaY = temp
                 }
-                else if (deltaX < 0) {
+                else if (deltaX <= 0 && deltaY >= 0) {
                     var temp = deltaX
-                    deltaX = deltaY * -1
-                    deltaY = temp
+                    deltaX = deltaY
+                    deltaY = temp * -1
                 }
             }
             OrientationManager.ScreenOrientation.LANDSCAPE -> {
@@ -39,7 +39,11 @@ class BitmapBob(engine: GameEngine) : GameObject(engine) {
                     deltaX = deltaY * -1
                     deltaY = temp
                 }
-
+                else if (deltaX <= 0 && deltaY <= 0) {
+                    var temp = deltaX
+                    deltaX = deltaY
+                    deltaY = temp * -1
+                }
             }
             OrientationManager.ScreenOrientation.REVERSED_PORTRAIT -> {
                 if (deltaX <= 0 && deltaY >= 0) {
@@ -47,7 +51,7 @@ class BitmapBob(engine: GameEngine) : GameObject(engine) {
                     deltaX = deltaY * -1
                     deltaY = temp
                 }
-                if (deltaX > 0) {
+                else if (deltaX > 0) {
                     var temp = deltaX
                     deltaX = deltaY * -1
                     deltaY = temp
@@ -58,6 +62,11 @@ class BitmapBob(engine: GameEngine) : GameObject(engine) {
                     var temp = deltaX
                     deltaX = deltaY * -1
                     deltaY = temp
+                }
+                else if (deltaX >= 0 && deltaY >= 0) {
+                    var temp = deltaX
+                    deltaX = deltaY
+                    deltaY = temp * -1
                 }
             }
         }
