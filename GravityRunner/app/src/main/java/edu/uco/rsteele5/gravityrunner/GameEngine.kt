@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.BitmapFactory.*
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -13,6 +14,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import android.widget.Toast
 import edu.uco.rsteele5.gravityrunner.R
 import edu.uco.rsteele5.gravityrunner.OrientationManager.OrientationListener
 import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation
@@ -21,11 +23,16 @@ import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation.REVER
 import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation.LANDSCAPE
 import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation.REVERSED_LANDSCAPE
 
-const val TAG = "Engine"
+const val TAG = "GR"
 
 class GameEngine : Activity(), OrientationListener {
 
+
     var orientationManager: OrientationManager? = null
+    var gameObjects: ArrayList<GameObject>? = null
+    var orientation: ScreenOrientation = PORTRAIT
+    var fps: Long = 0
+
     var deltaX = 150f
     var deltaY = 150f
 
@@ -43,7 +50,9 @@ class GameEngine : Activity(), OrientationListener {
 
     override fun onOrientationChange(screenOrientation: ScreenOrientation) {
         Log.d(TAG, screenOrientation.toString())
-        gameView?.orientation = screenOrientation
+        orientation = screenOrientation
+
+        Toast.makeText(this, screenOrientation.name, Toast.LENGTH_SHORT).show()
     }
 
     //TODO: Need to look into this more, can we use this to pause the game?
@@ -58,9 +67,8 @@ class GameEngine : Activity(), OrientationListener {
         gameView!!.pause()
     }
 
-    internal inner class GameView (context: Context) : SurfaceView(context), Runnable {
+    internal inner class GameView(context: Context) : SurfaceView(context), Runnable {
 
-        var orientation: ScreenOrientation = PORTRAIT
         private var gameThread: Thread? = null
         private var ourHolder: SurfaceHolder? = null
 
@@ -70,28 +78,17 @@ class GameEngine : Activity(), OrientationListener {
         @Volatile
         var playing: Boolean = false
 
-        var fps: Long = 0
+
         private var timeThisFrame: Long = 0
-
-        //TODO: Need to make this an array of game objects
-        var bitmapBob: Bitmap? = null
-
-        //TODO: Need to fix this bob specific stuff
-        var isMoving = false
-
-        //TODO: Need to fix this bob specific stuff
-
-
-        //TODO: Need to fix this bob specific stuff
-        var bobXPosition = 10f
-        var bobYPosition = 10f
 
         init {
             ourHolder = holder
             paint = Paint()
 
             //TODO: Maybe move this out and initialize elsewhere for brevity/cohesion
-            bitmapBob = BitmapFactory.decodeResource(this.resources, R.drawable.bob)
+            gameObjects = ArrayList()
+
+            gameObjects!!.add(BitmapBob(this@GameEngine))
 
             playing = true
 
@@ -118,45 +115,9 @@ class GameEngine : Activity(), OrientationListener {
 
         //TODO: Here we update() game objects, called as above, gravity will probably go here
         fun update() {
-            if (isMoving) {
-                when(this.orientation){
-                    PORTRAIT -> {
-                        if(deltaY < 0){
-                            deltaY *= -1
-                        }
-                        if(deltaX < 0){
-                            deltaX *= -1
-                        }
-                    }
-                    LANDSCAPE -> {
-                        if(deltaY < 0){
-                            deltaY *= -1
-                        }
-                        if(deltaX > 0){
-                            deltaX *= -1
-                        }
-                    }
-                    REVERSED_PORTRAIT -> {
-                        if(deltaY > 0){
-                            deltaY *= -1
-                        }
-                        if(deltaX > 0){
-                            deltaX *= -1
-                        }
-                    }
-                    REVERSED_LANDSCAPE -> {
-                        if(deltaY > 0){
-                            deltaY *= -1
-                        }
-                        if(deltaX < 0){
-                            deltaX *= -1
-                        }
-                    }
-                }
-                bobXPosition = bobXPosition + deltaX / fps
-                bobYPosition = bobYPosition + deltaY / fps
+            for (gameObject in gameObjects!!) {
+                gameObject.update()
             }
-
         }
 
         //TODO: Here we update() game objects, called as above, gravity will probably go here it is already double buffered btw
@@ -175,7 +136,15 @@ class GameEngine : Activity(), OrientationListener {
                 canvas!!.drawText("FPS:$fps", 20f, 40f, paint!!)
 
                 //TODO: Loop through array to draw
-                canvas!!.drawBitmap(bitmapBob!!, bobXPosition, bobYPosition, paint)
+                for (gameObject in gameObjects!!) {
+                    canvas!!.drawBitmap(
+                        gameObject.getImg()!!,
+                        gameObject.getX(),
+                        gameObject.getY(),
+                        paint
+                    )
+                }
+                //canvas!!.drawBitmap(bitmapBob!!, bobXPosition, bobYPosition, paint)
 
                 //Unlock canvas and post is double buffered, kinda cool how it works, check it out
                 ourHolder!!.unlockCanvasAndPost(canvas)
@@ -205,8 +174,8 @@ class GameEngine : Activity(), OrientationListener {
         override fun onTouchEvent(motionEvent: MotionEvent): Boolean {
 
             when (motionEvent.action and MotionEvent.ACTION_MASK) {
-                MotionEvent.ACTION_DOWN -> isMoving = true
-                MotionEvent.ACTION_UP -> isMoving = false
+                MotionEvent.ACTION_DOWN -> (gameObjects!![0] as BitmapBob).isMoving = true
+                MotionEvent.ACTION_UP -> (gameObjects!![0] as BitmapBob).isMoving = false
             }
             return true
         }
