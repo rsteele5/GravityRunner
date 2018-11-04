@@ -23,7 +23,7 @@ class OrientationManager(context: Context, rate: Int, listener: OrientationListe
             return
         }
 
-        Log.d(TAG, orientation.toString())
+        Log.d(TAG_GR, orientation.toString())
 
         val newOrientation: ScreenOrientation = when (orientation) {
             in 60..140 -> ScreenOrientation.REVERSED_LANDSCAPE
