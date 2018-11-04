@@ -1,4 +1,16 @@
 <resources>
     <string name="app_name">Gravity Runner</string>
     <string name="label_playButton">Play</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="btnCreate">Create Account</string>
+    <string name="btnLogIn">Log In</string>
+    <string name="eAccount">Enter your Account</string>
+    <string name="ePass">Enter your Password</string>
+    <string name="loginSuccess">Hello %1$s!</string>
+    <string name="loginFail">Failed! Please check your email and password</string>
+    <string name="successCreate">Success to create an account</string>
+    <string name="short_password">password is too short</string>
+    <string name="emptyAccount">Please fill ID and Password values</string>
+    <string name="beforePlay">Before play..</string>
+    <string name="loginFirst">Would you like to log in first?</string>
 </resources>

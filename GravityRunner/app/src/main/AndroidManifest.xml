@@ -16,7 +16,13 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".GameEngine">
+        <activity android:name=".GameEngine"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".LoginActivity"
+                android:label="@string/title_activity_login">
         </activity>
     </application>
 
