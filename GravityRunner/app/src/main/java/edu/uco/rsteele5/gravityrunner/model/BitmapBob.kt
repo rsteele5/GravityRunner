@@ -14,16 +14,19 @@ class BitmapBob(engine: GameEngine, x: Float, y: Float) : GameEntity(engine, x, 
     val bobHeight = 86f
     var isMoving = false
 
-    var boundTop = false
-    var boundBottom = false
-    var boundLeft = false
-    var boundRight = false
+    var onGround = false
+
+    var speed = 8f
+    val portraitRight = Pair<Float,Float>(speed, 0f)
+    val landscapeRight = Pair<Float,Float>(0f, speed)
+    val reversePortraitRight = Pair<Float,Float>(-speed,0f)
+    val reverseLandscapeRight = Pair<Float,Float>(0f, -speed)
 
     init {
         isMoving = false
         image = BitmapFactory.decodeResource(engine.resources, R.drawable.bob)
         deltaX = 1f
-        deltaY = 3f
+        deltaY = 10f
         collisionBox = RectF(xPos, yPos, bobWidth+xPos, bobHeight+yPos)
     }
 
@@ -35,51 +38,67 @@ class BitmapBob(engine: GameEngine, x: Float, y: Float) : GameEntity(engine, x, 
         Log.d(TAG_GR, isMoving.toString())
         when (engine!!.orientation) {
             OrientationManager.ScreenOrientation.PORTRAIT -> {
-                if (deltaX >= 0 && deltaY <= 0) {
-                    var temp = deltaX
-                    deltaX = deltaY * -1
-                    deltaY = temp
-                }
-                else if (deltaX <= 0 && deltaY >= 0) {
-                    var temp = deltaX
-                    deltaX = deltaY
-                    deltaY = temp * -1
+                if(!onGround) {
+                    if (deltaX >= 0 && deltaY <= 0) {
+                        var temp = deltaX
+                        deltaX = deltaY * -1
+                        deltaY = temp
+                    } else if (deltaX <= 0 && deltaY >= 0) {
+                        var temp = deltaX
+                        deltaX = deltaY
+                        deltaY = temp * -1
+                    }
+                }else {
+                    deltaX = portraitRight.first
+                    deltaY = portraitRight.second
                 }
             }
             OrientationManager.ScreenOrientation.LANDSCAPE -> {
-                if (deltaX >= 0 && deltaY >= 0) {
-                    var temp = deltaX
-                    deltaX = deltaY * -1
-                    deltaY = temp
-                }
-                else if (deltaX <= 0 && deltaY <= 0) {
-                    var temp = deltaX
-                    deltaX = deltaY
-                    deltaY = temp * -1
+                if(!onGround) {
+                    if (deltaX >= 0 && deltaY >= 0) {
+                        var temp = deltaX
+                        deltaX = deltaY * -1
+                        deltaY = temp
+                    } else if (deltaX <= 0 && deltaY <= 0) {
+                        var temp = deltaX
+                        deltaX = deltaY
+                        deltaY = temp * -1
+                    }
+                }else{
+                    deltaX = landscapeRight.first
+                    deltaY = landscapeRight.second
                 }
             }
             OrientationManager.ScreenOrientation.REVERSED_PORTRAIT -> {
-                if (deltaX <= 0 && deltaY >= 0) {
-                    var temp = deltaX
-                    deltaX = deltaY * -1
-                    deltaY = temp
-                }
-                else if (deltaX > 0) {
-                    var temp = deltaX
-                    deltaX = deltaY * -1
-                    deltaY = temp
+                if(!onGround) {
+                    if (deltaX <= 0 && deltaY >= 0) {
+                        var temp = deltaX
+                        deltaX = deltaY * -1
+                        deltaY = temp
+                    } else if (deltaX > 0) {
+                        var temp = deltaX
+                        deltaX = deltaY * -1
+                        deltaY = temp
+                    }
+                }else{
+                    deltaX = reversePortraitRight.first
+                    deltaY = reversePortraitRight.second
                 }
             }
             OrientationManager.ScreenOrientation.REVERSED_LANDSCAPE -> {
-                if (deltaX <= 0 && deltaY <= 0) {
-                    var temp = deltaX
-                    deltaX = deltaY * -1
-                    deltaY = temp
-                }
-                else if (deltaX >= 0 && deltaY >= 0) {
-                    var temp = deltaX
-                    deltaX = deltaY
-                    deltaY = temp * -1
+                if(!onGround) {
+                    if (deltaX <= 0 && deltaY <= 0) {
+                        var temp = deltaX
+                        deltaX = deltaY * -1
+                        deltaY = temp
+                    } else if (deltaX >= 0 && deltaY >= 0) {
+                        var temp = deltaX
+                        deltaX = deltaY
+                        deltaY = temp * -1
+                    }
+                }else{
+                    deltaX = reverseLandscapeRight.first
+                    deltaY = reverseLandscapeRight .second
                 }
             }
         }
@@ -94,8 +113,8 @@ class BitmapBob(engine: GameEngine, x: Float, y: Float) : GameEntity(engine, x, 
     }
 
     override fun draw(canvas: Canvas, paint: Paint) {
-        canvas.drawBitmap(
-            image,null, collisionBox,null)
+        canvas.drawRect(collisionBox,paint) // backup in case image does not render
+        canvas.drawBitmap(image,null, collisionBox,null)
     }
 
 

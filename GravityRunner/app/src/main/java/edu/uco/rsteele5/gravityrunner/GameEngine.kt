@@ -12,21 +12,22 @@ import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.widget.Toast
+import edu.uco.rsteele5.gravityrunner.Control.CollisionDetector
 import edu.uco.rsteele5.gravityrunner.OrientationManager.OrientationListener
 import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation
 import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation.PORTRAIT
 import edu.uco.rsteele5.gravityrunner.model.BitmapBob
+import edu.uco.rsteele5.gravityrunner.model.BoundaryObject
 import edu.uco.rsteele5.gravityrunner.model.GameObject
 import edu.uco.rsteele5.gravityrunner.model.Wall
+import java.util.concurrent.CopyOnWriteArrayList
 
 const val TAG_GR = "GR"
-const val TAG_WALL = "WALL"
 
 class GameEngine : Activity(), OrientationListener {
 
 
     var orientationManager: OrientationManager? = null
-    var gameObjects: ArrayList<GameObject>? = null
     var orientation: ScreenOrientation = PORTRAIT
     var fps: Long = 0
 
@@ -68,9 +69,14 @@ class GameEngine : Activity(), OrientationListener {
 
         private var gameThread: Thread? = null
         private var ourHolder: SurfaceHolder? = null
+        var gameObjects: CopyOnWriteArrayList<GameObject>? = null
+        var boundaryObjects: CopyOnWriteArrayList<BoundaryObject>? = null
 
         private var canvas: Canvas? = null
         var paint: Paint? = null
+
+        val collisionDetector = CollisionDetector()
+        var bitmapBob = BitmapBob(this@GameEngine, 110f,100f)
 
         @Volatile
         var playing: Boolean = false
@@ -83,18 +89,22 @@ class GameEngine : Activity(), OrientationListener {
             paint = Paint()
 
             //TODO: Maybe move this out and initialize elsewhere for brevity/cohesion
-            gameObjects = ArrayList()
+            gameObjects = CopyOnWriteArrayList()
+            boundaryObjects = CopyOnWriteArrayList()
             //TODO: Replace this after sprint 1, Temp Vals for testing on sprint 1
-            Log.d(TAG_WALL, "Started adding")
-            val rectX = 15
-            val rectY = 10
-            gameObjects!!.add(BitmapBob(this@GameEngine, 110f,100f))
-            gameObjects!!.add(Wall(this@GameEngine,0f, 0f, rectX)) //Landscape TOP
-            gameObjects!!.add(Wall(this@GameEngine,0f, 80f, rectY, true))//Landscape LEFT
-            gameObjects!!.add(Wall(this@GameEngine,100f*rectX, 0f, rectY, true))//Landscape RIGHT
-            gameObjects!!.add(Wall(this@GameEngine, 100f, 80f*rectY, rectX))//Landscape BOTTOM
+            val rectX = 10
+            val rectY = 19
+            gameObjects!!.add(bitmapBob)
 
-            Log.d(TAG_WALL, "Started adding")
+            boundaryObjects!!.add(Wall(this@GameEngine,0f, 0f, rectX)) //Landscape TOP
+            boundaryObjects!!.add(Wall(this@GameEngine,0f, 80f, rectY, true))//Landscape LEFT
+            boundaryObjects!!.add(Wall(this@GameEngine,100f*rectX, 0f, rectY, true))//Landscape RIGHT
+            boundaryObjects!!.add(Wall(this@GameEngine, 100f, 80f*rectY, rectX))//Landscape BOTTOM
+
+            for(obj in boundaryObjects!!){
+                gameObjects!!.add(obj)
+            }
+
             playing = true
 
         }
@@ -120,6 +130,7 @@ class GameEngine : Activity(), OrientationListener {
 
         //TODO: Here we update() game objects, called as above, gravity will probably go here
         fun update() {
+            collisionDetector.processPlayerBoundaryCollision(bitmapBob, boundaryObjects!!)
             for (gameObject in gameObjects!!) {
                 gameObject.update()
             }
@@ -135,16 +146,15 @@ class GameEngine : Activity(), OrientationListener {
 
                 //TODO: Find out what this does...
                 paint!!.color = Color.argb(255, 249, 129, 0)
-
-
-                paint!!.textSize = 45f
-                canvas!!.drawText("FPS:$fps", 20f, 40f, paint!!)
-
                 //TODO: Loop through array to draw
                 for (gameObject in gameObjects!!) {
                     gameObject.draw(canvas!!, paint!!)
                 }
-                //canvas!!.drawBitmap(bitmapBob!!, bobXPosition, bobYPosition, paint)
+
+                paint!!.textSize = 45f
+                canvas!!.drawText("FPS:$fps", 20f, 40f, paint!!)
+                canvas!!.drawText("OnGround:${bitmapBob.onGround}", 20f, 80f, paint!!)
+
 
                 //Unlock canvas and post is double buffered, kinda cool how it works, check it out
                 ourHolder!!.unlockCanvasAndPost(canvas)
