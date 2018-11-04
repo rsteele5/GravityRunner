@@ -76,7 +76,7 @@ class GameEngine : Activity(), OrientationListener {
         var paint: Paint? = null
 
         val collisionDetector = CollisionDetector()
-        var bitmapBob = BitmapBob(this@GameEngine, 110f,100f)
+        var bitmapBob = BitmapBob(this@GameEngine, 130f,100f)
 
         @Volatile
         var playing: Boolean = false
