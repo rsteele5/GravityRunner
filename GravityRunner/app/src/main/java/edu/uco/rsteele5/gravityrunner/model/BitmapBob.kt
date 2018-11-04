@@ -17,16 +17,16 @@ class BitmapBob(engine: GameEngine, x: Float, y: Float) : GameEntity(engine, x, 
     var onGround = false
 
     var speed = 8f
-    val portraitRight = Pair<Float,Float>(speed, 0f)
-    val landscapeRight = Pair<Float,Float>(0f, speed)
-    val reversePortraitRight = Pair<Float,Float>(-speed,0f)
-    val reverseLandscapeRight = Pair<Float,Float>(0f, -speed)
+    val portraitRight = Pair(speed, 0f)
+    val landscapeRight = Pair(0f, speed)
+    val reversePortraitRight = Pair(-speed,0f)
+    val reverseLandscapeRight = Pair(0f, -speed)
 
     init {
         isMoving = false
         image = BitmapFactory.decodeResource(engine.resources, R.drawable.bob)
-        deltaX = 1f
-        deltaY = 10f
+        deltaX = 0.001f
+        deltaY = 2f
         collisionBox = RectF(xPos, yPos, bobWidth+xPos, bobHeight+yPos)
     }
 
@@ -43,7 +43,7 @@ class BitmapBob(engine: GameEngine, x: Float, y: Float) : GameEntity(engine, x, 
                         var temp = deltaX
                         deltaX = deltaY * -1
                         deltaY = temp
-                    } else if (deltaX <= 0 && deltaY >= 0) {
+                    } else if (deltaX < 0 && deltaY > 0) {
                         var temp = deltaX
                         deltaX = deltaY
                         deltaY = temp * -1
@@ -59,7 +59,7 @@ class BitmapBob(engine: GameEngine, x: Float, y: Float) : GameEntity(engine, x, 
                         var temp = deltaX
                         deltaX = deltaY * -1
                         deltaY = temp
-                    } else if (deltaX <= 0 && deltaY <= 0) {
+                    } else if (deltaX < 0 && deltaY < 0) {
                         var temp = deltaX
                         deltaX = deltaY
                         deltaY = temp * -1
@@ -91,7 +91,7 @@ class BitmapBob(engine: GameEngine, x: Float, y: Float) : GameEntity(engine, x, 
                         var temp = deltaX
                         deltaX = deltaY * -1
                         deltaY = temp
-                    } else if (deltaX >= 0 && deltaY >= 0) {
+                    } else if (deltaX > 0 && deltaY > 0) {
                         var temp = deltaX
                         deltaX = deltaY
                         deltaY = temp * -1
