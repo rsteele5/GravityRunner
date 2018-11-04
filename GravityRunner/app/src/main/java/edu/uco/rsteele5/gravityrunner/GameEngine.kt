@@ -2,9 +2,6 @@ package edu.uco.rsteele5.gravityrunner
 
 import android.app.Activity
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.BitmapFactory.*
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -15,21 +12,22 @@ import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.widget.Toast
-import edu.uco.rsteele5.gravityrunner.R
+import edu.uco.rsteele5.gravityrunner.Control.CollisionDetector
 import edu.uco.rsteele5.gravityrunner.OrientationManager.OrientationListener
 import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation
 import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation.PORTRAIT
-import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation.REVERSED_PORTRAIT
-import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation.LANDSCAPE
-import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation.REVERSED_LANDSCAPE
+import edu.uco.rsteele5.gravityrunner.model.BitmapBob
+import edu.uco.rsteele5.gravityrunner.model.BoundaryObject
+import edu.uco.rsteele5.gravityrunner.model.GameObject
+import edu.uco.rsteele5.gravityrunner.model.Wall
+import java.util.concurrent.CopyOnWriteArrayList
 
-const val TAG = "GR"
+const val TAG_GR = "GR"
 
 class GameEngine : Activity(), OrientationListener {
 
 
     var orientationManager: OrientationManager? = null
-    var gameObjects: ArrayList<GameObject>? = null
     var orientation: ScreenOrientation = PORTRAIT
     var fps: Long = 0
 
@@ -49,7 +47,7 @@ class GameEngine : Activity(), OrientationListener {
     }
 
     override fun onOrientationChange(screenOrientation: ScreenOrientation) {
-        Log.d(TAG, screenOrientation.toString())
+        Log.d(TAG_GR, screenOrientation.toString())
         orientation = screenOrientation
 
         Toast.makeText(this, screenOrientation.name, Toast.LENGTH_SHORT).show()
@@ -71,9 +69,14 @@ class GameEngine : Activity(), OrientationListener {
 
         private var gameThread: Thread? = null
         private var ourHolder: SurfaceHolder? = null
+        var gameObjects: CopyOnWriteArrayList<GameObject>? = null
+        var boundaryObjects: CopyOnWriteArrayList<BoundaryObject>? = null
 
         private var canvas: Canvas? = null
         var paint: Paint? = null
+
+        val collisionDetector = CollisionDetector()
+        var bitmapBob = BitmapBob(this@GameEngine, 110f,100f)
 
         @Volatile
         var playing: Boolean = false
@@ -86,9 +89,21 @@ class GameEngine : Activity(), OrientationListener {
             paint = Paint()
 
             //TODO: Maybe move this out and initialize elsewhere for brevity/cohesion
-            gameObjects = ArrayList()
+            gameObjects = CopyOnWriteArrayList()
+            boundaryObjects = CopyOnWriteArrayList()
+            //TODO: Replace this after sprint 1, Temp Vals for testing on sprint 1
+            val rectX = 10
+            val rectY = 19
+            gameObjects!!.add(bitmapBob)
 
-            gameObjects!!.add(BitmapBob(this@GameEngine))
+            boundaryObjects!!.add(Wall(this@GameEngine,0f, 0f, rectX)) //Landscape TOP
+            boundaryObjects!!.add(Wall(this@GameEngine,0f, 80f, rectY, true))//Landscape LEFT
+            boundaryObjects!!.add(Wall(this@GameEngine,100f*rectX, 0f, rectY, true))//Landscape RIGHT
+            boundaryObjects!!.add(Wall(this@GameEngine, 100f, 80f*rectY, rectX))//Landscape BOTTOM
+
+            for(obj in boundaryObjects!!){
+                gameObjects!!.add(obj)
+            }
 
             playing = true
 
@@ -115,6 +130,7 @@ class GameEngine : Activity(), OrientationListener {
 
         //TODO: Here we update() game objects, called as above, gravity will probably go here
         fun update() {
+            collisionDetector.processPlayerBoundaryCollision(bitmapBob, boundaryObjects!!)
             for (gameObject in gameObjects!!) {
                 gameObject.update()
             }
@@ -125,26 +141,20 @@ class GameEngine : Activity(), OrientationListener {
             if (ourHolder!!.surface.isValid) {
                 canvas = ourHolder!!.lockCanvas()
 
-                //TODO: The backgroudn will get done here
+                //TODO: The background will get done here
                 canvas!!.drawColor(Color.argb(255, 26, 128, 182))
 
                 //TODO: Find out what this does...
                 paint!!.color = Color.argb(255, 249, 129, 0)
-
+                //TODO: Loop through array to draw
+                for (gameObject in gameObjects!!) {
+                    gameObject.draw(canvas!!, paint!!)
+                }
 
                 paint!!.textSize = 45f
                 canvas!!.drawText("FPS:$fps", 20f, 40f, paint!!)
+                canvas!!.drawText("OnGround:${bitmapBob.onGround}", 20f, 80f, paint!!)
 
-                //TODO: Loop through array to draw
-                for (gameObject in gameObjects!!) {
-                    canvas!!.drawBitmap(
-                        gameObject.getImg()!!,
-                        gameObject.getX(),
-                        gameObject.getY(),
-                        paint
-                    )
-                }
-                //canvas!!.drawBitmap(bitmapBob!!, bobXPosition, bobYPosition, paint)
 
                 //Unlock canvas and post is double buffered, kinda cool how it works, check it out
                 ourHolder!!.unlockCanvasAndPost(canvas)

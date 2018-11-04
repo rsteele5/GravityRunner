@@ -9,7 +9,7 @@ import com.google.firebase.auth.FirebaseAuth
 
 import kotlinx.android.synthetic.main.activity_login.*
 
-const val TAG = "LOGINACTIVITY"
+const val TAG_LA = "LOGINACTIVITY"
 //const val EMAIL = "email"
 //const val PASSWORD = "password"
 
@@ -61,7 +61,7 @@ class LoginActivity : Activity() {
                 }
                 ?.addOnFailureListener {
                     Toast.makeText(this,it.toString(),Toast.LENGTH_LONG).show()
-                    Log.d(TAG,it.toString())
+                    Log.d(TAG_LA,it.toString())
                 }
         }
     }
