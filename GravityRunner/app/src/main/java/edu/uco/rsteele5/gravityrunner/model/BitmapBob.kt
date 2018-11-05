@@ -142,7 +142,7 @@ class BitmapBob(engine: GameEngine, x: Float, y: Float) : GameEntity(engine, x, 
             }
         }
 
-        canvas.drawRect(collisionBox,paint) // backup in case image does not render
+        //canvas.drawRect(collisionBox,paint) // backup in case image does not render
         //val rotatedImage = Bitmap.createBitmap(image, 0, 0, 28, 43, null, true)
         canvas.drawBitmap(image!!.rotate(rotation), null, collisionBox, null)
     }
