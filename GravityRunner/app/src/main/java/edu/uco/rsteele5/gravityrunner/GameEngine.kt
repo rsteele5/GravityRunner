@@ -49,8 +49,6 @@ class GameEngine : Activity(), OrientationListener {
     override fun onOrientationChange(screenOrientation: ScreenOrientation) {
         Log.d(TAG_GR, screenOrientation.toString())
         orientation = screenOrientation
-
-        Toast.makeText(this, screenOrientation.name, Toast.LENGTH_SHORT).show()
     }
 
     //TODO: Need to look into this more, can we use this to pause the game?
