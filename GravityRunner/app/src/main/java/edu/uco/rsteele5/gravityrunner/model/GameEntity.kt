@@ -5,9 +5,11 @@ import android.graphics.Matrix
 
 
 abstract class GameEntity(engine: GameEngine, x: Float, y: Float): GameObject(engine) {
-    val rotateGavMatrix = Matrix()
+    var rotateGavMatrix = Matrix()
     init{
         xPos = x
         yPos = y
     }
+
+    //abstract fun onCollison(bound: BoundaryObject)
 }
