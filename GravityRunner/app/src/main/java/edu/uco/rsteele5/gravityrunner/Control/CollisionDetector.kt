@@ -12,7 +12,6 @@ class CollisionDetector(){
 
         for(bound in boundarys) {
             if(player.getCollidableBox().intersect(bound.getCollidableBox())){
-                //player.onCollision(bound)
                 player.onGround = true
                 break
             }else{
