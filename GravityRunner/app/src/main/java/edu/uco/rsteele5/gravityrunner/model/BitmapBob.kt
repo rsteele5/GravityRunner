@@ -43,11 +43,6 @@ class BitmapBob(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
             180f -> collisionBox.set(xPos, yPos, bobWidth + xPos, bobHeight + yPos)
             270f -> collisionBox.set(xPos, yPos, bobHeight + xPos, bobWidth + yPos)
         }
-
-        deltaX = gravityVector.first * speed
-        deltaY = gravityVector.second * speed
-        xPos += deltaX
-        yPos += deltaY
     }
 
     override fun draw(canvas: Canvas, paint: Paint) {

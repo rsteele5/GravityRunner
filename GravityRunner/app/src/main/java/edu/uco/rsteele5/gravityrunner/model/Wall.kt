@@ -33,7 +33,23 @@ class Wall(image: Bitmap, x: Float, y: Float, lengthOf: Int, varticalFlag: Boole
     }
 
     override fun update(orientation: ScreenOrientation, gravityVector: Triple<Float, Float, Float>) {
+        deltaX = gravityVector.first * gravityVector.third
+        deltaY = gravityVector.second * gravityVector.third
+        xPos += deltaX
+        yPos += deltaY
 
+        if(vertical) {
+            for (i in 0..(length-1)){
+                wallScalars[i].set(RectF(xPos, (80f*i)+yPos, 100f+xPos, (80f*i)+80f+yPos))
+            }
+            collisionBox.set(RectF(xPos, yPos, 100f+xPos, (length * 80f) + yPos))
+        }
+        else {
+            for (i in 0..(length-1)){
+                wallScalars[i].set(RectF((100f*i)+xPos, yPos, (100f*i)+100f+xPos, 80f+yPos))
+            }
+            collisionBox.set(RectF(xPos, yPos, (100f*length)+xPos, 80f+yPos))
+        }
     }
 
     override fun draw(canvas: Canvas, paint: Paint) {

@@ -9,7 +9,6 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import android.widget.Toast
 import edu.uco.rsteele5.gravityrunner.Control.CollisionDetector
 import edu.uco.rsteele5.gravityrunner.OrientationManager.OrientationListener
 import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation
@@ -29,12 +28,14 @@ class GameEngine : Activity(), OrientationListener {
     var orientation: ScreenOrientation = PORTRAIT
     var fps: Long = 0
 
-    var speed = 6f
+    var speed = 2f
 
-    val portraitGravityVector = Triple(0f, 1f, speed)
-    val landscapeGravityVector = Triple(-1f, 0f, speed)
-    val reversePortraitGravityVector = Triple(0f,-1f, speed)
-    val reverseLandscapeGravityVector = Triple(1f, 0f, speed)
+    val portraitGravityVector = Triple(0f, -1f, speed)
+    val landscapeGravityVector = Triple(1f, 0f, speed)
+    val reversePortraitGravityVector = Triple(0f,1f, speed)
+    val reverseLandscapeGravityVector = Triple(-1f, 0f, speed)
+
+    val motionVector = Triple(-1f, 0f, speed)
 
     var gravityVector: Triple<Float, Float, Float>? = portraitGravityVector
 
@@ -140,6 +141,7 @@ class GameEngine : Activity(), OrientationListener {
         //TODO: Here we update() game objects, called as above, gravity will probably go here
         fun update(gravityVector: Triple<Float, Float, Float>) {
             collisionDetector.processPlayerBoundaryCollision(bitmapBob, boundaryObjects!!)
+            //set motion vector
             for (gameObject in gameObjects!!) {
                 gameObject.update(orientation, gravityVector)
             }
