@@ -13,4 +13,6 @@
     <string name="emptyAccount">Please fill ID and Password values</string>
     <string name="beforePlay">Before play..</string>
     <string name="loginFirst">Would you like to log in first?</string>
+    <string name="drawer_open">drawer_open</string>
+    <string name="drawer_close">drawer_close</string>
 </resources>

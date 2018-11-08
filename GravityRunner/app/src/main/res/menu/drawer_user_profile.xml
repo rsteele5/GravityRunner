@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/level"
+        android:title="level"/>
+    <item
+        android:id="@+id/score"
+        android:title="score"
+        />
+    <item
+        android:id="@+id/coin"
+        android:title="coin"
+        />
+</menu>
