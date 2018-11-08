@@ -15,4 +15,11 @@
     <string name="loginFirst">Would you like to log in first?</string>
     <string name="drawer_open">drawer_open</string>
     <string name="drawer_close">drawer_close</string>
+    <string name="btnLevel">level select</string>
+    <string name="btnStore">store</string>
+    <string name="btnBoard">Leader Board</string>
+    <string name="btnOut">logout</string>
+    <string name="btnQuit">quit</string>
+    <string name="level_activity">Level Select</string>
+    <string name="user_activity">User Profile</string>
 </resources>

@@ -36,8 +36,8 @@ class LoginActivity : Activity() {
                     if (it.isSuccessful) {
                         Toast.makeText(this, getString(R.string.loginSuccess, email), Toast.LENGTH_SHORT).show()
 
-                        var i = Intent(this,GameEngine::class.java)
-
+                        //var i = Intent(this,GameEngine::class.java)
+                        val i = Intent(this, UserProfile::class.java)
                         //intent.putExtra(EMAIL,email)  //player's information / current user fun
                         //intent.putExtra(PASSWORD,password)
 
