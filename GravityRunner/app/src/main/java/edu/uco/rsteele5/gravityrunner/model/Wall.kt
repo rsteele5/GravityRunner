@@ -1,22 +1,19 @@
 package edu.uco.rsteele5.gravityrunner.model
 
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.RectF
-import edu.uco.rsteele5.gravityrunner.GameEngine
-import edu.uco.rsteele5.gravityrunner.R
+import android.graphics.*
+import android.util.Log
+import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation
 import java.util.concurrent.CopyOnWriteArrayList
 
-class Wall(engine: GameEngine, x: Float, y: Float, lengthOf: Int, varticalFlag: Boolean): BoundaryObject(engine, x, y) {
-    constructor(engine: GameEngine, x: Float, y: Float, lengthOf: Int) : this(engine,x,y,lengthOf,false)
-    constructor(engine: GameEngine, x: Float, y: Float) : this(engine,x,y,1,false)
+class Wall(image: Bitmap, x: Float, y: Float, lengthOf: Int, varticalFlag: Boolean): BoundaryObject(image, x, y) {
+    constructor(image: Bitmap, x: Float, y: Float, lengthOf: Int) : this(image,x,y,lengthOf,false)
+    constructor(image: Bitmap, x: Float, y: Float) : this(image,x,y,1,false)
 
     protected var length = 0
     protected var vertical = false
     protected val wallScalars = CopyOnWriteArrayList<RectF>()
     init {
-        image = BitmapFactory.decodeResource(engine.resources, R.drawable.stone100x80)
+        this.image = image
         length = lengthOf
         vertical = varticalFlag
         //TODO: Make more modular for other boundary objects
@@ -35,8 +32,24 @@ class Wall(engine: GameEngine, x: Float, y: Float, lengthOf: Int, varticalFlag: 
         }
     }
 
-    override fun update() {
+    override fun update(orientation: ScreenOrientation, gravityVector: Triple<Float, Float, Float>) {
+        deltaX = gravityVector.first * gravityVector.third
+        deltaY = gravityVector.second * gravityVector.third
+        xPos += deltaX
+        yPos += deltaY
 
+        if(vertical) {
+            for (i in 0..(length-1)){
+                wallScalars[i].set(RectF(xPos, (80f*i)+yPos, 100f+xPos, (80f*i)+80f+yPos))
+            }
+            collisionBox.set(RectF(xPos, yPos, 100f+xPos, (length * 80f) + yPos))
+        }
+        else {
+            for (i in 0..(length-1)){
+                wallScalars[i].set(RectF((100f*i)+xPos, yPos, (100f*i)+100f+xPos, 80f+yPos))
+            }
+            collisionBox.set(RectF(xPos, yPos, (100f*length)+xPos, 80f+yPos))
+        }
     }
 
     override fun draw(canvas: Canvas, paint: Paint) {

@@ -1,9 +1,8 @@
 package edu.uco.rsteele5.gravityrunner.model
 
-import edu.uco.rsteele5.gravityrunner.GameEngine
+import android.graphics.Bitmap
 
-
-abstract class BoundaryObject (engine: GameEngine, x: Float, y: Float) : GameObject(engine) {
+abstract class BoundaryObject (image: Bitmap, x: Float, y: Float) : GameObject(image) {
 
     init{
         xPos = x

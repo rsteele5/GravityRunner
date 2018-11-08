@@ -2,20 +2,17 @@ package edu.uco.rsteele5.gravityrunner
 
 import android.app.Activity
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
+import android.graphics.*
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import android.widget.Toast
 import edu.uco.rsteele5.gravityrunner.Control.CollisionDetector
 import edu.uco.rsteele5.gravityrunner.OrientationManager.OrientationListener
 import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation
-import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation.PORTRAIT
+import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation.*
 import edu.uco.rsteele5.gravityrunner.model.BitmapBob
 import edu.uco.rsteele5.gravityrunner.model.BoundaryObject
 import edu.uco.rsteele5.gravityrunner.model.GameObject
@@ -31,8 +28,16 @@ class GameEngine : Activity(), OrientationListener {
     var orientation: ScreenOrientation = PORTRAIT
     var fps: Long = 0
 
-    var deltaX = 150f
-    var deltaY = 150f
+    var speed = 2f
+
+    val portraitGravityVector = Triple(0f, -1f, speed)
+    val landscapeGravityVector = Triple(1f, 0f, speed)
+    val reversePortraitGravityVector = Triple(0f,1f, speed)
+    val reverseLandscapeGravityVector = Triple(-1f, 0f, speed)
+
+    val motionVector = Triple(-1f, 0f, speed)
+
+    var gravityVector: Triple<Float, Float, Float>? = portraitGravityVector
 
     private var gameView: GameView? = null
 
@@ -47,8 +52,13 @@ class GameEngine : Activity(), OrientationListener {
     }
 
     override fun onOrientationChange(screenOrientation: ScreenOrientation) {
-        Log.d(TAG_GR, screenOrientation.toString())
         orientation = screenOrientation
+        gravityVector = when(orientation){
+            PORTRAIT -> portraitGravityVector
+            LANDSCAPE -> landscapeGravityVector
+            REVERSED_PORTRAIT -> reversePortraitGravityVector
+            REVERSED_LANDSCAPE -> reverseLandscapeGravityVector
+        }
     }
 
     //TODO: Need to look into this more, can we use this to pause the game?
@@ -67,6 +77,7 @@ class GameEngine : Activity(), OrientationListener {
 
         private var gameThread: Thread? = null
         private var ourHolder: SurfaceHolder? = null
+
         var gameObjects: CopyOnWriteArrayList<GameObject>? = null
         var boundaryObjects: CopyOnWriteArrayList<BoundaryObject>? = null
 
@@ -74,11 +85,10 @@ class GameEngine : Activity(), OrientationListener {
         var paint: Paint? = null
 
         val collisionDetector = CollisionDetector()
-        var bitmapBob = BitmapBob(this@GameEngine, 130f,100f)
+        var bitmapBob = BitmapBob(BitmapFactory.decodeResource(resources, R.drawable.bob), 150f,100f)
 
         @Volatile
         var playing: Boolean = false
-
 
         private var timeThisFrame: Long = 0
 
@@ -89,15 +99,18 @@ class GameEngine : Activity(), OrientationListener {
             //TODO: Maybe move this out and initialize elsewhere for brevity/cohesion
             gameObjects = CopyOnWriteArrayList()
             boundaryObjects = CopyOnWriteArrayList()
+
             //TODO: Replace this after sprint 1, Temp Vals for testing on sprint 1
             val rectX = 10
             val rectY = 19
             gameObjects!!.add(bitmapBob)
 
-            boundaryObjects!!.add(Wall(this@GameEngine,0f, 0f, rectX)) //Landscape TOP
-            boundaryObjects!!.add(Wall(this@GameEngine,0f, 80f, rectY, true))//Landscape LEFT
-            boundaryObjects!!.add(Wall(this@GameEngine,100f*rectX, 0f, rectY, true))//Landscape RIGHT
-            boundaryObjects!!.add(Wall(this@GameEngine, 100f, 80f*rectY, rectX))//Landscape BOTTOM
+
+
+            boundaryObjects!!.add(Wall(BitmapFactory.decodeResource(resources, R.drawable.stone100x80),0f, 0f, rectX)) //Landscape TOP
+            boundaryObjects!!.add(Wall(BitmapFactory.decodeResource(resources, R.drawable.stone100x80),0f, 80f, rectY, true))//Landscape LEFT
+            boundaryObjects!!.add(Wall(BitmapFactory.decodeResource(resources, R.drawable.stone100x80),100f*rectX, 0f, rectY, true))//Landscape RIGHT
+            boundaryObjects!!.add(Wall(BitmapFactory.decodeResource(resources, R.drawable.stone100x80), 100f, 80f*rectY, rectX))//Landscape BOTTOM
 
             for(obj in boundaryObjects!!){
                 gameObjects!!.add(obj)
@@ -113,7 +126,7 @@ class GameEngine : Activity(), OrientationListener {
                 val startFrameTime = System.currentTimeMillis()
 
                 //TODO: Need to loop through the array and call update() on game objects
-                update()
+                update(gravityVector!!)
 
                 //TODO: Need to loop through the array and call draw() on game objects
                 draw()
@@ -123,14 +136,14 @@ class GameEngine : Activity(), OrientationListener {
                     fps = 1000 / timeThisFrame
                 }
             }
-
         }
 
         //TODO: Here we update() game objects, called as above, gravity will probably go here
-        fun update() {
+        fun update(gravityVector: Triple<Float, Float, Float>) {
             collisionDetector.processPlayerBoundaryCollision(bitmapBob, boundaryObjects!!)
+            //set motion vector
             for (gameObject in gameObjects!!) {
-                gameObject.update()
+                gameObject.update(orientation, gravityVector)
             }
         }
 
@@ -141,13 +154,16 @@ class GameEngine : Activity(), OrientationListener {
 
                 //TODO: The background will get done here
                 canvas!!.drawColor(Color.argb(255, 26, 128, 182))
-
-                //TODO: Find out what this does...
                 paint!!.color = Color.argb(255, 249, 129, 0)
-                //TODO: Loop through array to draw
+
                 for (gameObject in gameObjects!!) {
                     gameObject.draw(canvas!!, paint!!)
                 }
+                for (gameObject in boundaryObjects!!){
+                    gameObject.draw(canvas!!, paint!!)
+                }
+
+                canvas!!.drawBitmap(BitmapFactory.decodeResource(resources, R.drawable.stone100x80), null, RectF(500f,500f,580f,580f), null)
 
                 paint!!.textSize = 45f
                 canvas!!.drawText("FPS:$fps", 20f, 40f, paint!!)
@@ -168,7 +184,6 @@ class GameEngine : Activity(), OrientationListener {
             } catch (e: InterruptedException) {
                 Log.e("Error:", "joining thread")
             }
-
         }
 
         //TODO: Need to look into this more, can we use this to pause the game?
@@ -180,11 +195,11 @@ class GameEngine : Activity(), OrientationListener {
 
         //TODO: Use this for jumps and stuff
         override fun onTouchEvent(motionEvent: MotionEvent): Boolean {
-
-            when (motionEvent.action and MotionEvent.ACTION_MASK) {
-                MotionEvent.ACTION_DOWN -> (gameObjects!![0] as BitmapBob).isMoving = true
-                MotionEvent.ACTION_UP -> (gameObjects!![0] as BitmapBob).isMoving = false
-            }
+//
+//            when (motionEvent.action and MotionEvent.ACTION_MASK) {
+//                MotionEvent.ACTION_DOWN -> (gameObjects!![0] as BitmapBob).isMoving = true
+//                MotionEvent.ACTION_UP -> (gameObjects!![0] as BitmapBob).isMoving = false
+//            }
             return true
         }
     }
