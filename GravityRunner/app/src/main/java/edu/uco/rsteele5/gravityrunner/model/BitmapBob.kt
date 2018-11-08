@@ -15,7 +15,7 @@ class BitmapBob(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
 
     var onGround = false
     var currentRotation: Float = 0f
-
+    var currentOrientation: ScreenOrientation = PORTRAIT
     var speed = 3f
 
     init {
@@ -30,18 +30,24 @@ class BitmapBob(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
     }
 
     override fun update(orientation: ScreenOrientation, gravityVector: Triple<Float, Float, Float>) {
-        currentRotation = when (orientation){
-            PORTRAIT -> 0f
-            LANDSCAPE -> 90f
-            REVERSED_PORTRAIT -> 180f
-            REVERSED_LANDSCAPE -> 270f
-        }
-
-        when (currentRotation) {
-            0f -> collisionBox.set(xPos, yPos, bobWidth + xPos, bobHeight + yPos)
-            90f -> collisionBox.set(xPos, yPos, bobHeight + xPos, bobWidth + yPos)
-            180f -> collisionBox.set(xPos, yPos, bobWidth + xPos, bobHeight + yPos)
-            270f -> collisionBox.set(xPos, yPos, bobHeight + xPos, bobWidth + yPos)
+        currentOrientation = orientation
+        when (currentOrientation){
+            PORTRAIT -> {
+                currentRotation = 0f
+                collisionBox.set(xPos, yPos, bobWidth + xPos, bobHeight + yPos)
+            }
+            LANDSCAPE -> {
+                currentRotation = 90f
+                collisionBox.set(xPos, yPos, bobHeight + xPos, bobWidth + yPos)
+            }
+            REVERSED_PORTRAIT -> {
+                currentRotation = 180f
+                collisionBox.set(xPos, yPos, bobWidth + xPos, bobHeight + yPos)
+            }
+            REVERSED_LANDSCAPE -> {
+                currentRotation = 270f
+                collisionBox.set(xPos, yPos, bobHeight + xPos, bobWidth + yPos)
+            }
         }
     }
 
@@ -52,5 +58,17 @@ class BitmapBob(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
     private fun Bitmap.rotate(degrees: Float): Bitmap {
         val matrix = Matrix().apply { postRotate(degrees) }
         return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
+    }
+
+    fun getCenter(): Pair<Float, Float> {
+        return  if(currentOrientation == PORTRAIT || currentOrientation == REVERSED_PORTRAIT)
+                    Pair(getX() + (bobWidth / 2), getY() + (bobHeight / 2))
+                else
+                    Pair(getX() + (bobHeight / 2), getY() + (bobWidth / 2))
+    }
+
+    fun debugMove(dx: Float, dy: Float) {
+        xPos += dx
+        yPos += dy
     }
 }

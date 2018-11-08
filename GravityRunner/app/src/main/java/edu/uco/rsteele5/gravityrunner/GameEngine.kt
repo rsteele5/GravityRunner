@@ -2,6 +2,7 @@ package edu.uco.rsteele5.gravityrunner
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.*
 import android.hardware.SensorManager
 import android.os.Bundle
@@ -22,7 +23,6 @@ import java.util.concurrent.CopyOnWriteArrayList
 const val TAG_GR = "GR"
 
 class GameEngine : Activity(), OrientationListener {
-
 
     var orientationManager: OrientationManager? = null
     var orientation: ScreenOrientation = PORTRAIT
@@ -73,6 +73,19 @@ class GameEngine : Activity(), OrientationListener {
         gameView!!.pause()
     }
 
+    fun getScreenWidth(): Int {
+        return Resources.getSystem().getDisplayMetrics().widthPixels - 60
+    }
+
+    fun getScreenHeight(): Int {
+        return Resources.getSystem().getDisplayMetrics().heightPixels - 114 * 4
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        this.finish()
+    }
+
     internal inner class GameView(context: Context) : SurfaceView(context), Runnable {
 
         private var gameThread: Thread? = null
@@ -85,7 +98,11 @@ class GameEngine : Activity(), OrientationListener {
         var paint: Paint? = null
 
         val collisionDetector = CollisionDetector()
-        var bitmapBob = BitmapBob(BitmapFactory.decodeResource(resources, R.drawable.bob), 150f,100f)
+        var bitmapBob = BitmapBob(
+            BitmapFactory.decodeResource(resources,
+            R.drawable.bob),
+            (getScreenWidth() / 2).toFloat(),
+            (getScreenHeight() / 2).toFloat())
 
         @Volatile
         var playing: Boolean = false
@@ -104,8 +121,6 @@ class GameEngine : Activity(), OrientationListener {
             val rectX = 10
             val rectY = 19
             gameObjects!!.add(bitmapBob)
-
-
 
             boundaryObjects!!.add(Wall(BitmapFactory.decodeResource(resources, R.drawable.stone100x80),0f, 0f, rectX)) //Landscape TOP
             boundaryObjects!!.add(Wall(BitmapFactory.decodeResource(resources, R.drawable.stone100x80),0f, 80f, rectY, true))//Landscape LEFT
@@ -141,6 +156,9 @@ class GameEngine : Activity(), OrientationListener {
         //TODO: Here we update() game objects, called as above, gravity will probably go here
         fun update(gravityVector: Triple<Float, Float, Float>) {
             collisionDetector.processPlayerBoundaryCollision(bitmapBob, boundaryObjects!!)
+
+            collisionDetector.getNormalVector()
+
             //set motion vector
             for (gameObject in gameObjects!!) {
                 gameObject.update(orientation, gravityVector)
@@ -162,8 +180,6 @@ class GameEngine : Activity(), OrientationListener {
                 for (gameObject in boundaryObjects!!){
                     gameObject.draw(canvas!!, paint!!)
                 }
-
-                canvas!!.drawBitmap(BitmapFactory.decodeResource(resources, R.drawable.stone100x80), null, RectF(500f,500f,580f,580f), null)
 
                 paint!!.textSize = 45f
                 canvas!!.drawText("FPS:$fps", 20f, 40f, paint!!)
