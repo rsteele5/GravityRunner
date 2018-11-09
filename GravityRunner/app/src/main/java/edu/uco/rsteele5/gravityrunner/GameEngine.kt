@@ -35,7 +35,7 @@ class GameEngine : Activity(), OrientationListener {
     val reversePortraitGravityVector = Triple(0f,1f, speed)
     val reverseLandscapeGravityVector = Triple(-1f, 0f, speed)
 
-    val motionVector = Triple(-1f, 0f, speed)
+    val motionVector = Triple(0f, 0f, 0f)
 
     var gravityVector: Triple<Float, Float, Float>? = portraitGravityVector
 
@@ -157,11 +157,11 @@ class GameEngine : Activity(), OrientationListener {
         fun update(gravityVector: Triple<Float, Float, Float>) {
             collisionDetector.processPlayerBoundaryCollision(bitmapBob, boundaryObjects!!)
 
-            collisionDetector.getNormalVector()
-
+            val norm = collisionDetector.getNormalVector()
+            motionVector = calculateMotionVector(gravityVector,collisionDetector.getNormalVector(), motionVector)
             //set motion vector
             for (gameObject in gameObjects!!) {
-                gameObject.update(orientation, gravityVector)
+                gameObject.update(orientation, motionVector)
             }
         }
 
