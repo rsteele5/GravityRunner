@@ -13,7 +13,6 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_user_profile.*
 import kotlinx.android.synthetic.main.content_user_profile.*
-import kotlinx.android.synthetic.main.nav_header_user_profile.*
 import kotlinx.android.synthetic.main.toolbar_user_profile.*
 
 class UserProfile : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -42,7 +41,7 @@ class UserProfile : AppCompatActivity(), NavigationView.OnNavigationItemSelected
             emailView.text = currentUser.email
             */
         }else{
-            Toast.makeText(this,"no current usre",Toast.LENGTH_SHORT).show()
+            Toast.makeText(this,getString(R.string.noUser),Toast.LENGTH_SHORT).show()
         }
 
         btnLevel.setOnClickListener {
@@ -61,11 +60,21 @@ class UserProfile : AppCompatActivity(), NavigationView.OnNavigationItemSelected
         }
 
         btnOut.setOnClickListener {
-            //log out only
+            mAuth?.signOut()
+            if(mAuth.currentUser == null)
+                Toast.makeText(this,getString(R.string.logout),Toast.LENGTH_SHORT).show()
+            else
+                Toast.makeText(this,getString(R.string.fail_logout),Toast.LENGTH_SHORT).show()
+            finish()
         }
 
         btnQuit.setOnClickListener {
-            //logout,quit app
+            mAuth?.signOut()
+            if(mAuth.currentUser == null)
+                Toast.makeText(this,getString(R.string.logout),Toast.LENGTH_SHORT).show()
+            else
+                Toast.makeText(this,getString(R.string.fail_logout),Toast.LENGTH_SHORT).show()
+            finishAffinity()
         }
     }
 

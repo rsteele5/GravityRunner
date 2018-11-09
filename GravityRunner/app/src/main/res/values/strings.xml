@@ -22,4 +22,11 @@
     <string name="btnQuit">quit</string>
     <string name="level_activity">Level Select</string>
     <string name="user_activity">User Profile</string>
+    <string name="logout">Logged out successfully</string>
+    <string name="fail_logout">Failed to logout</string>
+    <string name="noUser">You didn\'t login</string>
+    <string name="play">Play</string>
+    <string name="restart">Restart</string>
+    <string name="locked">Locked</string>
+    <string name="click">Click</string>
 </resources>

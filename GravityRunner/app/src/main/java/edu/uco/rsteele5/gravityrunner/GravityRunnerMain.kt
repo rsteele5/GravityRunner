@@ -22,7 +22,8 @@ class GravityRunnerMain : Activity() {
                 startActivity(i)
             }
             alert.setNegativeButton("No"){dialog: DialogInterface?, which: Int ->
-                val i = Intent(this, GameEngine::class.java)
+                //val i = Intent(this, GameEngine::class.java)
+                val i = Intent(this, LevelSelect::class.java)
                 startActivity(i)
             }
             alert.show()

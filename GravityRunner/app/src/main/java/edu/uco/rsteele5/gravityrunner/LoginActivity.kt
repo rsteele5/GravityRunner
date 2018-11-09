@@ -10,8 +10,6 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_login.*
 
 const val TAG_LA = "LOGINACTIVITY"
-//const val EMAIL = "email"
-//const val PASSWORD = "password"
 
 class LoginActivity : Activity() {
 
@@ -42,6 +40,8 @@ class LoginActivity : Activity() {
                         //intent.putExtra(PASSWORD,password)
 
                         startActivity(i)
+                        eAccount.text = null
+                        ePass.text = null
                     } else {
                         Toast.makeText(this, getString(R.string.loginFail), Toast.LENGTH_SHORT).show()
                     }
