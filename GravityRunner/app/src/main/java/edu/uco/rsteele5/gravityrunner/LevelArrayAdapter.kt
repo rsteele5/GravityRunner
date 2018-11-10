@@ -55,10 +55,11 @@ class LevelArrayAdapter(val context: Context, var levelList: ArrayList<Level>) :
             if(levelList[position].status==-1) {
                 item.setBackgroundColor(colorId)
                 itemView.setClickable(false)
-            }
-            itemView.setOnClickListener {
-                Toast.makeText(context,context.resources.getText(R.string.click),Toast.LENGTH_SHORT).show()
-                //stage click event//버튼이 있는데 굳이??
+            }else {
+                itemView.setOnClickListener {
+                    Toast.makeText(context, context.resources.getText(R.string.click), Toast.LENGTH_SHORT).show()
+                    //stage click event//버튼이 있는데 굳이??
+                }
             }
 
         }

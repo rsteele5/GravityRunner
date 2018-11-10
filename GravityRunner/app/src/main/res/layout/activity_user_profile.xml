@@ -27,10 +27,11 @@
                 android:id="@+id/nav_user_profile_navigation_root"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-        android:layout_gravity="start"
+                android:layout_gravity="start"
                 android:fitsSystemWindows="true"
-                app:headerLayout="@layout/nav_header_user_profile"
-                app:menu="@menu/drawer_user_profile"/>
+                app:headerLayout="@layout/nav_header_user_profile">
+        </android.support.design.widget.NavigationView>
+        <!--app:menu="@menu/drawer_user_profile"/-->
 
     </android.support.v4.widget.DrawerLayout>
 
