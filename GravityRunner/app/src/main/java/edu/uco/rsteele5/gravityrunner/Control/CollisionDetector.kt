@@ -1,20 +1,15 @@
 package edu.uco.rsteele5.gravityrunner.Control
 
 import android.graphics.RectF
-import android.util.Log
-import edu.uco.rsteele5.gravityrunner.GameEngine
-import edu.uco.rsteele5.gravityrunner.model.BitmapBob
-import edu.uco.rsteele5.gravityrunner.model.BoundaryObject
-import edu.uco.rsteele5.gravityrunner.model.GameEntity
-import edu.uco.rsteele5.gravityrunner.model.GameObject
+import edu.uco.rsteele5.gravityrunner.model.*
 import java.util.concurrent.CopyOnWriteArrayList
 
 class CollisionDetector{
-    private var normalVector: Triple<Float, Float, Float> = Triple(0f,0f,0f)
+    private var normalVector = PhysicsVector()
 
-    fun processPlayerBoundaryCollision(player: BitmapBob, boundarys: CopyOnWriteArrayList<BoundaryObject>){
+    fun processPlayerBoundaryCollision(player: Player, boundaries: CopyOnWriteArrayList<BoundaryObject>){
 
-        for(bound in boundarys) {
+        for(bound in boundaries) {
             if(RectF.intersects(player.getCollidableBox(), bound.getCollidableBox())) {
                 var intersection = RectF()
                 intersection.setIntersect(player.getCollidableBox(), bound.getCollidableBox())
@@ -37,15 +32,16 @@ class CollisionDetector{
                 if (xComp.isNaN()) xComp = 0.0f
                 if (yComp.isNaN()) yComp = 0.0f
 
-                normalVector = Triple(xComp, yComp, -magnitude)
-
-                //TODO: Remove this once testing is done...
-                //player.debugMove(xComp * -magnitude, yComp * -magnitude)
+                normalVector = normalVector.add(PhysicsVector(xComp, yComp, magnitude))
             }
         }
     }
 
-    fun getNormalVector(): Triple<Float, Float, Float> {
+    fun getNormalVector(): PhysicsVector{
         return normalVector
+    }
+
+    fun resetNormalVector(){
+        normalVector.zero()
     }
 }
