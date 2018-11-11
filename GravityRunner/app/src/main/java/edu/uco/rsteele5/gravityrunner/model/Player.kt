@@ -1,11 +1,11 @@
 package edu.uco.rsteele5.gravityrunner.model
 
 import android.graphics.*
-import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation
-import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation.PORTRAIT
-import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation.LANDSCAPE
-import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation.REVERSED_PORTRAIT
-import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation.REVERSED_LANDSCAPE
+import edu.uco.rsteele5.gravityrunner.Control.OrientationManager.ScreenOrientation
+import edu.uco.rsteele5.gravityrunner.Control.OrientationManager.ScreenOrientation.PORTRAIT
+import edu.uco.rsteele5.gravityrunner.Control.OrientationManager.ScreenOrientation.LANDSCAPE
+import edu.uco.rsteele5.gravityrunner.Control.OrientationManager.ScreenOrientation.REVERSED_PORTRAIT
+import edu.uco.rsteele5.gravityrunner.Control.OrientationManager.ScreenOrientation.REVERSED_LANDSCAPE
 
 class Player(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
 
@@ -49,7 +49,6 @@ class Player(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
     }
 
     override fun draw(canvas: Canvas, paint: Paint) {
-        canvas.drawRect(collisionBox, paint)
         canvas.drawBitmap(image!!.rotate(currentRotation), null, collisionBox, null)
     }
 

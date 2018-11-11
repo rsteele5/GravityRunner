@@ -12,7 +12,7 @@ class LevelSelect : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_level_select)
-        setTitle(getString(R.string.level_activity))
+        title = getString(R.string.level_activity)
 
         rLevelView.layoutManager = LinearLayoutManager(this)
         rLevelView.adapter = LevelArrayAdapter(this, levelList)

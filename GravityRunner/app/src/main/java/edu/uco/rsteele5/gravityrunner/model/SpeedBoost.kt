@@ -1,7 +1,7 @@
 package edu.uco.rsteele5.gravityrunner.model
 
 import android.graphics.*
-import edu.uco.rsteele5.gravityrunner.OrientationManager
+import edu.uco.rsteele5.gravityrunner.Control.OrientationManager
 
 class SpeedBoost(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
 

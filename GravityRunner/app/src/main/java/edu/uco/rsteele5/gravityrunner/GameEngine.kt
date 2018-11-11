@@ -12,13 +12,12 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import edu.uco.rsteele5.gravityrunner.Control.CollisionDetector
 import edu.uco.rsteele5.gravityrunner.Control.LevelController
+import edu.uco.rsteele5.gravityrunner.Control.OrientationManager
 import edu.uco.rsteele5.gravityrunner.Control.PlayerController
-import edu.uco.rsteele5.gravityrunner.OrientationManager.OrientationListener
-import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation
-import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation.*
+import edu.uco.rsteele5.gravityrunner.Control.OrientationManager.OrientationListener
+import edu.uco.rsteele5.gravityrunner.Control.OrientationManager.ScreenOrientation
+import edu.uco.rsteele5.gravityrunner.Control.OrientationManager.ScreenOrientation.*
 import edu.uco.rsteele5.gravityrunner.model.PhysicsVector
-import edu.uco.rsteele5.gravityrunner.model.Wall
-import java.util.concurrent.CopyOnWriteArrayList
 
 const val TAG_GR = "GR"
 
@@ -47,7 +46,8 @@ class GameEngine : Activity(), OrientationListener {
         gameView = GameView(this)
         setContentView(gameView)
 
-        orientationManager = OrientationManager(this, SensorManager.SENSOR_DELAY_NORMAL, this)
+        orientationManager =
+                OrientationManager(this, SensorManager.SENSOR_DELAY_NORMAL, this)
         orientationManager!!.enable()
     }
 
@@ -165,14 +165,6 @@ class GameEngine : Activity(), OrientationListener {
                 canvas!!.drawText("Vector x:${motionVector.x}", 20f, 80f, paint!!)
                 canvas!!.drawText("Vector y:${motionVector.y}", 20f, 120f, paint!!)
                 canvas!!.drawText("Vector mag:${motionVector.magnitude}", 20f, 160f, paint!!)
-
-                //Debug center screen
-                paint!!.color = Color.argb(255, 255, 255, 255)
-                canvas!!.drawRect(RectF(getScreenWidth()/2f - 5f,
-                    getScreenHeight()/2f - 5f,
-                    getScreenWidth()/2f + 5f,
-                    getScreenHeight()/2f + 5f), paint!!)
-
 
                 //Unlock canvas and post is double buffered, kinda cool how it works, check it out
                 ourHolder!!.unlockCanvasAndPost(canvas)

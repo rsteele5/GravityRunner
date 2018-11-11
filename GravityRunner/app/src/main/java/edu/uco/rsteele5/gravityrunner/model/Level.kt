@@ -5,7 +5,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.Log
-import edu.uco.rsteele5.gravityrunner.OrientationManager
+import edu.uco.rsteele5.gravityrunner.Control.OrientationManager
 import edu.uco.rsteele5.gravityrunner.R
 import edu.uco.rsteele5.gravityrunner.Renderable
 import java.util.concurrent.CopyOnWriteArrayList

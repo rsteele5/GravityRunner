@@ -1,8 +1,9 @@
-package edu.uco.rsteele5.gravityrunner
+package edu.uco.rsteele5.gravityrunner.Control
 
 import android.content.Context
 import android.util.Log
 import android.view.OrientationEventListener
+import edu.uco.rsteele5.gravityrunner.TAG_GR
 
 class OrientationManager(context: Context, rate: Int, listener: OrientationListener) : OrientationEventListener(context, rate) {
 
