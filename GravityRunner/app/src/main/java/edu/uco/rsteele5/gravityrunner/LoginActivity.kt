@@ -10,8 +10,6 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_login.*
 
 const val TAG_LA = "LOGINACTIVITY"
-//const val EMAIL = "email"
-//const val PASSWORD = "password"
 
 class LoginActivity : Activity() {
 
@@ -36,12 +34,14 @@ class LoginActivity : Activity() {
                     if (it.isSuccessful) {
                         Toast.makeText(this, getString(R.string.loginSuccess, email), Toast.LENGTH_SHORT).show()
 
-                        var i = Intent(this,GameEngine::class.java)
-
+                        //var i = Intent(this,GameEngine::class.java)
+                        val i = Intent(this, UserProfile::class.java)
                         //intent.putExtra(EMAIL,email)  //player's information / current user fun
                         //intent.putExtra(PASSWORD,password)
 
                         startActivity(i)
+                        eAccount.text = null
+                        ePass.text = null
                     } else {
                         Toast.makeText(this, getString(R.string.loginFail), Toast.LENGTH_SHORT).show()
                     }
