@@ -11,10 +11,13 @@ import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import edu.uco.rsteele5.gravityrunner.Control.CollisionDetector
+import edu.uco.rsteele5.gravityrunner.Control.LevelController
+import edu.uco.rsteele5.gravityrunner.Control.PlayerController
 import edu.uco.rsteele5.gravityrunner.OrientationManager.OrientationListener
 import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation
 import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation.*
-import edu.uco.rsteele5.gravityrunner.model.*
+import edu.uco.rsteele5.gravityrunner.model.PhysicsVector
+import edu.uco.rsteele5.gravityrunner.model.Wall
 import java.util.concurrent.CopyOnWriteArrayList
 
 const val TAG_GR = "GR"
@@ -25,16 +28,16 @@ class GameEngine : Activity(), OrientationListener {
     var orientation: ScreenOrientation = PORTRAIT
     var fps: Long = 0
 
-    var speed = 2f
+    var gravSpeed = 5f
 
-    val portraitGravityVector = Triple(0f, -1f, speed)
-    val landscapeGravityVector = Triple(1f, 0f, speed)
-    val reversePortraitGravityVector = Triple(0f,1f, speed)
-    val reverseLandscapeGravityVector = Triple(-1f, 0f, speed)
+    val portraitGravityVector = PhysicsVector(0f, -1f, gravSpeed)
+    val landscapeGravityVector = PhysicsVector(1f, 0f, gravSpeed)
+    val reversePortraitGravityVector = PhysicsVector(0f,1f, gravSpeed)
+    val reverseLandscapeGravityVector = PhysicsVector(-1f, 0f, gravSpeed)
 
-    val motionVector = Triple(-1f, 0f, speed)
+    var motionVector = PhysicsVector(0f, 0f, 0f)
 
-    var gravityVector: Triple<Float, Float, Float>? = portraitGravityVector
+    var gravityVector = portraitGravityVector
 
     private var gameView: GameView? = null
 
@@ -71,11 +74,11 @@ class GameEngine : Activity(), OrientationListener {
     }
 
     fun getScreenWidth(): Int {
-        return Resources.getSystem().getDisplayMetrics().widthPixels - 60
+        return Resources.getSystem().getDisplayMetrics().widthPixels - 52
     }
 
     fun getScreenHeight(): Int {
-        return Resources.getSystem().getDisplayMetrics().heightPixels - 114 * 4
+        return Resources.getSystem().getDisplayMetrics().heightPixels - 100 * 4
     }
 
     override fun onBackPressed() {
@@ -88,17 +91,18 @@ class GameEngine : Activity(), OrientationListener {
         private var gameThread: Thread? = null
         private var ourHolder: SurfaceHolder? = null
 
-        var gameObjects: CopyOnWriteArrayList<GameObject>? = null
-        var boundaryObjects: CopyOnWriteArrayList<BoundaryObject>? = null
-
         private var canvas: Canvas? = null
         var paint: Paint? = null
 
+        //Controllers
         val collisionDetector = CollisionDetector()
-        var bitmapBob = BitmapBob(
+        val playerController = PlayerController(
             BitmapFactory.decodeResource(resources, R.drawable.bob),
-            (getScreenWidth() / 2).toFloat(),
-            (getScreenHeight() / 2).toFloat())
+            getScreenWidth().toFloat(),
+            getScreenHeight().toFloat())
+        val levelController = LevelController(resources,
+            getScreenWidth().toFloat(),
+            getScreenHeight().toFloat())
 
         var speedBoost = SpeedBoost(
             BitmapFactory.decodeResource(resources, R.drawable.speed_boost),
@@ -113,24 +117,8 @@ class GameEngine : Activity(), OrientationListener {
             ourHolder = holder
             paint = Paint()
 
-            //TODO: Maybe move this out and initialize elsewhere for brevity/cohesion
-            gameObjects = CopyOnWriteArrayList()
-            boundaryObjects = CopyOnWriteArrayList()
-
             //TODO: Replace this after sprint 1, Temp Vals for testing on sprint 1
-            val rectX = 10
-            val rectY = 19
-            gameObjects!!.add(bitmapBob)
-            gameObjects!!.add(speedBoost)
-
-            boundaryObjects!!.add(Wall(BitmapFactory.decodeResource(resources, R.drawable.stone100x80),0f, 0f, rectX)) //Landscape TOP
-            boundaryObjects!!.add(Wall(BitmapFactory.decodeResource(resources, R.drawable.stone100x80),0f, 80f, rectY, true))//Landscape LEFT
-            boundaryObjects!!.add(Wall(BitmapFactory.decodeResource(resources, R.drawable.stone100x80),100f*rectX, 0f, rectY, true))//Landscape RIGHT
-            boundaryObjects!!.add(Wall(BitmapFactory.decodeResource(resources, R.drawable.stone100x80), 100f, 80f*rectY, rectX))//Landscape BOTTOM
-
-            for(obj in boundaryObjects!!){
-                gameObjects!!.add(obj)
-            }
+            levelController.loadLevelOne()
 
             playing = true
 
@@ -142,7 +130,7 @@ class GameEngine : Activity(), OrientationListener {
                 val startFrameTime = System.currentTimeMillis()
 
                 //TODO: Need to loop through the array and call update() on game objects
-                update(gravityVector!!)
+                update(gravityVector)
 
                 //TODO: Need to loop through the array and call draw() on game objects
                 draw()
@@ -155,15 +143,16 @@ class GameEngine : Activity(), OrientationListener {
         }
 
         //TODO: Here we update() game objects, called as above, gravity will probably go here
-        fun update(gravityVector: Triple<Float, Float, Float>) {
-            collisionDetector.processPlayerBoundaryCollision(bitmapBob, boundaryObjects!!)
-
-            collisionDetector.getNormalVector()
-
-            //set motion vector
-            for (gameObject in gameObjects!!) {
-                gameObject.update(orientation, gravityVector)
-            }
+        fun update(gravityVector: PhysicsVector) {
+            //Collision Detection
+            collisionDetector.resetNormalVector()
+            collisionDetector.processPlayerBoundaryCollision(playerController.player!!,
+                levelController.currentLevel!!.boundaryObjects)
+            //Calculate motion vector
+            motionVector = calculateMotionVector(gravityVector,collisionDetector.getNormalVector())
+            //Update the player and level
+            playerController.update(orientation, motionVector)
+            levelController.update(orientation, motionVector)
         }
 
         //TODO: Here we update() game objects, called as above, gravity will probably go here it is already double buffered btw
@@ -175,16 +164,14 @@ class GameEngine : Activity(), OrientationListener {
                 canvas!!.drawColor(Color.argb(255, 26, 128, 182))
                 paint!!.color = Color.argb(255, 249, 129, 0)
 
-                for (gameObject in gameObjects!!) {
-                    gameObject.draw(canvas!!, paint!!)
-                }
-                for (gameObject in boundaryObjects!!){
-                    gameObject.draw(canvas!!, paint!!)
-                }
+                playerController.draw(canvas!!,paint!!)
+                levelController.draw(canvas!!,paint!!)
 
-                paint!!.textSize = 45f
+                paint!!.textSize = 40f
                 canvas!!.drawText("FPS:$fps", 20f, 40f, paint!!)
-                canvas!!.drawText("OnGround:${bitmapBob.onGround}", 20f, 80f, paint!!)
+                canvas!!.drawText("Vector x:${motionVector.x}", 20f, 80f, paint!!)
+                canvas!!.drawText("Vector y:${motionVector.y}", 20f, 120f, paint!!)
+                canvas!!.drawText("Vector mag:${motionVector.magnitude}", 20f, 160f, paint!!)
 
                 //Unlock canvas and post is double buffered, kinda cool how it works, check it out
                 ourHolder!!.unlockCanvasAndPost(canvas)
@@ -217,6 +204,39 @@ class GameEngine : Activity(), OrientationListener {
 //                MotionEvent.ACTION_UP -> (gameObjects!![0] as BitmapBob).isMoving = false
 //            }
             return true
+        }
+
+        fun calculateMotionVector(gravity: PhysicsVector,
+                                  normal: PhysicsVector): PhysicsVector{
+
+            val vectorGN = normal.add(gravity)
+            val running = getRunningVector()
+            val motion =
+                if(vectorGN.magnitude == 0f)                    //On ground Return running
+                    vectorGN.add(running)
+                else if(vectorGN.add(running).magnitude == 0f)  //In corner return Zero Vector
+                    PhysicsVector()
+                else                                            //else falling due to gravity
+                    vectorGN
+            /*
+            Log.d(TAG_GR, "Grav- x:${gravity.x}, y:${gravity.y}, mag:${gravity.magnitude}")
+            Log.d(TAG_GR, "Norm- x:${normal.x}, y:${normal.y}, mag:${normal.magnitude}")
+            Log.d(TAG_GR, "G+N- x:${vectorGN.x}, y:${vectorGN.y}, mag:${vectorGN.magnitude}")
+            Log.d(TAG_GR, "Overall- x:${motion.x}, y:${motion.y}, mag:${motion.magnitude}")
+            */
+
+            return motion
+
+
+        }
+
+        private fun getRunningVector(): PhysicsVector{
+            return when(orientation){
+                PORTRAIT -> PhysicsVector(-1f, 0f, playerController.getSpeed())
+                LANDSCAPE -> PhysicsVector(0f, -1f, playerController.getSpeed())
+                REVERSED_PORTRAIT -> PhysicsVector(1f, 0f, playerController.getSpeed())
+                REVERSED_LANDSCAPE -> PhysicsVector(0f, 1f, playerController.getSpeed())
+            }
         }
     }
 }
