@@ -1,27 +1,29 @@
 package edu.uco.rsteele5.gravityrunner.Control
 
-import android.graphics.Canvas
-import android.graphics.Paint
 import android.graphics.RectF
-import android.util.Log
 import edu.uco.rsteele5.gravityrunner.model.*
 import java.util.concurrent.CopyOnWriteArrayList
 
-const val TAG_CD = "CD" //TODO: Remove
-
 class CollisionDetector{
+
     private var normalVector = PhysicsVector()
     private val collidedBoundaries = CopyOnWriteArrayList<BoundaryObject>()
+    private val collidedEntities = CopyOnWriteArrayList<GameEntity>()
+    private var rPCBox = RectF()
 
+    //Boundary Collision------------------------------------------------------------------------------------------------
     fun processPlayerBoundaryCollision(player: Player, boundaries: CopyOnWriteArrayList<BoundaryObject>){
 
+        //Reverse Phantom collision box (saves the initial location of the player)
+        rPCBox = player.getCollidableBox()
+
+        //Find all boundaries that collide with the player
         for(bound in boundaries) {
             if(RectF.intersects(player.getCollidableBox(), bound.getCollidableBox())) {
                 collidedBoundaries.add(bound)
             }
         }
-        Log.d(TAG_CD, collidedBoundaries.size.toString())
-        Log.d(TAG_CD, collidedBoundaries.toString())
+        //Sort the list of boundaries in descending order by size of their intersections
         collidedBoundaries.sortWith(Comparator<BoundaryObject> { b1, b2 ->
             val inter1 = RectF()
             val inter2 = RectF()
@@ -33,7 +35,8 @@ class CollisionDetector{
 
             if(inter1Area >= inter2Area) 1 else -1
         })
-        Log.d(TAG_CD, collidedBoundaries.toString())
+
+        //Calculate a normal vector that will get the player out all the collided boxes
         for(bound in collidedBoundaries) {
             if (RectF.intersects(player.getCollidableBox(), bound.getCollidableBox())) {
                 var intersection = RectF()
@@ -61,22 +64,10 @@ class CollisionDetector{
                 normalVector = normalVector.add(cVector)
 
                 moveCollisionBox(player.getCollidableBox(), cVector)
-
-                Log.d(TAG_CD, "CVector- x:${cVector.x}, y:${cVector.y}, mag:${cVector.magnitude}")
-                Log.d(TAG_CD, "Norm- x:${normalVector.x}, y:${normalVector.y}, mag:${normalVector.magnitude}")
             }
-            Log.d(TAG_CD, "")
         }
-        collidedBoundaries.clear()
-        Log.d(TAG_CD, "--------------------------------")
-    }
-
-    fun getNormalVector(): PhysicsVector{
-        return normalVector
-    }
-
-    fun resetNormalVector(){
-        normalVector.zero()
+        player.getCollidableBox().set(rPCBox)   //reset the player to the center of the screen
+        collidedBoundaries.clear()              //clear the now avoided boundaries from the list
     }
 
     private fun moveCollisionBox(collisionBox: RectF, physicsVector: PhysicsVector) {
@@ -86,4 +77,27 @@ class CollisionDetector{
             collisionBox.right - physicsVector.getDeltaX(),
             collisionBox.bottom - physicsVector.getDeltaY()))
     }
+
+    fun getNormalVector(): PhysicsVector{
+        return normalVector
+    }
+
+    fun resetNormalVector(){
+        normalVector.zero()
+    }
+    //------------------------------------------------------------------------------------------------------------------
+    //TODO: CHange to accept more than speed boost
+    fun processPlayerEntityCollision(player: Player, entities: CopyOnWriteArrayList<GameEntity>){
+        for(entity in entities){
+            if(RectF.intersects(player.getCollidableBox(), entity.getCollidableBox())) {
+                collidedEntities.add(entity)
+                player.speedBoost = true    //TODO: Remove durring sprint 3
+            }
+        }
+
+        for(entity in collidedEntities){
+            entities.remove(entity)
+        }
+    }
+
 }

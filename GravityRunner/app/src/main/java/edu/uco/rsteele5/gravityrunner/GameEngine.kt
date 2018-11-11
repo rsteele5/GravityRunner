@@ -104,10 +104,6 @@ class GameEngine : Activity(), OrientationListener {
             getScreenWidth().toFloat(),
             getScreenHeight().toFloat())
 
-        var speedBoost = SpeedBoost(
-            BitmapFactory.decodeResource(resources, R.drawable.speed_boost),
-            200f, 200f)
-
         @Volatile
         var playing: Boolean = false
 
@@ -117,7 +113,6 @@ class GameEngine : Activity(), OrientationListener {
             ourHolder = holder
             paint = Paint()
 
-            //TODO: Replace this after sprint 1, Temp Vals for testing on sprint 1
             levelController.loadLevelOne()
 
             playing = true
@@ -129,10 +124,8 @@ class GameEngine : Activity(), OrientationListener {
 
                 val startFrameTime = System.currentTimeMillis()
 
-                //TODO: Need to loop through the array and call update() on game objects
                 update(gravityVector)
 
-                //TODO: Need to loop through the array and call draw() on game objects
                 draw()
 
                 timeThisFrame = System.currentTimeMillis() - startFrameTime
@@ -142,12 +135,13 @@ class GameEngine : Activity(), OrientationListener {
             }
         }
 
-        //TODO: Here we update() game objects, called as above, gravity will probably go here
         fun update(gravityVector: PhysicsVector) {
             //Collision Detection
             collisionDetector.resetNormalVector()
             collisionDetector.processPlayerBoundaryCollision(playerController.player!!,
                 levelController.currentLevel!!.boundaryObjects)
+            collisionDetector.processPlayerEntityCollision(playerController.player!!,
+                levelController.currentLevel!!.gameEntitys)
             //Calculate motion vector
             motionVector = calculateMotionVector(gravityVector,collisionDetector.getNormalVector())
             //Update the player and level
@@ -155,7 +149,6 @@ class GameEngine : Activity(), OrientationListener {
             levelController.update(orientation, motionVector)
         }
 
-        //TODO: Here we update() game objects, called as above, gravity will probably go here it is already double buffered btw
         fun draw() {
             if (ourHolder!!.surface.isValid) {
                 canvas = ourHolder!!.lockCanvas()
@@ -208,7 +201,6 @@ class GameEngine : Activity(), OrientationListener {
 
         fun calculateMotionVector(gravity: PhysicsVector,
                                   normal: PhysicsVector): PhysicsVector{
-
             val vectorGN = normal.add(gravity)
             val running = getRunningVector()
             val motion =
@@ -224,10 +216,7 @@ class GameEngine : Activity(), OrientationListener {
             Log.d(TAG_GR, "G+N- x:${vectorGN.x}, y:${vectorGN.y}, mag:${vectorGN.magnitude}")
             Log.d(TAG_GR, "Overall- x:${motion.x}, y:${motion.y}, mag:${motion.magnitude}")
             */
-
             return motion
-
-
         }
 
         private fun getRunningVector(): PhysicsVector{

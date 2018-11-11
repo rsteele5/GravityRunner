@@ -29,14 +29,6 @@ class LevelController(r: Resources, val screenWidth: Float, val screenHeight: Fl
     }
 
     fun loadLevelOne(){
-        val map = CopyOnWriteArrayList<CopyOnWriteArrayList<Int>>()
-        val rows = 14
-        val cols = 12
-
-        for(i in 0..(rows-1)){
-            map.add(CopyOnWriteArrayList())
-        }
-
         /* TODO: Goal
         2,2,2,2,2,2,2,2,2,2,2,2
         2,0,0,0,0,0,0,0,0,0,0,2
@@ -65,14 +57,18 @@ class LevelController(r: Resources, val screenWidth: Float, val screenHeight: Fl
                 arrayOf(2,0,0,0,0,0,0,2,0,0,0,2),
                 arrayOf(2,0,0,0,0,0,0,2,0,0,0,2),
                 arrayOf(2,2,2,2,2,2,2,2,0,0,0,2),
-                arrayOf(2,2,0,0,0,0,0,6,0,0,0,2),
-                arrayOf(2,2,0,2,2,2,2,2,2,2,2,2),
-                arrayOf(2,2,0,0,0,0,0,0,0,0,3,2), //TODO: Change to have goal.
+                arrayOf(2,0,0,0,0,0,0,0,0,0,0,2),
+                arrayOf(2,0,0,0,0,0,0,6,0,0,0,2),
+                arrayOf(2,0,0,2,2,2,2,2,2,2,2,2),
+                arrayOf(2,0,0,0,0,0,0,0,0,0,0,2),
+                arrayOf(2,0,0,0,0,0,0,0,0,0,3,2), //TODO: Change to have goal.
                 arrayOf(2,2,2,2,2,2,2,2,2,2,2,2))
 
-        for(i in 0..(rows-1)){
+        val map = CopyOnWriteArrayList<CopyOnWriteArrayList<Int>>()
+        
+        for(i in 0..(mapArray.size-1)){
+            map.add(CopyOnWriteArrayList())
             map[i].addAll(mapArray[i])
-            Log.d(TAG_LC, "$i ${map[i]}")
         }
 
         currentLevel = Level(resources!!, map, screenWidth, screenHeight)

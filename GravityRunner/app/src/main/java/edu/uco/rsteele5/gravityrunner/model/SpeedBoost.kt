@@ -5,13 +5,13 @@ import edu.uco.rsteele5.gravityrunner.OrientationManager
 
 class SpeedBoost(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
 
-    val width = 90f
-    val height = 90f
 
     var currentRotation: Float = 0f
     var currentOrientation: OrientationManager.ScreenOrientation = OrientationManager.ScreenOrientation.PORTRAIT
 
     init {
+        width = 90f
+        height = 90f
         this.image = image
         collisionBox = RectF(xPos, yPos, width+xPos, height+yPos)
     }
@@ -20,7 +20,9 @@ class SpeedBoost(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
         return collisionBox
     }
 
-    override fun update(orientation: OrientationManager.ScreenOrientation, gravityVector: Triple<Float, Float, Float>) {
+    override fun update(orientation: OrientationManager.ScreenOrientation, motionVector: PhysicsVector) {
+        translate(motionVector.getDeltaX(), motionVector.getDeltaY())
+
         currentOrientation = orientation
         when (currentOrientation){
             OrientationManager.ScreenOrientation.PORTRAIT -> {
@@ -50,16 +52,4 @@ class SpeedBoost(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
         val matrix = Matrix().apply { postRotate(degrees) }
         return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
     }
-
-    fun getCenter(): Pair<Float, Float> {
-        return  if(currentOrientation == OrientationManager.ScreenOrientation.PORTRAIT || currentOrientation == OrientationManager.ScreenOrientation.REVERSED_PORTRAIT)
-            Pair(getX() + (width / 2), getY() + (height / 2))
-        else
-            Pair(getX() + (height / 2), getY() + (width / 2))
-    }
-
-//    fun debugMove(dx: Float, dy: Float) {
-//        xPos += dx
-//        yPos += dy
-//    }
 }

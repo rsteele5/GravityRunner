@@ -49,6 +49,7 @@ class Player(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
     }
 
     override fun draw(canvas: Canvas, paint: Paint) {
+        canvas.drawRect(collisionBox, paint)
         canvas.drawBitmap(image!!.rotate(currentRotation), null, collisionBox, null)
     }
 

@@ -43,7 +43,6 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
         scanAndSetSpawnLocation()
         scanAndSetGameEntitys()
         scanAndCreateBoundaryObj()
-
     }
 
     //Finds the Spawn location on the map and saves the x,y coordinates.
@@ -68,7 +67,10 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                     GOAL -> {/*TODO: Create Goal and at it to gameEntitys*/}
                     SPIKES -> {/*TODO: Create Spikes and at it to gameEntitys*/}
                     BAT -> {/*TODO: Create Bat and at it to gameEntitys*/}
-                    SPEEDBOOST ->{/*TODO: Create SpeedBoost and at it to gameEntitys*/}
+                    SPEEDBOOST ->{
+                        gameEntitys.add(SpeedBoost(BitmapFactory.decodeResource(resources, R.drawable.speed_boost),
+                            getOffsetX(x), getOffsetY(y)))
+                    }
                 }
             }
         }
@@ -81,7 +83,6 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
             for (x in 0..(map[y].size - 1)){
                 when(map[y][x]){
                     WALL -> {
-                        Log.d(TAG_LC, "I have found a Wall at point x:$x, y:$y")
                         createBestWallFromPoint(WALL, x,y)
                     }
                 }
@@ -96,7 +97,6 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
         var lengthY = 0
 
         //Find the lengths of the potential walls
-        Log.d(TAG_LC, "Check if Hori length")
         for (i in x..(map[y].size - 1)){
             if(boundType == map[y][i])
                 lengthX++
@@ -104,7 +104,6 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                 break
         }
 
-        Log.d(TAG_LC, "Check if Vert length")
         for (i in y..(map.size - 1)){
             if(boundType == map[i][x])
                 lengthY++
@@ -112,24 +111,15 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                 break
         }
         //Compare lengths and create the optimal wall (Horizontal or Vertical)
-        Log.d(TAG_LC, "Check if Hori length is longer")
         if(lengthX >= lengthY){
-            for(i in x..(x+lengthX-1)){
-                map[y][i] = -boundType
-            }
-            Log.d(TAG_LC, "WallHori: x:$x, y:$y, Length:$lengthX")
+            for(i in x..(x+lengthX-1)){ map[y][i] = -boundType }
             boundaryObjects.add(Wall(BitmapFactory.decodeResource(resources, R.drawable.stone100x80),
                 getOffsetX(x),getOffsetY(y), lengthX))
-            for(i in 0..(map.size-1)){ Log.d(TAG_LC, "${map[i]}") }   //TODO: This is for testing, remove once done
         }
-        else{Log.d(TAG_LC, "Vert length is longer")
-            for (i in y..(y+lengthY-1)){
-                map[i][x] = -boundType
-            }
-            Log.d(TAG_LC, "WallVert: x:$x, y:$y, Length:$lengthY")
+        else{
+            for (i in y..(y+lengthY-1)){ map[i][x] = -boundType }
             boundaryObjects.add(Wall(BitmapFactory.decodeResource(resources, R.drawable.stone100x80),
                 getOffsetX(x),getOffsetY(y), lengthY, true))
-            for(i in 0..(map.size-1)){ Log.d(TAG_LC, "${map[i]}") }   //TODO: This is for testing, remove once done
         }
     }
 
@@ -139,25 +129,15 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
     override fun update(orientation: OrientationManager.ScreenOrientation, motionVector: PhysicsVector) {
         loaded = spawnLoaded && entitiesLoaded && boundariesLoaded
         if(loaded) {
-            for (entity in gameEntitys) {
-                entity.update(orientation, motionVector)
-            }
-
-            for (bound in boundaryObjects) {
-                bound.update(orientation, motionVector)
-            }
+            for (entity in gameEntitys) { entity.update(orientation, motionVector) }
+            for (bound in boundaryObjects) { bound.update(orientation, motionVector) }
         }
     }
 
     override fun draw(canvas: Canvas, paint: Paint) {
         if(loaded) {
-            for (bound in boundaryObjects) {
-                bound.draw(canvas, paint)
-            }
-
-            for (entity in gameEntitys) {
-                entity.draw(canvas, paint)
-            }
+            for (bound in boundaryObjects) { bound.draw(canvas, paint) }
+            for (entity in gameEntitys) { entity.draw(canvas, paint) }
         }
     }
 
