@@ -63,19 +63,19 @@ class CollisionDetector{
                 val cVector = PhysicsVector(xComp, yComp, magnitude)
                 normalVector = normalVector.add(cVector)
 
-                moveCollisionBox(player.getCollidableBox(), cVector)
+                player.getCollidableBox().set(moveCollisionBox(player.getCollidableBox(), cVector))
             }
         }
         player.getCollidableBox().set(rPCBox)   //reset the player to the center of the screen
         collidedBoundaries.clear()              //clear the now avoided boundaries from the list
     }
 
-    private fun moveCollisionBox(collisionBox: RectF, physicsVector: PhysicsVector) {
-        collisionBox.set(RectF(
+    private fun moveCollisionBox(collisionBox: RectF, physicsVector: PhysicsVector): RectF {
+        return RectF(
             collisionBox.left - physicsVector.getDeltaX(),
             collisionBox.top - physicsVector.getDeltaY(),
             collisionBox.right - physicsVector.getDeltaX(),
-            collisionBox.bottom - physicsVector.getDeltaY()))
+            collisionBox.bottom - physicsVector.getDeltaY())
     }
 
     fun getNormalVector(): PhysicsVector{

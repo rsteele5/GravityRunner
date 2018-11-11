@@ -136,6 +136,9 @@ class GameEngine : Activity(), OrientationListener {
         }
 
         fun update(gravityVector: PhysicsVector) {
+            //Update the player and level
+            playerController.update(orientation, motionVector)
+            levelController.update(orientation, motionVector)
             //Collision Detection
             collisionDetector.resetNormalVector()
             collisionDetector.processPlayerBoundaryCollision(playerController.player!!,
@@ -144,9 +147,6 @@ class GameEngine : Activity(), OrientationListener {
                 levelController.currentLevel!!.gameEntitys)
             //Calculate motion vector
             motionVector = calculateMotionVector(gravityVector,collisionDetector.getNormalVector())
-            //Update the player and level
-            playerController.update(orientation, motionVector)
-            levelController.update(orientation, motionVector)
         }
 
         fun draw() {
@@ -165,6 +165,14 @@ class GameEngine : Activity(), OrientationListener {
                 canvas!!.drawText("Vector x:${motionVector.x}", 20f, 80f, paint!!)
                 canvas!!.drawText("Vector y:${motionVector.y}", 20f, 120f, paint!!)
                 canvas!!.drawText("Vector mag:${motionVector.magnitude}", 20f, 160f, paint!!)
+
+                //Debug center screen
+                paint!!.color = Color.argb(255, 255, 255, 255)
+                canvas!!.drawRect(RectF(getScreenWidth()/2f - 5f,
+                    getScreenHeight()/2f - 5f,
+                    getScreenWidth()/2f + 5f,
+                    getScreenHeight()/2f + 5f), paint!!)
+
 
                 //Unlock canvas and post is double buffered, kinda cool how it works, check it out
                 ourHolder!!.unlockCanvasAndPost(canvas)
