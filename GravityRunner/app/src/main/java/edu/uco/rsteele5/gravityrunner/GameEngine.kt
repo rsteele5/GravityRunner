@@ -88,7 +88,7 @@ class GameEngine : Activity(), OrientationListener {
         private var gameThread: Thread? = null
         private var ourHolder: SurfaceHolder? = null
 
-        var gameObjects: c<GameObject>? = null
+        var gameObjects: CopyOnWriteArrayList<GameObject>? = null
         var boundaryObjects: CopyOnWriteArrayList<BoundaryObject>? = null
 
         private var canvas: Canvas? = null
