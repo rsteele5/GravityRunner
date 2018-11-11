@@ -4,6 +4,7 @@ import android.content.res.Resources
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.util.Log
 import edu.uco.rsteele5.gravityrunner.OrientationManager
 import edu.uco.rsteele5.gravityrunner.R
 import edu.uco.rsteele5.gravityrunner.Renderable
@@ -16,14 +17,16 @@ const val SPIKES = 4
 const val BAT = 5
 const val SPEEDBOOST = 6
 
-class Level(r: Resources, basicMap: CopyOnWriteArrayList<CopyOnWriteArrayList<Int>>,
+const val TAG_LC = "LC"
+
+class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int>>,
             val screenWidth: Float, val screenHeight: Float): Renderable{
 
     var spawnLocX = 0
     var spawnLocY = 0
+    var screenCenter = Pair(0f,0f)
     val tileSize = 100f
     var resources: Resources? = null
-    val map = CopyOnWriteArrayList<CopyOnWriteArrayList<Int>>()
     var spawnLoaded = false
     var entitiesLoaded = false
     var boundariesLoaded = false
@@ -32,8 +35,8 @@ class Level(r: Resources, basicMap: CopyOnWriteArrayList<CopyOnWriteArrayList<In
     val gameEntitys = CopyOnWriteArrayList<GameEntity>()
 
     init {
-        map.addAllAbsent(basicMap)
         resources = r
+        screenCenter = Pair(screenWidth/2f, screenHeight/2f)
     }
 
     fun createLevel(){
@@ -45,22 +48,23 @@ class Level(r: Resources, basicMap: CopyOnWriteArrayList<CopyOnWriteArrayList<In
 
     //Finds the Spawn location on the map and saves the x,y coordinates.
     private fun scanAndSetSpawnLocation(){
-        for(x in 0..(map.size - 1)){
-            for (y in 0..(map[x].size - 1)){
-                if(map[x][y] == SPAWN){
+        for(y in 0..(map.size - 1)){
+            for (x in 0..(map[y].size - 1)){
+                if(map[y][x] == SPAWN){
                         spawnLocX = x
                         spawnLocY = y
                 }
             }
         }
-        spawnLoaded = true;
+        Log.d(TAG_LC, "Spawn: x:$spawnLocX, y:$spawnLocY")
+        spawnLoaded = true
     }
 
     //Finds and creates the game entities then adds them to the gameEntities array.
     private fun scanAndSetGameEntitys(){
-        for(x in 0..(map.size - 1)){
-            for (y in 0..(map[x].size - 1)){
-                when(map[x][y]){
+        for(y in 0..(map.size - 1)){
+            for (x in 0..(map[y].size - 1)){
+                when(map[y][x]){
                     GOAL -> {/*TODO: Create Goal and at it to gameEntitys*/}
                     SPIKES -> {/*TODO: Create Spikes and at it to gameEntitys*/}
                     BAT -> {/*TODO: Create Bat and at it to gameEntitys*/}
@@ -73,10 +77,11 @@ class Level(r: Resources, basicMap: CopyOnWriteArrayList<CopyOnWriteArrayList<In
 
     //Scans for and creates the boundary objects then adds them to the boundaryObjects array.
     private fun scanAndCreateBoundaryObj(){
-        for(x in 0..(map.size - 1)){
-            for (y in 0..(map[x].size - 1)){
-                when(map[x][y]){
+        for(y in 0..(map.size - 1)){
+            for (x in 0..(map[y].size - 1)){
+                when(map[y][x]){
                     WALL -> {
+                        Log.d(TAG_LC, "I have found a Wall at point x:$x, y:$y")
                         createBestWallFromPoint(WALL, x,y)
                     }
                 }
@@ -91,37 +96,45 @@ class Level(r: Resources, basicMap: CopyOnWriteArrayList<CopyOnWriteArrayList<In
         var lengthY = 0
 
         //Find the lengths of the potential walls
-        for (i in y..(map[x].size - 1)){
-            if(boundType == map[x][i])
+        Log.d(TAG_LC, "Check if Hori length")
+        for (i in x..(map[y].size - 1)){
+            if(boundType == map[y][i])
                 lengthX++
             else
                 break
         }
-        for (i in x..(map.size - 1)){
-            if(boundType == map[i][y])
+
+        Log.d(TAG_LC, "Check if Vert length")
+        for (i in y..(map.size - 1)){
+            if(boundType == map[i][x])
                 lengthY++
             else
                 break
         }
-        //Compare their length and create the optimal wall
+        //Compare lengths and create the optimal wall (Horizontal or Vertical)
+        Log.d(TAG_LC, "Check if Hori length is longer")
         if(lengthX >= lengthY){
-            for(i in y..(y+lengthX-1)){
-                map[x][i] = -boundType
+            for(i in x..(x+lengthX-1)){
+                map[y][i] = -boundType
             }
+            Log.d(TAG_LC, "WallHori: x:$x, y:$y, Length:$lengthX")
             boundaryObjects.add(Wall(BitmapFactory.decodeResource(resources, R.drawable.stone100x80),
                 getOffsetX(x),getOffsetY(y), lengthX))
+            for(i in 0..(map.size-1)){ Log.d(TAG_LC, "${map[i]}") }   //TODO: This is for testing, remove once done
         }
-        else{
-            for (i in x..(x+lengthY-1)){
-                map[i][y] = -boundType
+        else{Log.d(TAG_LC, "Vert length is longer")
+            for (i in y..(y+lengthY-1)){
+                map[i][x] = -boundType
             }
+            Log.d(TAG_LC, "WallVert: x:$x, y:$y, Length:$lengthY")
             boundaryObjects.add(Wall(BitmapFactory.decodeResource(resources, R.drawable.stone100x80),
                 getOffsetX(x),getOffsetY(y), lengthY, true))
+            for(i in 0..(map.size-1)){ Log.d(TAG_LC, "${map[i]}") }   //TODO: This is for testing, remove once done
         }
     }
 
-    private fun getOffsetX(x: Int): Float{ return tileSize * (x - spawnLocX) }
-    private fun getOffsetY(y: Int): Float{ return tileSize * (y - spawnLocY) }
+    private fun getOffsetX(x: Int): Float{ return tileSize * (x - spawnLocX) + screenCenter.first}
+    private fun getOffsetY(y: Int): Float{ return tileSize * (y - spawnLocY) + screenCenter.second}
 
     override fun update(orientation: OrientationManager.ScreenOrientation, motionVector: PhysicsVector) {
         loaded = spawnLoaded && entitiesLoaded && boundariesLoaded
