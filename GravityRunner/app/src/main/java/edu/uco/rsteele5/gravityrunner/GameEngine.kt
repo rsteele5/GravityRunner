@@ -14,10 +14,7 @@ import edu.uco.rsteele5.gravityrunner.Control.CollisionDetector
 import edu.uco.rsteele5.gravityrunner.OrientationManager.OrientationListener
 import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation
 import edu.uco.rsteele5.gravityrunner.OrientationManager.ScreenOrientation.*
-import edu.uco.rsteele5.gravityrunner.model.BitmapBob
-import edu.uco.rsteele5.gravityrunner.model.BoundaryObject
-import edu.uco.rsteele5.gravityrunner.model.GameObject
-import edu.uco.rsteele5.gravityrunner.model.Wall
+import edu.uco.rsteele5.gravityrunner.model.*
 import java.util.concurrent.CopyOnWriteArrayList
 
 const val TAG_GR = "GR"
@@ -99,10 +96,13 @@ class GameEngine : Activity(), OrientationListener {
 
         val collisionDetector = CollisionDetector()
         var bitmapBob = BitmapBob(
-            BitmapFactory.decodeResource(resources,
-            R.drawable.bob),
+            BitmapFactory.decodeResource(resources, R.drawable.bob),
             (getScreenWidth() / 2).toFloat(),
             (getScreenHeight() / 2).toFloat())
+
+        var speedBoost = SpeedBoost(
+            BitmapFactory.decodeResource(resources, R.drawable.speed_boost),
+            200f, 200f)
 
         @Volatile
         var playing: Boolean = false
@@ -121,6 +121,7 @@ class GameEngine : Activity(), OrientationListener {
             val rectX = 10
             val rectY = 19
             gameObjects!!.add(bitmapBob)
+            gameObjects!!.add(speedBoost)
 
             boundaryObjects!!.add(Wall(BitmapFactory.decodeResource(resources, R.drawable.stone100x80),0f, 0f, rectX)) //Landscape TOP
             boundaryObjects!!.add(Wall(BitmapFactory.decodeResource(resources, R.drawable.stone100x80),0f, 80f, rectY, true))//Landscape LEFT
@@ -184,7 +185,6 @@ class GameEngine : Activity(), OrientationListener {
                 paint!!.textSize = 45f
                 canvas!!.drawText("FPS:$fps", 20f, 40f, paint!!)
                 canvas!!.drawText("OnGround:${bitmapBob.onGround}", 20f, 80f, paint!!)
-
 
                 //Unlock canvas and post is double buffered, kinda cool how it works, check it out
                 ourHolder!!.unlockCanvasAndPost(canvas)
