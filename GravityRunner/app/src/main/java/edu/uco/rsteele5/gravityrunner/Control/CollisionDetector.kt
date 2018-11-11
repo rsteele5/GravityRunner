@@ -13,15 +13,9 @@ const val TAG_CD = "CD" //TODO: Remove
 class CollisionDetector{
     private var normalVector = PhysicsVector()
     private val collidedBoundaries = CopyOnWriteArrayList<BoundaryObject>()
-    private var pCBox = RectF()
-    private var pCCenter = Pair(0f,0f)
-    private var currentOrientation = OrientationManager.ScreenOrientation.PORTRAIT
 
     //TODO: REMOVE Canvas and paint
     fun processPlayerBoundaryCollision(player: Player, boundaries: CopyOnWriteArrayList<BoundaryObject>){
-        pCBox = player.getCollidableBox()
-        pCCenter = player.getCenter()
-        currentOrientation = player.currentOrientation
 
         for(bound in boundaries) {
             if(RectF.intersects(player.getCollidableBox(), bound.getCollidableBox())) {
@@ -33,8 +27,8 @@ class CollisionDetector{
         collidedBoundaries.sortWith(Comparator<BoundaryObject> { b1, b2 ->
             val inter1 = RectF()
             val inter2 = RectF()
-            inter1.setIntersect(pCBox, b1.getCollidableBox())
-            inter2.setIntersect(pCBox, b2.getCollidableBox())
+            inter1.setIntersect(player.getCollidableBox(), b1.getCollidableBox())
+            inter2.setIntersect(player.getCollidableBox(), b2.getCollidableBox())
 
             val inter1Area = inter1.width()*inter1.height()
             val inter2Area = inter2.width()*inter2.height()
@@ -43,9 +37,9 @@ class CollisionDetector{
         })
         Log.d(TAG_CD, collidedBoundaries.toString())
         for(bound in collidedBoundaries) {
-            if (RectF.intersects(pCBox, bound.getCollidableBox())) {
+            if (RectF.intersects(player.getCollidableBox(), bound.getCollidableBox())) {
                 var intersection = RectF()
-                intersection.setIntersect(pCBox, bound.getCollidableBox())
+                intersection.setIntersect(player.getCollidableBox(), bound.getCollidableBox())
 
                 var magnitude = if (intersection.height() > intersection.width()) {
                     intersection.width()
@@ -54,8 +48,8 @@ class CollisionDetector{
                 }
 
                 val angleDeg = Math.atan2(
-                    intersection.centerY() - pCCenter.second.toDouble(),
-                    intersection.centerX() - pCCenter.first.toDouble()
+                    intersection.centerY() - player.getCenter().second.toDouble(),
+                    intersection.centerX() - player.getCenter().first.toDouble()
                 )
 
 
@@ -68,14 +62,7 @@ class CollisionDetector{
                 val cVector = PhysicsVector(xComp, yComp, magnitude)
                 normalVector = normalVector.add(cVector)
 
-                pCCenter = Pair(pCCenter.first + cVector.getDeltaX(),
-                                pCCenter.second + cVector.getDeltaY())
-
-                pCBox.set(RectF(
-                    pCBox.left + cVector.getDeltaX(),
-                    pCBox.top + cVector.getDeltaY(),
-                    pCBox.right + cVector.getDeltaX(),
-                    pCBox.bottom + cVector.getDeltaY()))
+                moveCollisionBox(player.getCollidableBox(), cVector)
 
                 Log.d(TAG_CD, "CVector- x:${cVector.x}, y:${cVector.y}, mag:${cVector.magnitude}")
                 Log.d(TAG_CD, "Norm- x:${normalVector.x}, y:${normalVector.y}, mag:${normalVector.magnitude}")
@@ -92,5 +79,13 @@ class CollisionDetector{
 
     fun resetNormalVector(){
         normalVector.zero()
+    }
+
+    private fun moveCollisionBox(collisionBox: RectF, physicsVector: PhysicsVector) {
+        collisionBox.set(RectF(
+            collisionBox.left - physicsVector.getDeltaX(),
+            collisionBox.top - physicsVector.getDeltaY(),
+            collisionBox.right - physicsVector.getDeltaX(),
+            collisionBox.bottom - physicsVector.getDeltaY()))
     }
 }
