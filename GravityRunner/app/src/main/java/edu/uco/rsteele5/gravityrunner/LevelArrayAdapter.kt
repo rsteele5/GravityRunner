@@ -1,6 +1,7 @@
 package edu.uco.rsteele5.gravityrunner
 
 import android.content.Context
+import android.content.Intent
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -57,6 +58,8 @@ class LevelArrayAdapter(val context: Context, var levelList: ArrayList<Level>) :
             }else {
                 itemView.setOnClickListener {
                     Toast.makeText(context, context.resources.getText(R.string.click), Toast.LENGTH_SHORT).show()
+                    val i = Intent(context, GameEngine::class.java)
+                    context.startActivity(i)
                     //stage click event//버튼이 있는데 굳이??
                 }
             }
