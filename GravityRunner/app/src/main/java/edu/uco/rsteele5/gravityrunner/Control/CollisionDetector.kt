@@ -91,7 +91,7 @@ class CollisionDetector{
         for(entity in entities){
             if(RectF.intersects(player.getCollidableBox(), entity.getCollidableBox())) {
                 collidedEntities.add(entity)
-                player.speedBoost = true    //TODO: Remove durring sprint 3
+                player.setSpeedBoost()    //TODO: Remove durring sprint 3
             }
         }
 

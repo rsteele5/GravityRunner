@@ -74,11 +74,11 @@ class GameEngine : Activity(), OrientationListener {
     }
 
     fun getScreenWidth(): Int {
-        return Resources.getSystem().getDisplayMetrics().widthPixels - 52
+        return Resources.getSystem().displayMetrics.widthPixels - 52
     }
 
     fun getScreenHeight(): Int {
-        return Resources.getSystem().getDisplayMetrics().heightPixels - 100 * 4
+        return Resources.getSystem().displayMetrics.heightPixels - 100
     }
 
     override fun onBackPressed() {
@@ -98,11 +98,11 @@ class GameEngine : Activity(), OrientationListener {
         val collisionDetector = CollisionDetector()
         val playerController = PlayerController(
             BitmapFactory.decodeResource(resources, R.drawable.bob),
-            getScreenWidth().toFloat(),
-            getScreenHeight().toFloat())
+            (getScreenWidth() - 52).toFloat(),
+            (getScreenHeight() - 100).toFloat())
         val levelController = LevelController(resources,
-            getScreenWidth().toFloat(),
-            getScreenHeight().toFloat())
+            (getScreenWidth() - 52).toFloat(),
+            (getScreenHeight() - 100).toFloat())
 
         @Volatile
         var playing: Boolean = false
@@ -161,15 +161,66 @@ class GameEngine : Activity(), OrientationListener {
                 levelController.draw(canvas!!,paint!!)
 
                 paint!!.textSize = 40f
-                canvas!!.drawText("FPS:$fps", 20f, 40f, paint!!)
-                canvas!!.drawText("Vector x:${motionVector.x}", 20f, 80f, paint!!)
-                canvas!!.drawText("Vector y:${motionVector.y}", 20f, 120f, paint!!)
-                canvas!!.drawText("Vector mag:${motionVector.magnitude}", 20f, 160f, paint!!)
+
+
+
+                drawUI()
+
+//                canvas!!.rotate(0f, 50f, 50f)
+//                canvas!!.drawText("FPS:$fps", 20f, 40f, paint!!)
+//                canvas!!.drawText("Vector x:${motionVector.x}", 20f, 80f, paint!!)
+//                canvas!!.drawText("Vector y:${motionVector.y}", 20f, 120f, paint!!)
+//                canvas!!.drawText("Vector mag:${motionVector.magnitude}", 20f, 160f, paint!!)
 
                 //Unlock canvas and post is double buffered, kinda cool how it works, check it out
                 ourHolder!!.unlockCanvasAndPost(canvas)
             }
 
+        }
+
+        fun drawUI() {
+            canvas!!.save()
+            var xOffSet = 20f
+            var yOffset = 40f
+            when (orientation) {
+                LANDSCAPE -> {
+                    canvas!!.rotate(90f, canvas!!.width/2f, canvas!!.height/2f)
+                    xOffSet = -232f
+                    yOffset = 290f
+                }
+                REVERSED_PORTRAIT -> {
+                    canvas!!.rotate(180f, canvas!!.width/2f, canvas!!.height/2f)
+                    xOffSet = 20f
+                    yOffset = 40f
+                }
+                REVERSED_LANDSCAPE -> {
+                    canvas!!.rotate(270f, canvas!!.width/2f, canvas!!.height/2f)
+                    xOffSet = -232f
+                    yOffset = 290f
+                }
+                else -> {
+                    xOffSet = 20f
+                    yOffset = 40f
+                }
+            }
+            if(playerController.player!!.speedBoost) {
+                var speedBoostRectF = RectF(
+                    canvas!!.width/2 - 120f,
+                    yOffset,
+                    canvas!!.width/2 - 60f,
+                    yOffset + 60
+                )
+                canvas!!.drawBitmap(
+                    BitmapFactory.decodeResource(resources, R.drawable.speed_boost), null,
+                    speedBoostRectF, paint
+                )
+            }
+
+            canvas!!.drawText("FPS:$fps", xOffSet, yOffset, paint!!)
+            canvas!!.drawText("Vector x:${motionVector.x}", xOffSet, yOffset + 40f , paint!!)
+            canvas!!.drawText("Vector y:${motionVector.y}", xOffSet, yOffset + 80f, paint!!)
+            canvas!!.drawText("Vector mag:${motionVector.magnitude}", xOffSet, yOffset + 120f, paint!!)
+            canvas!!.restore()
         }
 
         //TODO: Need to look into this more, can we use this to pause the game?

@@ -27,6 +27,7 @@ class PlayerController(image: Bitmap, val screenWidth: Float, val screenHeight: 
     fun getSpeed(): Float{
         return speed * getSpeedModifer()
     }
+
     private fun getSpeedModifer(): Float{
         return if(player!!.speedBoost) 3f else 1f
     }
