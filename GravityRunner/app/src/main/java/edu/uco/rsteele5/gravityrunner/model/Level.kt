@@ -65,15 +65,19 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
             for (x in 0..(map[y].size - 1)){
                 when(map[y][x]){
                     GOAL -> {/*TODO: Create Goal and at it to gameEntitys*/}
-                    SPIKES -> {/*TODO: Create Spikes and at it to gameEntitys*/}
+                    SPIKES -> {
+                        gameEntitys.add(Spikes(BitmapFactory.decodeResource(resources, R.drawable.spikes_down),
+                            getOffsetX(x), getOffsetY(y)))
+                    }
                     BAT -> {/*TODO: Create Bat and at it to gameEntitys*/}
-                    SPEEDBOOST ->{
+                    SPEEDBOOST -> {
                         gameEntitys.add(SpeedBoost(BitmapFactory.decodeResource(resources, R.drawable.speed_boost),
                             getOffsetX(x), getOffsetY(y)))
                     }
                 }
             }
         }
+        Log.d("spikes", "$gameEntitys")
         entitiesLoaded = true
     }
 
