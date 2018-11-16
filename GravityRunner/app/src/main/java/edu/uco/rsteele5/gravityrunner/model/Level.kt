@@ -1,21 +1,24 @@
 package edu.uco.rsteele5.gravityrunner.model
 
 import android.content.res.Resources
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Paint
+import android.graphics.*
 import android.util.Log
 import edu.uco.rsteele5.gravityrunner.Control.OrientationManager
 import edu.uco.rsteele5.gravityrunner.R
 import edu.uco.rsteele5.gravityrunner.Renderable
+import edu.uco.rsteele5.gravityrunner.model.spikes.SpikeAnimator
+import edu.uco.rsteele5.gravityrunner.model.spikes.Spikes
 import java.util.concurrent.CopyOnWriteArrayList
 
 const val SPAWN = 1
 const val WALL = 2
 const val GOAL = 3
 const val SPIKES = 4
-const val BAT = 5
-const val SPEEDBOOST = 6
+const val SPIKES_RIGHT = 5
+const val SPIKES_DOWN = 6
+const val SPIKES_LEFT = 7
+const val BAT = 8
+const val SPEEDBOOST = 9
 
 const val TAG_LC = "LC"
 
@@ -38,6 +41,8 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
         resources = r
         screenCenter = Pair(screenWidth/2f, screenHeight/2f)
     }
+
+
 
     fun createLevel(){
         scanAndSetSpawnLocation()
@@ -66,8 +71,40 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                 when(map[y][x]){
                     GOAL -> {/*TODO: Create Goal and at it to gameEntitys*/}
                     SPIKES -> {
-                        gameEntitys.add(Spikes(BitmapFactory.decodeResource(resources, R.drawable.spikes_down),
-                            getOffsetX(x), getOffsetY(y)))
+                        gameEntitys.add(
+                            Spikes(
+                                BitmapFactory.decodeResource(resources, R.drawable.spikes_down),
+                                SpikeAnimator(resources, 0f),
+                                getOffsetX(x), getOffsetY(y), 0f
+                            )
+                        )
+                    }
+                    SPIKES_RIGHT -> {
+                        gameEntitys.add(
+                            Spikes(
+                                BitmapFactory.decodeResource(resources, R.drawable.spikes_down),
+                                SpikeAnimator(resources, 90f),
+                                getOffsetX(x), getOffsetY(y), 90f
+                            )
+                        )
+                    }
+                    SPIKES_DOWN -> {
+                        gameEntitys.add(
+                            Spikes(
+                                BitmapFactory.decodeResource(resources, R.drawable.spikes_down),
+                                SpikeAnimator(resources, 180f),
+                                getOffsetX(x), getOffsetY(y),180f
+                            )
+                        )
+                    }
+                    SPIKES_LEFT -> {
+                        gameEntitys.add(
+                            Spikes(
+                                BitmapFactory.decodeResource(resources, R.drawable.spikes_down),
+                                SpikeAnimator(resources, 270f),
+                                getOffsetX(x), getOffsetY(y), 270f
+                            )
+                        )
                     }
                     BAT -> {/*TODO: Create Bat and at it to gameEntitys*/}
                     SPEEDBOOST -> {
@@ -145,4 +182,8 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
         }
     }
 
+    private fun Bitmap.rotate(degrees: Float): Bitmap {
+        val matrix = Matrix().apply { postRotate(degrees) }
+        return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
+    }
 }
