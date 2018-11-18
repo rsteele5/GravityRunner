@@ -30,7 +30,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
     var orientation: ScreenOrientation = PORTRAIT
     var fps: Long = 0
 
-    var gravSpeed = 5f
+    var gravSpeed = 10f
 
     private val portraitGravityVector = PhysicsVector(0f, -1f, gravSpeed)
     private val landscapeGravityVector = PhysicsVector(1f, 0f, gravSpeed)
@@ -50,7 +50,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
         super.onCreate(savedInstanceState)
         //setSupportActionBar(findViewById(R.id.game_engine_toolbar))
 
-        gameView = GameView(this, 1)    //TODO: Change to getParcellable
+        gameView = GameView(this, 2)    //TODO: Change to getParcellable
         setContentView(gameView)
 
         orientationManager =
@@ -226,7 +226,8 @@ class GameEngine : AppCompatActivity(), OrientationListener {
                     playerController.player!!,
                     levelController.currentLevel!!.gameEntities)
                 //Calculate motion vector
-                motionVector = calculateMotionVector(gravityVector, collisionDetector.getNormalVector())
+                motionVector = calculateMotionVector(collisionDetector.getNormalVector())
+
             }
         }
 
@@ -323,22 +324,25 @@ class GameEngine : AppCompatActivity(), OrientationListener {
 
         //TODO: Use this for jumps and stuff
         override fun onTouchEvent(motionEvent: MotionEvent): Boolean {
-
             when (motionEvent.action and MotionEvent.ACTION_MASK) {
                 MotionEvent.ACTION_DOWN -> {
-                    if(collisionDetector.getNormalVector()
-                            .add(gravityVector)
-                            .add(playerController.getJumpingVector())
-                            .magnitude == 0f)
-
-                        playerController.startJump(orientation)}
+                    val normal = collisionDetector.getNormalVector()
+                    if(!normal.approximateOpposite(playerController.getRunningVector())){
+                        if(playerController.getJumpingVector().magnitude == 0f
+                            && normal.magnitude > 0f
+                            && playerController.getRunningVector().magnitude > 0f){
+                            playerController.startJump(orientation)
+                        }
+                    }
+                }
             }
             return true
         }
 
-        private fun calculateMotionVector(gravity: PhysicsVector, normal: PhysicsVector): PhysicsVector{
+        private fun calculateMotionVector(normal: PhysicsVector): PhysicsVector{
 
-            val ngj = normal.add(gravity).add(playerController.getJumpingVector())
+            val ngj = normal.add(gravityVector).add(playerController.getJumpingVector())
+
                 if(ngj.magnitude == 0f) {
                     playerController.startRun(orientation)
                     playerController.incrementRun()

@@ -28,10 +28,10 @@ class PhysicsVector(var x: Float,var y: Float,var magnitude: Float) {
 
     fun approximateOpposite(vector: PhysicsVector): Boolean{
         val comparable = this.add(vector)
-        comparable.x = (Math.round(comparable.x * 100.0) / 100.0).toFloat()
-        comparable.y = (Math.round(comparable.y * 100.0) / 100.0).toFloat()
+        val cx = x + vector.x
+        val cy = y + vector.y
 
-        return (comparable.x < 0.005f && comparable.y < 0.005f)
+        return (cx == 0f && cy == 0f)
     }
 
     fun deprecateMagnitudeBy(value: Float){

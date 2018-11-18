@@ -34,7 +34,7 @@ class CollisionDetector{
             val inter1Area = inter1.width()*inter1.height()
             val inter2Area = inter2.width()*inter2.height()
 
-            if(inter1Area >= inter2Area) 1 else -1
+            if(inter1Area < inter2Area) 1 else -1
         })
 
         //Calculate a normal vector that will get the player out all the collided boxes
