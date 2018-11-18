@@ -51,8 +51,10 @@ class LevelArrayAdapter(val context: Context, var levelList: ArrayList<Level>) :
                 statusView.text = context.getString(R.string.leaderBoard)
                 itemView.setOnClickListener {
                     //open each level activity
-                    //TODO: ADD Parcelable here
+                    /*var lev = Level("","",0,0,levelList[position].level).engine().toString()
+                    var type:Class<*> = Class.forName("edu.uco.rsteele5.gravityrunner."+lev)*/
                     val i = Intent(context, GameEngine::class.java)
+                    i.putExtra(LEVEL,levelList[position].level)
                     context.startActivity(i)
                 }
                 statusView.setOnClickListener {

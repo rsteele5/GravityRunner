@@ -2,6 +2,7 @@ package edu.uco.rsteele5.gravityrunner
 
 import android.app.Activity
 import android.content.Intent
+import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.app.ActionBarDrawerToggle
@@ -14,6 +15,7 @@ import kotlinx.android.synthetic.main.content_user_profile.*
 import kotlinx.android.synthetic.main.toolbar_user_profile.*
 
 class UserProfile : AppCompatActivity() {
+    private var coin = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,12 +26,12 @@ class UserProfile : AppCompatActivity() {
         setTitle(getString(R.string.user_activity))
 
         val headerView = nav_user_profile_navigation_root.getHeaderView(0)
+        val coinView = headerView.findViewById<TextView>(R.id.tCoin)
         val levelView = headerView.findViewById<TextView>(R.id.tLevel)
         val scoreView = headerView.findViewById<TextView>(R.id.tScore)
-        val coinView = headerView.findViewById<TextView>(R.id.tCoin)
+
         var mAuth = FirebaseAuth.getInstance()
         val db = FirebaseFirestore.getInstance()
-        var coin = 0
         var score = 0
         var level = 1
 
@@ -44,21 +46,15 @@ class UserProfile : AppCompatActivity() {
             emailView.text = email
 
             if (email != null) {
-                db?.collection(email)?.document("Coins")?.get()
-                    ?.addOnCompleteListener {
-                        var document = it?.getResult()
-                        var stat = document?.getData().toString()
-                        val index1 = stat.indexOf('=')
-                        val index2 = stat.lastIndexOf('}')
-                        coin = stat.substring(index1+1,index2).toInt()
-                    }
+                userInfo().execute(coin)
             } else {
                 Toast.makeText(this, getString(R.string.noUser), Toast.LENGTH_SHORT).show()
             }
 
             levelView.text = getString(R.string.level, level)
             scoreView.text = getString(R.string.score, score)
-            coinView.text = getString(R.string.coin, coin)//read from database
+            //coinView.text = getString(R.string.coin, coin)
+
 
             btnLevel.setOnClickListener {
                 val i = Intent(this, LevelSelect::class.java)
@@ -95,6 +91,38 @@ class UserProfile : AppCompatActivity() {
             ActionBarDrawerToggle(Activity(), drawer_root, toolbar, R.string.drawer_open, R.string.drawer_close)
         drawer_root.addDrawerListener(toggle)
         toggle.syncState()
+    }
+
+    inner class userInfo : AsyncTask<Int, Int, Int>() {
+
+        override fun doInBackground(vararg params: Int?): Int {
+            val mAuth = FirebaseAuth.getInstance()
+            val db = FirebaseFirestore.getInstance()
+            var email = mAuth.currentUser?.email
+            var coin = 0
+            if (email != null) {
+                db?.collection(email)?.document("Coins")?.get()
+                    ?.addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            var document = it?.getResult()
+                            var stat = document?.getData().toString()
+                            val index1 = stat.indexOf('=')
+                            val index2 = stat.lastIndexOf('}')
+                            coin = stat.substring(index1 + 1, index2).toInt()
+                        }
+                    }
+            }
+            Thread.sleep(2000)
+            return coin
+        }
+
+        override fun onPostExecute(result: Int?) {
+            if (result != null) {
+                val headerView = nav_user_profile_navigation_root.getHeaderView(0)
+                val coinView = headerView.findViewById<TextView>(R.id.tCoin)
+                coinView.text= getString(R.string.coin,result)
+            }
+        }
     }
 }
 

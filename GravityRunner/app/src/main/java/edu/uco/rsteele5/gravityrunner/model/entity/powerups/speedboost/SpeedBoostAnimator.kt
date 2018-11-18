@@ -17,7 +17,6 @@ class SpeedBoostAnimator(resources: Resources?): Animator(resources){
         currentImage = animation[0]
     }
 
-
     override fun initializeAnimation() {
         animation.add(speedBoost0)
         animation.add(speedBoost1)

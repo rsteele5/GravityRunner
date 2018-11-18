@@ -1,11 +1,8 @@
 package edu.uco.rsteele5.gravityrunner
 
-import android.app.Activity
 import android.app.AlertDialog
-import android.app.Application
 import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
 import android.content.res.Resources
 import android.graphics.*
 import android.hardware.SensorManager
@@ -51,7 +48,8 @@ class GameEngine : AppCompatActivity(), OrientationListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        gameView = GameView(this, 1)    //TODO: Change to getParcellable
+        var level = intent.getIntExtra("level",0)//receive int from levelArrayAdapter
+        gameView = GameView(this, level)    //TODO: Change to getParcellable
         setContentView(gameView)
 
         orientationManager =
