@@ -2,6 +2,7 @@ package edu.uco.rsteele5.gravityrunner.control
 
 import android.graphics.RectF
 import edu.uco.rsteele5.gravityrunner.model.*
+import edu.uco.rsteele5.gravityrunner.model.spikes.Spikes
 import java.util.concurrent.CopyOnWriteArrayList
 
 class CollisionDetector{
@@ -90,8 +91,23 @@ class CollisionDetector{
     fun processPlayerEntityCollision(player: Player, entities: CopyOnWriteArrayList<GameEntity>){
         for(entity in entities){
             if(RectF.intersects(player.getCollidableBox(), entity.getCollidableBox())) {
-                collidedEntities.add(entity)
-                player.speedBoost = true    //TODO: Remove durring sprint 3
+                if(entity is PowerUp){
+                    collidedEntities.add(entity)
+                    entity.applyPowerUp(player)
+                } else if (entity is Enemy){
+                    if(entity is Spikes){
+                        if(RectF.intersects(player.getCollidableBox(), entity.getTriggerPulledBox())){
+                            entity.playerClose = true
+                            entity.setAnimation(0)
+                            if(RectF.intersects(player.getCollidableBox(), entity.getHitBox())){
+                                //Kill the player since he hit the inside box
+                            }
+                        } else {
+                            entity.playerClose = false
+                            entity.setAnimation(1)
+                        }
+                    }
+                }
             }
         }
 

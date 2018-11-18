@@ -19,7 +19,8 @@
         <activity
                 android:name=".GameEngine"
                 android:configChanges="orientation"
-                android:screenOrientation="portrait">
+                android:screenOrientation="portrait"
+                android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
         </activity>
         <activity
                 android:name=".LoginActivity"

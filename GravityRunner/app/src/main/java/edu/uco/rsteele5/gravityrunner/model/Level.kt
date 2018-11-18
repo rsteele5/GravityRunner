@@ -1,23 +1,33 @@
 package edu.uco.rsteele5.gravityrunner.model
 
 import android.content.res.Resources
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Paint
+import android.graphics.*
 import android.util.Log
 import edu.uco.rsteele5.gravityrunner.control.OrientationManager
 import edu.uco.rsteele5.gravityrunner.R
 import edu.uco.rsteele5.gravityrunner.Renderable
+import edu.uco.rsteele5.gravityrunner.model.coin.Coin
+import edu.uco.rsteele5.gravityrunner.model.coin.CoinAnimator
+import edu.uco.rsteele5.gravityrunner.model.powerups.armor.Armor
+import edu.uco.rsteele5.gravityrunner.model.powerups.armor.ArmorAnimator
+import edu.uco.rsteele5.gravityrunner.model.powerups.speedboost.SpeedBoost
+import edu.uco.rsteele5.gravityrunner.model.powerups.speedboost.SpeedBoostAnimator
+import edu.uco.rsteele5.gravityrunner.model.spikes.SpikesAnimator
+import edu.uco.rsteele5.gravityrunner.model.spikes.Spikes
 import java.util.concurrent.CopyOnWriteArrayList
 
 const val SPAWN = 1
 const val WALL = 2
 const val GOAL = 3
 const val SPIKES = 4
-const val BAT = 5
-const val SPEEDBOOST = 6
-const val ARMORBOOST = 7
-const val COIN = 8
+const val SPIKES_RIGHT = 5
+const val SPIKES_DOWN = 6
+const val SPIKES_LEFT = 7
+const val BAT = 8
+const val SPEEDBOOST = 9
+const val COIN = 10
+const val ARMOR = 11
+const val JUMPBOOST = 12
 
 const val TAG_LC = "LC"
 
@@ -40,6 +50,8 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
         resources = r
         screenCenter = Pair(screenWidth/2f, screenHeight/2f)
     }
+
+
 
     fun createLevel(){
         scanAndSetSpawnLocation()
@@ -66,15 +78,71 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
         for(y in 0..(map.size - 1)){
             for (x in 0..(map[y].size - 1)){
                 when(map[y][x]){
-                    GOAL -> {/*TODO: Create Goal and at it to gameEntities*/}
-                    SPIKES -> {/*TODO: Create Spikes and at it to gameEntities*/}
-                    BAT -> {/*TODO: Create Bat and at it to gameEntities*/}
-                    SPEEDBOOST ->{
-                        gameEntities.add(SpeedBoost(BitmapFactory.decodeResource(resources, R.drawable.speed_boost),
-                            getOffsetX(x), getOffsetY(y)))
+                    GOAL -> {/*TODO: Create Goal and at it to gameEntitys*/}
+                    SPIKES -> {
+                        gameEntities.add(
+                            Spikes(
+                                BitmapFactory.decodeResource(resources, R.drawable.spikes_down),
+                                SpikesAnimator(resources, 0f),
+                                getOffsetX(x), getOffsetY(y), 0f
+                            )
+                        )
                     }
-                    ARMORBOOST -> { /*TODO: Create Armor boost and at it to gameEntities*/ }
-                    COIN -> { /*TODO: Create Coin and at it to gameEntities*/ }
+                    SPIKES_RIGHT -> {
+                        gameEntities.add(
+                            Spikes(
+                                BitmapFactory.decodeResource(resources, R.drawable.spikes_down),
+                                SpikesAnimator(resources, 90f),
+                                getOffsetX(x), getOffsetY(y), 90f
+                            )
+                        )
+                    }
+                    SPIKES_DOWN -> {
+                        gameEntities.add(
+                            Spikes(
+                                BitmapFactory.decodeResource(resources, R.drawable.spikes_down),
+                                SpikesAnimator(resources, 180f),
+                                getOffsetX(x), getOffsetY(y),180f
+                            )
+                        )
+                    }
+                    SPIKES_LEFT -> {
+                        gameEntities.add(
+                            Spikes(
+                                BitmapFactory.decodeResource(resources, R.drawable.spikes_down),
+                                SpikesAnimator(resources, 270f),
+                                getOffsetX(x), getOffsetY(y), 270f
+                            )
+                        )
+                    }
+                    BAT -> {/*TODO: Create Bat and at it to gameEntitys*/}
+                    SPEEDBOOST -> {
+                        gameEntities.add(
+                            SpeedBoost(
+                                BitmapFactory.decodeResource(resources, R.drawable.speed_boost),
+                                SpeedBoostAnimator(resources),
+                                getOffsetX(x), getOffsetY(y)
+                            )
+                        )
+                    }
+                    COIN -> {
+                        gameEntities.add(
+                            Coin(
+                                BitmapFactory.decodeResource(resources, R.drawable.coin_0),
+                                CoinAnimator(resources),
+                                getOffsetX(x), getOffsetY(y), 270f
+                            )
+                        )
+                    }
+                    ARMOR -> {
+                        gameEntities.add(
+                            Armor(
+                                BitmapFactory.decodeResource(resources, R.drawable.armor_0),
+                                ArmorAnimator(resources),
+                                getOffsetX(x), getOffsetY(y)
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -156,4 +224,8 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
 
     }
 
+    private fun Bitmap.rotate(degrees: Float): Bitmap {
+        val matrix = Matrix().apply { postRotate(degrees) }
+        return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
+    }
 }

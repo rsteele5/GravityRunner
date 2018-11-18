@@ -1,15 +1,18 @@
 package edu.uco.rsteele5.gravityrunner
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.app.Application
 import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.content.res.Resources
 import android.graphics.*
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.view.MotionEvent
-import android.view.SurfaceHolder
-import android.view.SurfaceView
+import android.view.*
 import edu.uco.rsteele5.gravityrunner.control.CollisionDetector
 import edu.uco.rsteele5.gravityrunner.control.LevelController
 import edu.uco.rsteele5.gravityrunner.control.OrientationManager
@@ -21,7 +24,7 @@ import edu.uco.rsteele5.gravityrunner.model.PhysicsVector
 
 const val TAG_GR = "GR"
 
-class GameEngine : Activity(), OrientationListener {
+class GameEngine : AppCompatActivity(), OrientationListener {
 
     var orientationManager: OrientationManager? = null
     var orientation: ScreenOrientation = PORTRAIT
@@ -40,8 +43,12 @@ class GameEngine : Activity(), OrientationListener {
 
     private var gameView: GameView? = null
 
+    val loadingTime: Long = 4000
+    var waitTime: Long = System.currentTimeMillis() + loadingTime
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //setSupportActionBar(findViewById(R.id.game_engine_toolbar))
 
         gameView = GameView(this, 1)    //TODO: Change to getParcellable
         setContentView(gameView)
@@ -49,6 +56,24 @@ class GameEngine : Activity(), OrientationListener {
         orientationManager =
                 OrientationManager(this, SensorManager.SENSOR_DELAY_NORMAL, this)
         orientationManager!!.enable()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.id_pause -> {
+            showPauseMenu()
+            true
+        }
+
+        else -> {
+            // If we got here, the user's action was not recognized.
+            // Invoke the superclass to handle it.
+            super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.game_engine_menu, menu)
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOrientationChange(screenOrientation: ScreenOrientation) {
@@ -74,16 +99,58 @@ class GameEngine : Activity(), OrientationListener {
     }
 
     fun getScreenWidth(): Int {
-        return Resources.getSystem().getDisplayMetrics().widthPixels - 52
+        return Resources.getSystem().displayMetrics.widthPixels - 52
     }
 
     fun getScreenHeight(): Int {
-        return Resources.getSystem().getDisplayMetrics().heightPixels - 100 * 4
+        return Resources.getSystem().displayMetrics.heightPixels - 100
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
         this.finish()
+    }
+
+    fun showFinishedMenu(){
+        gameView!!.pause()
+        val alert = AlertDialog.Builder(this@GameEngine)
+        alert.setTitle(getString(R.string.finished_menu_title))
+        alert.setMessage(getString(R.string.finished_menu_message))
+        alert.setPositiveButton(getString(R.string.finished_menu_btn_continue)){ _: DialogInterface?, _: Int ->
+            //Continue to next level
+        }
+        alert.setNeutralButton(getString(R.string.finished_menu_btn_return_to_level_select)){ _: DialogInterface?, _: Int ->
+            finish()
+        }
+        alert.show()
+    }
+
+    fun showFailedMenu(){
+        gameView!!.pause()
+        val alert = AlertDialog.Builder(this@GameEngine)
+        alert.setTitle(getString(R.string.fail_menu_title))
+        alert.setMessage(getString(R.string.fail_menu_message))
+        alert.setPositiveButton(getString(R.string.fail_menu_btn_restart)){ _: DialogInterface?, _: Int ->
+            //Restart the level
+        }
+        alert.setNeutralButton(getString(R.string.fail_menu_btn_return_to_level_select)){ _: DialogInterface?, _: Int ->
+            finish()
+        }
+        alert.show()
+    }
+
+    private fun showPauseMenu(){
+        gameView!!.pause()
+        val alert = AlertDialog.Builder(this@GameEngine)
+        alert.setTitle(getString(R.string.pause_menu_title))
+        alert.setMessage(getString(R.string.pause_menu_message))
+        alert.setPositiveButton(getString(R.string.pause_menu_btn_restart)){ _: DialogInterface?, _: Int ->
+            //Restart the level
+        }
+        alert.setNeutralButton(getString(R.string.pause_menu_btn_return_to_level_select)){ _: DialogInterface?, _: Int ->
+            finish()
+        }
+        alert.show()
     }
 
     internal inner class GameView(context: Context, level: Int) : SurfaceView(context), Runnable {
@@ -94,15 +161,16 @@ class GameEngine : Activity(), OrientationListener {
         private var canvas: Canvas? = null
         var paint: Paint? = null
 
+
         //Controllers
         val collisionDetector = CollisionDetector()
         val playerController = PlayerController(
             BitmapFactory.decodeResource(resources, R.drawable.bob),
-            getScreenWidth().toFloat(),
-            getScreenHeight().toFloat())
+            (getScreenWidth() - 52).toFloat(),
+            (getScreenHeight() - 100).toFloat())
         val levelController = LevelController(resources,
-            getScreenWidth().toFloat(),
-            getScreenHeight().toFloat())
+            (getScreenWidth() - 52).toFloat(),
+            (getScreenHeight() - 100).toFloat())
 
         @Volatile
         var playing: Boolean = false
@@ -116,11 +184,13 @@ class GameEngine : Activity(), OrientationListener {
             levelController.loadLevel(level)
 
             playing = true
+            gameThread = Thread(this)
 
         }
 
         override fun run() {
-            while (playing) {
+            Thread.sleep(1000)
+            while (playing && waitTime <= System.currentTimeMillis() + loadingTime) {
 
                 val startFrameTime = System.currentTimeMillis()
 
@@ -132,6 +202,11 @@ class GameEngine : Activity(), OrientationListener {
                 if (timeThisFrame > 0) {
                     fps = 1000 / timeThisFrame
                 }
+//                if(failed == true){
+//                    showFinishedMenu()
+//                } else if (finished == true){
+//
+//                }
             }
         }
 
@@ -170,16 +245,69 @@ class GameEngine : Activity(), OrientationListener {
                     canvas!!.drawCircle(getScreenWidth()/2f, getScreenHeight()/2f, 20f, paint!!)
                 }
                 paint!!.textSize = 40f
-                canvas!!.drawText("FPS:$fps", 20f, 40f, paint!!)
-                canvas!!.drawText("Vector x:${motionVector.x}", 20f, 80f, paint!!)
-                canvas!!.drawText("Vector y:${motionVector.y}", 20f, 120f, paint!!)
-                canvas!!.drawText("Vector mag:${motionVector.magnitude}", 20f, 160f, paint!!)
+
+
+
+                drawUI()
+
+//                canvas!!.rotate(0f, 50f, 50f)
+//                canvas!!.drawText("FPS:$fps", 20f, 40f, paint!!)
+//                canvas!!.drawText("Vector x:${motionVector.x}", 20f, 80f, paint!!)
+//                canvas!!.drawText("Vector y:${motionVector.y}", 20f, 120f, paint!!)
+//                canvas!!.drawText("Vector mag:${motionVector.magnitude}", 20f, 160f, paint!!)
 
                 //Unlock canvas and post is double buffered, kinda cool how it works, check it out
                 ourHolder!!.unlockCanvasAndPost(canvas)
             }
 
         }
+
+        fun drawUI() {
+            canvas!!.save()
+            var xOffSet = 20f
+            var yOffset = 40f
+            when (orientation) {
+                LANDSCAPE -> {
+                    canvas!!.rotate(90f, canvas!!.width/2f, canvas!!.height/2f)
+                    xOffSet = -232f
+                    yOffset = 290f
+                }
+                REVERSED_PORTRAIT -> {
+                    canvas!!.rotate(180f, canvas!!.width/2f, canvas!!.height/2f)
+                    xOffSet = 20f
+                    yOffset = 40f
+                }
+                REVERSED_LANDSCAPE -> {
+                    canvas!!.rotate(270f, canvas!!.width/2f, canvas!!.height/2f)
+                    xOffSet = -232f
+                    yOffset = 290f
+                }
+                else -> {
+                    xOffSet = 20f
+                    yOffset = 40f
+                }
+            }
+            if(playerController.player!!.speedBoost) {
+                var speedBoostRectF = RectF(
+                    canvas!!.width/2 - 120f,
+                    yOffset,
+                    canvas!!.width/2 - 60f,
+                    yOffset + 60
+                )
+                canvas!!.drawBitmap(
+                    BitmapFactory.decodeResource(resources, R.drawable.speed_boost), null,
+                    speedBoostRectF, paint
+                )
+            }
+
+            canvas!!.drawText("FPS:$fps", xOffSet, yOffset, paint!!)
+            canvas!!.drawText("Vector x:${motionVector.x}", xOffSet, yOffset + 40f , paint!!)
+            canvas!!.drawText("Vector y:${motionVector.y}", xOffSet, yOffset + 80f, paint!!)
+            canvas!!.drawText("Vector mag:${motionVector.magnitude}", xOffSet, yOffset + 120f, paint!!)
+            canvas!!.restore()
+        }
+
+
 
         //TODO: Need to look into this more, can we use this to pause the game?
         fun pause() {
@@ -193,6 +321,7 @@ class GameEngine : Activity(), OrientationListener {
 
         //TODO: Need to look into this more, can we use this to pause the game?
         fun resume() {
+            waitTime = System.currentTimeMillis() + loadingTime
             playing = true
             gameThread = Thread(this)
             gameThread!!.start()
@@ -203,8 +332,6 @@ class GameEngine : Activity(), OrientationListener {
 
             when (motionEvent.action and MotionEvent.ACTION_MASK) {
                 MotionEvent.ACTION_DOWN -> playerController.startJump(orientation)
-//                MotionEvent.ACTION_DOWN -> (gameObjects!![0] as BitmapBob).isMoving = true
-//                MotionEvent.ACTION_UP -> (gameObjects!![0] as BitmapBob).isMoving = false
             }
             return true
         }
@@ -215,7 +342,8 @@ class GameEngine : Activity(), OrientationListener {
 
             var motion = when {
                 normal.add(gravity).magnitude == 0f -> {getRunningVector()}
-                normal.magnitude == 0f && playerController.jumping -> {}
+                //TODO:FIX DIS SHIT v
+                normal.add(gravity).magnitude == 0f && playerController.jumping -> {getRunningVector().add(getJumpingVector())}
                 //else falling due to gravity
                 else -> gravity
             }

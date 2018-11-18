@@ -29,8 +29,10 @@ class PlayerController(image: Bitmap, screenWidth: Float, screenHeight: Float): 
     }
 
     fun startJump(orientation: OrientationManager.ScreenOrientation){
-        jumpInfo = Triple(player!!.getCenter().first, player!!.getCenter().second, orientation)
-        jumping = true
+        if(!jumping) {
+            jumpInfo = Triple(player!!.getCenter().first, player!!.getCenter().second, orientation)
+            jumping = true
+        }
     }
     fun stopJump(){
         jumpInfo = null

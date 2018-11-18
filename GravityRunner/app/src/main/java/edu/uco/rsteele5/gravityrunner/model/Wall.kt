@@ -14,7 +14,6 @@ class Wall(image: Bitmap, x: Float, y: Float, lengthOf: Int, varticalFlag: Boole
     protected val wallScalars = CopyOnWriteArrayList<RectF>()
 
     init {
-        this.image = image
         length = lengthOf
         vertical = varticalFlag
         width = 100f
