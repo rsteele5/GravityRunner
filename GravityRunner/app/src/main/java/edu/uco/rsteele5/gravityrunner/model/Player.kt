@@ -10,6 +10,8 @@ import edu.uco.rsteele5.gravityrunner.control.OrientationManager.ScreenOrientati
 class Player(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
 
     var speedBoost = false
+    var jumpBoost = false
+    var armorBoost = false
 
     var currentRotation: Float = 0f
     var currentOrientation: ScreenOrientation = PORTRAIT

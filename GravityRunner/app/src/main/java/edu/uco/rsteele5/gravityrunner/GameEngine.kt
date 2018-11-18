@@ -214,8 +214,8 @@ class GameEngine : Activity(), OrientationListener {
                                   previous: PhysicsVector): PhysicsVector{
 
             var motion = when {
-                normal.approximateOpposite(gravity) -> {getRunningVector()}
-                normal.add(gravity).approximateOpposite(getRunningVector()) -> {PhysicsVector()}
+                normal.add(gravity).magnitude == 0f -> {getRunningVector()}
+                normal.magnitude == 0f && playerController.jumping -> {}
                 //else falling due to gravity
                 else -> gravity
             }
@@ -244,6 +244,15 @@ class GameEngine : Activity(), OrientationListener {
                 LANDSCAPE -> PhysicsVector(0f, -1f, playerController.getSpeed())
                 REVERSED_PORTRAIT -> PhysicsVector(1f, 0f, playerController.getSpeed())
                 REVERSED_LANDSCAPE -> PhysicsVector(0f, 1f, playerController.getSpeed())
+            }
+        }
+
+        private fun getJumpingVector(): PhysicsVector{
+            return when(orientation){
+                PORTRAIT -> PhysicsVector(0f, 1f, playerController.getJumpSpeed())
+                LANDSCAPE -> PhysicsVector(-1f, 0f, playerController.getJumpSpeed())
+                REVERSED_PORTRAIT -> PhysicsVector(0f, -1f, playerController.getJumpSpeed())
+                REVERSED_LANDSCAPE -> PhysicsVector(1f, 0f, playerController.getJumpSpeed())
             }
         }
     }

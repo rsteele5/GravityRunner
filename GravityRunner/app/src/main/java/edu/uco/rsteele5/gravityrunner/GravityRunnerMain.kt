@@ -26,8 +26,6 @@ class GravityRunnerMain : Activity() {
                 startActivity(i)
             }
             alert.show()
-            //val i = Intent(this, GameEngine::class.java)
-            //startActivity(i)
         }
     }
 }

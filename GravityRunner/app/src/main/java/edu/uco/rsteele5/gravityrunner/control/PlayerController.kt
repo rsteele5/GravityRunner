@@ -10,8 +10,8 @@ import edu.uco.rsteele5.gravityrunner.model.Player
 class PlayerController(image: Bitmap, screenWidth: Float, screenHeight: Float): Renderable{
 
     var player: Player? = null
+    var jumping = false
     private var jumpInfo: Triple<Float, Float, OrientationManager.ScreenOrientation>? = null
-    private var jumping = false
     private val speed = 10f
 
     init {
@@ -41,8 +41,16 @@ class PlayerController(image: Bitmap, screenWidth: Float, screenHeight: Float): 
         return speed * getSpeedModifer()
     }
 
+    fun getJumpSpeed(): Float{
+        return speed * getSpeedModifer()
+    }
+
     private fun getSpeedModifer(): Float{
         return if(player!!.speedBoost) 3f else 1f
+    }
+
+    private fun getJumpSpeedModifer(): Float{
+        return if(player!!.jumpBoost) 2f else 1f
     }
 
 }
