@@ -22,7 +22,7 @@ class SpeedBoost(image: Bitmap, animator: SpeedBoostAnimator, x: Float, y: Float
     override fun update(orientation: OrientationManager.ScreenOrientation, motionVector: PhysicsVector) {
         translate(motionVector.getDeltaX(), motionVector.getDeltaY())
         updateCollisionBox()
-        image = animator.getCurrentImage()
+        image = animator.getCurrentFrame()
         animator.update()
     }
 

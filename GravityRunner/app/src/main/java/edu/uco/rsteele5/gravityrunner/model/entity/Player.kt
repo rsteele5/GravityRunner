@@ -14,6 +14,7 @@ class Player(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
     var armorBoost = false
     private var speedBoostTimer: Long = 0
     private var lastClock: Long = 0
+    private var hitPoints = 1
 
     init {
         width = 52f
@@ -27,6 +28,10 @@ class Player(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
         checkPowerUp()
     }
 
+    fun getHitPoint(): Int {
+        return hitPoints
+    }
+
     fun setSpeedBoost(){
         speedBoost = true
         speedBoostTimer = SPEED_BOOST_TIME
@@ -34,7 +39,9 @@ class Player(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
     }
 
     fun setArmor(){
-        armorBoost = true
+        if(hitPoints == 1){
+            hitPoints++
+        }
     }
 
     private fun checkPowerUp() {
@@ -46,6 +53,10 @@ class Player(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
             }
         }
         // check other powerups
+    }
+
+    fun decrementHitPoints(){
+        hitPoints--
     }
 
     override fun updateOrientation(orientation: ScreenOrientation){

@@ -3,7 +3,7 @@ package edu.uco.rsteele5.gravityrunner.model.entity
 import android.content.res.Resources
 import android.graphics.Bitmap
 
-abstract class Animator(resources: Resources) {
+abstract class Animator(resources: Resources?) {
     protected var animation: ArrayList<Bitmap> = ArrayList()
     protected var currentImage: Bitmap? = null
     protected var framesToDisplay: Int = 6
