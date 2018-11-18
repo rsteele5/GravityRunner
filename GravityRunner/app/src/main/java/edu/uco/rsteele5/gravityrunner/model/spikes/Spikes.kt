@@ -9,11 +9,11 @@ import edu.uco.rsteele5.gravityrunner.model.Enemy
 import edu.uco.rsteele5.gravityrunner.model.GameEntity
 import edu.uco.rsteele5.gravityrunner.model.PhysicsVector
 
-class Spikes (image: Bitmap, animator: SpikeAnimator, x: Float, y: Float, rotation: Float)
+class Spikes (image: Bitmap, animator: SpikesAnimator, x: Float, y: Float, rotation: Float)
     : GameEntity(image, x, y), Enemy {
 
     var playerClose: Boolean = false
-    var animator: SpikeAnimator
+    var animator: SpikesAnimator
     var rotation: Float
 
     init {
@@ -27,7 +27,7 @@ class Spikes (image: Bitmap, animator: SpikeAnimator, x: Float, y: Float, rotati
 
     override fun update(orientation: ScreenOrientation, motionVector: PhysicsVector) {
         translate(motionVector.getDeltaX(), motionVector.getDeltaY())
-        updateOrientation(orientation)
+        updateCollisionBox()
         image = animator.getCurrentImage()
         animator.update()
     }

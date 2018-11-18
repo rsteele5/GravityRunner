@@ -16,25 +16,17 @@ abstract class GameEntity(image: Bitmap, x: Float, y: Float): GameObject(image) 
         yPos = y
     }
 
-    protected fun updateOrientation(orientation: ScreenOrientation){
+    protected open fun updateCollisionBox() {
+        collisionBox.set(xPos, yPos, width + xPos, height + yPos)
+    }
+
+    protected open fun updateOrientation(orientation: ScreenOrientation){
         currentOrientation = orientation
         when (currentOrientation){
-            PORTRAIT -> {
-                currentRotation = 0f
-                collisionBox.set(xPos, yPos, width + xPos, height + yPos)
-            }
-            LANDSCAPE -> {
-                currentRotation = 90f
-                collisionBox.set(xPos, yPos, height + xPos, width + yPos)
-            }
-            REVERSED_PORTRAIT -> {
-                currentRotation = 180f
-                collisionBox.set(xPos, yPos, width + xPos, height + yPos)
-            }
-            REVERSED_LANDSCAPE -> {
-                currentRotation = 270f
-                collisionBox.set(xPos, yPos, height + xPos, width + yPos)
-            }
+            PORTRAIT -> currentRotation = 0f
+            LANDSCAPE -> currentRotation = 90f
+            REVERSED_PORTRAIT -> currentRotation = 180f
+            REVERSED_LANDSCAPE -> currentRotation = 270f
         }
     }
 

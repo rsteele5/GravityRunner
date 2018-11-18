@@ -4,13 +4,15 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.util.Log
 import edu.uco.rsteele5.gravityrunner.R
 
-class SpikeAnimator(resources: Resources?, rotation: Float)
+class SpikesAnimator(resources: Resources?, rotation: Float)
 {
-    private val spikeUp = BitmapFactory.decodeResource(resources, R.drawable.spikes_up).rotate(rotation)
-    private val spikeMid = BitmapFactory.decodeResource(resources, R.drawable.spikes_mid).rotate(rotation)
-    private val spikeDown = BitmapFactory.decodeResource(resources, R.drawable.spikes_down).rotate(rotation)
+    private val spikes0 = BitmapFactory.decodeResource(resources, R.drawable.spikes_0).rotate(rotation)
+    private val spikes1 = BitmapFactory.decodeResource(resources, R.drawable.spikes_1).rotate(rotation)
+    private val spikes2 = BitmapFactory.decodeResource(resources, R.drawable.spikes_2).rotate(rotation)
+    private val spikes3 = BitmapFactory.decodeResource(resources, R.drawable.spikes_3).rotate(rotation)
     private val spikeAnimations = ArrayList<ArrayList<Bitmap>>()
     private var currentAnimation: ArrayList<Bitmap>
     private var currentImage: Bitmap
@@ -32,7 +34,7 @@ class SpikeAnimator(resources: Resources?, rotation: Float)
         if(frameTimer == 0) {
             imageIndex++
             if(imageIndex > currentAnimation.size - 1){
-                imageIndex = 2
+                imageIndex = 3
             }
             currentImage = currentAnimation[imageIndex]
             frameTimer = framesToDisplay
@@ -56,16 +58,18 @@ class SpikeAnimator(resources: Resources?, rotation: Float)
 
     private fun initializeAnimations() {
         val spikeMovingUpAnimation = ArrayList<Bitmap>()
-        spikeMovingUpAnimation.add(spikeDown)
-        spikeMovingUpAnimation.add(spikeMid)
-        spikeMovingUpAnimation.add(spikeUp)
+        spikeMovingUpAnimation.add(spikes0)
+        spikeMovingUpAnimation.add(spikes1)
+        spikeMovingUpAnimation.add(spikes2)
+        spikeMovingUpAnimation.add(spikes3)
 
         val spikeMovingDownAnimation = ArrayList<Bitmap>()
-        spikeMovingDownAnimation.add(spikeUp)
-        spikeMovingDownAnimation.add(spikeMid)
-        spikeMovingDownAnimation.add(spikeDown)
+        spikeMovingDownAnimation.add(spikes3)
+        spikeMovingDownAnimation.add(spikes2)
+        spikeMovingDownAnimation.add(spikes1)
+        spikeMovingDownAnimation.add(spikes0)
 
-        spikeAnimations.add(spikeMovingUpAnimation)
         spikeAnimations.add(spikeMovingDownAnimation)
+        spikeAnimations.add(spikeMovingUpAnimation)
     }
 }

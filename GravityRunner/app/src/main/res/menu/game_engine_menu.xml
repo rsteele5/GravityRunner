@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="edu.uco.rsteele5.gravityrunner.GameEngine">
+
+    <item
+        android:id="@+id/id_pause"
+        android:icon="@drawable/pause"
+        android:orderInCategory="102"
+        android:title="@string/app_bar_pause"
+        app:showAsAction="always|always" />
+</menu>

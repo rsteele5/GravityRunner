@@ -1,15 +1,18 @@
 package edu.uco.rsteele5.gravityrunner
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.app.Application
 import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.content.res.Resources
 import android.graphics.*
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.view.MotionEvent
-import android.view.SurfaceHolder
-import android.view.SurfaceView
+import android.view.*
 import edu.uco.rsteele5.gravityrunner.Control.CollisionDetector
 import edu.uco.rsteele5.gravityrunner.Control.LevelController
 import edu.uco.rsteele5.gravityrunner.Control.OrientationManager
@@ -21,7 +24,7 @@ import edu.uco.rsteele5.gravityrunner.model.PhysicsVector
 
 const val TAG_GR = "GR"
 
-class GameEngine : Activity(), OrientationListener {
+class GameEngine : AppCompatActivity(), OrientationListener {
 
     var orientationManager: OrientationManager? = null
     var orientation: ScreenOrientation = PORTRAIT
@@ -40,8 +43,12 @@ class GameEngine : Activity(), OrientationListener {
 
     private var gameView: GameView? = null
 
+    val loadingTime: Long = 4000
+    var waitTime: Long = System.currentTimeMillis() + loadingTime
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //setSupportActionBar(findViewById(R.id.game_engine_toolbar))
 
         gameView = GameView(this)
         setContentView(gameView)
@@ -49,6 +56,24 @@ class GameEngine : Activity(), OrientationListener {
         orientationManager =
                 OrientationManager(this, SensorManager.SENSOR_DELAY_NORMAL, this)
         orientationManager!!.enable()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.id_pause -> {
+            showPauseMenu()
+            true
+        }
+
+        else -> {
+            // If we got here, the user's action was not recognized.
+            // Invoke the superclass to handle it.
+            super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.game_engine_menu, menu)
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOrientationChange(screenOrientation: ScreenOrientation) {
@@ -86,6 +111,48 @@ class GameEngine : Activity(), OrientationListener {
         this.finish()
     }
 
+    fun showFinishedMenu(){
+        gameView!!.pause()
+        val alert = AlertDialog.Builder(this@GameEngine)
+        alert.setTitle(getString(R.string.finished_menu_title))
+        alert.setMessage(getString(R.string.finished_menu_message))
+        alert.setPositiveButton(getString(R.string.finished_menu_btn_continue)){ _: DialogInterface?, _: Int ->
+            //Continue to next level
+        }
+        alert.setNeutralButton(getString(R.string.finished_menu_btn_return_to_level_select)){ _: DialogInterface?, _: Int ->
+            finish()
+        }
+        alert.show()
+    }
+
+    fun showFailedMenu(){
+        gameView!!.pause()
+        val alert = AlertDialog.Builder(this@GameEngine)
+        alert.setTitle(getString(R.string.fail_menu_title))
+        alert.setMessage(getString(R.string.fail_menu_message))
+        alert.setPositiveButton(getString(R.string.fail_menu_btn_restart)){ _: DialogInterface?, _: Int ->
+            //Restart the level
+        }
+        alert.setNeutralButton(getString(R.string.fail_menu_btn_return_to_level_select)){ _: DialogInterface?, _: Int ->
+            finish()
+        }
+        alert.show()
+    }
+
+    fun showPauseMenu(){
+        gameView!!.pause()
+        val alert = AlertDialog.Builder(this@GameEngine)
+        alert.setTitle(getString(R.string.pause_menu_title))
+        alert.setMessage(getString(R.string.pause_menu_message))
+        alert.setPositiveButton(getString(R.string.pause_menu_btn_restart)){ _: DialogInterface?, _: Int ->
+            //Restart the level
+        }
+        alert.setNeutralButton(getString(R.string.pause_menu_btn_return_to_level_select)){ _: DialogInterface?, _: Int ->
+            finish()
+        }
+        alert.show()
+    }
+
     internal inner class GameView(context: Context) : SurfaceView(context), Runnable {
 
         private var gameThread: Thread? = null
@@ -93,6 +160,7 @@ class GameEngine : Activity(), OrientationListener {
 
         private var canvas: Canvas? = null
         var paint: Paint? = null
+
 
         //Controllers
         val collisionDetector = CollisionDetector()
@@ -116,11 +184,13 @@ class GameEngine : Activity(), OrientationListener {
             levelController.loadLevelOne()
 
             playing = true
+            gameThread = Thread(this)
 
         }
 
         override fun run() {
-            while (playing) {
+            Thread.sleep(1000)
+            while (playing && waitTime <= System.currentTimeMillis() + loadingTime) {
 
                 val startFrameTime = System.currentTimeMillis()
 
@@ -133,6 +203,13 @@ class GameEngine : Activity(), OrientationListener {
                     fps = 1000 / timeThisFrame
                 }
             }
+//            if(failed == true){
+//                showFinishedMenu()
+//            } else if (finished == true){
+//
+//            } else if (paused == true) {
+//
+//            }
         }
 
         fun update(gravityVector: PhysicsVector) {
@@ -223,6 +300,8 @@ class GameEngine : Activity(), OrientationListener {
             canvas!!.restore()
         }
 
+
+
         //TODO: Need to look into this more, can we use this to pause the game?
         fun pause() {
             playing = false
@@ -235,6 +314,7 @@ class GameEngine : Activity(), OrientationListener {
 
         //TODO: Need to look into this more, can we use this to pause the game?
         fun resume() {
+            waitTime = System.currentTimeMillis() + loadingTime
             playing = true
             gameThread = Thread(this)
             gameThread!!.start()

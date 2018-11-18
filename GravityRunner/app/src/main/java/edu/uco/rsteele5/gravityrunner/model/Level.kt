@@ -6,7 +6,13 @@ import android.util.Log
 import edu.uco.rsteele5.gravityrunner.Control.OrientationManager
 import edu.uco.rsteele5.gravityrunner.R
 import edu.uco.rsteele5.gravityrunner.Renderable
-import edu.uco.rsteele5.gravityrunner.model.spikes.SpikeAnimator
+import edu.uco.rsteele5.gravityrunner.model.coin.Coin
+import edu.uco.rsteele5.gravityrunner.model.coin.CoinAnimator
+import edu.uco.rsteele5.gravityrunner.model.powerups.armor.Armor
+import edu.uco.rsteele5.gravityrunner.model.powerups.armor.ArmorAnimator
+import edu.uco.rsteele5.gravityrunner.model.powerups.speedboost.SpeedBoost
+import edu.uco.rsteele5.gravityrunner.model.powerups.speedboost.SpeedBoostAnimator
+import edu.uco.rsteele5.gravityrunner.model.spikes.SpikesAnimator
 import edu.uco.rsteele5.gravityrunner.model.spikes.Spikes
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -19,6 +25,9 @@ const val SPIKES_DOWN = 6
 const val SPIKES_LEFT = 7
 const val BAT = 8
 const val SPEEDBOOST = 9
+const val COIN = 10
+const val ARMOR = 11
+const val JUMPBOOST = 12
 
 const val TAG_LC = "LC"
 
@@ -74,7 +83,7 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                         gameEntitys.add(
                             Spikes(
                                 BitmapFactory.decodeResource(resources, R.drawable.spikes_down),
-                                SpikeAnimator(resources, 0f),
+                                SpikesAnimator(resources, 0f),
                                 getOffsetX(x), getOffsetY(y), 0f
                             )
                         )
@@ -83,7 +92,7 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                         gameEntitys.add(
                             Spikes(
                                 BitmapFactory.decodeResource(resources, R.drawable.spikes_down),
-                                SpikeAnimator(resources, 90f),
+                                SpikesAnimator(resources, 90f),
                                 getOffsetX(x), getOffsetY(y), 90f
                             )
                         )
@@ -92,7 +101,7 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                         gameEntitys.add(
                             Spikes(
                                 BitmapFactory.decodeResource(resources, R.drawable.spikes_down),
-                                SpikeAnimator(resources, 180f),
+                                SpikesAnimator(resources, 180f),
                                 getOffsetX(x), getOffsetY(y),180f
                             )
                         )
@@ -101,15 +110,38 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                         gameEntitys.add(
                             Spikes(
                                 BitmapFactory.decodeResource(resources, R.drawable.spikes_down),
-                                SpikeAnimator(resources, 270f),
+                                SpikesAnimator(resources, 270f),
                                 getOffsetX(x), getOffsetY(y), 270f
                             )
                         )
                     }
                     BAT -> {/*TODO: Create Bat and at it to gameEntitys*/}
                     SPEEDBOOST -> {
-                        gameEntitys.add(SpeedBoost(BitmapFactory.decodeResource(resources, R.drawable.speed_boost),
-                            getOffsetX(x), getOffsetY(y)))
+                        gameEntitys.add(
+                            SpeedBoost(
+                                BitmapFactory.decodeResource(resources, R.drawable.speed_boost),
+                                SpeedBoostAnimator(resources),
+                                getOffsetX(x), getOffsetY(y)
+                            )
+                        )
+                    }
+                    COIN -> {
+                        gameEntitys.add(
+                            Coin(
+                                BitmapFactory.decodeResource(resources, R.drawable.coin_0),
+                                CoinAnimator(resources),
+                                getOffsetX(x), getOffsetY(y), 270f
+                            )
+                        )
+                    }
+                    ARMOR -> {
+                        gameEntitys.add(
+                            Armor(
+                                BitmapFactory.decodeResource(resources, R.drawable.armor_0),
+                                ArmorAnimator(resources),
+                                getOffsetX(x), getOffsetY(y)
+                            )
+                        )
                     }
                 }
             }

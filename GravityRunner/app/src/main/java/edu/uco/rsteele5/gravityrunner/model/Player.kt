@@ -12,6 +12,7 @@ class Player(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
     var speedBoost = false
     private var speedBoostTimer: Long = 0
     private var lastClock: Long = 0
+    private var armor = false
 
     init {
         width = 52f
@@ -31,6 +32,10 @@ class Player(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
         lastClock = System.currentTimeMillis()
     }
 
+    fun setArmor(){
+        armor = true
+    }
+
     private fun checkPowerUp() {
         if(speedBoost) {
             speedBoostTimer -= (System.currentTimeMillis() - lastClock)
@@ -43,4 +48,25 @@ class Player(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
         // check other powerups
     }
 
+    override open fun updateOrientation(orientation: ScreenOrientation){
+        currentOrientation = orientation
+        when (currentOrientation){
+            ScreenOrientation.PORTRAIT -> {
+                currentRotation = 0f
+                collisionBox.set(xPos, yPos, width + xPos, height + yPos)
+            }
+            ScreenOrientation.LANDSCAPE -> {
+                currentRotation = 90f
+                collisionBox.set(xPos, yPos, height + xPos, width + yPos)
+            }
+            ScreenOrientation.REVERSED_PORTRAIT -> {
+                currentRotation = 180f
+                collisionBox.set(xPos, yPos, width + xPos, height + yPos)
+            }
+            ScreenOrientation.REVERSED_LANDSCAPE -> {
+                currentRotation = 270f
+                collisionBox.set(xPos, yPos, height + xPos, width + yPos)
+            }
+        }
+    }
 }

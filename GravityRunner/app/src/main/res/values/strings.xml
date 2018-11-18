@@ -32,4 +32,17 @@
     <string name="level">Level \t %1$d</string>
     <string name="score">Score \t %1$d</string>
     <string name="coin">Coin \t %1$d</string>
+    <string name="fail_menu_title">You Died</string>
+    <string name="fail_menu_message">Would you like to…</string>
+    <string name="fail_menu_btn_restart">Restart The Level</string>
+    <string name="fail_menu_btn_return_to_level_select">Return To Level Select</string>
+    <string name="pause_menu_title">Paused</string>
+    <string name="pause_menu_message">Would you like to…</string>
+    <string name="pause_menu_btn_restart">Restart Level</string>
+    <string name="pause_menu_btn_return_to_level_select">Return To Level Select</string>
+    <string name="finished_menu_title">Finished!!</string>
+    <string name="finished_menu_message">Would you like to…</string>
+    <string name="finished_menu_btn_continue">Continue To Next Level</string>
+    <string name="finished_menu_btn_return_to_level_select">Return To Level Select</string>
+    <string name="app_bar_pause">pause</string>
 </resources>
