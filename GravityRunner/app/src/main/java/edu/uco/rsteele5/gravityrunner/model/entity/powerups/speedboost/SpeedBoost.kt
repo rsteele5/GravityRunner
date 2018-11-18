@@ -1,13 +1,14 @@
-package edu.uco.rsteele5.gravityrunner.model.powerups.speedboost
+package edu.uco.rsteele5.gravityrunner.model.entity.powerups.speedboost
 
 import android.graphics.*
 import edu.uco.rsteele5.gravityrunner.control.OrientationManager
-import edu.uco.rsteele5.gravityrunner.model.GameEntity
+import edu.uco.rsteele5.gravityrunner.model.entity.GameEntity
 import edu.uco.rsteele5.gravityrunner.model.PhysicsVector
-import edu.uco.rsteele5.gravityrunner.model.Player
-import edu.uco.rsteele5.gravityrunner.model.PowerUp
+import edu.uco.rsteele5.gravityrunner.model.entity.Player
+import edu.uco.rsteele5.gravityrunner.model.entity.powerups.PowerUp
 
-class SpeedBoost(image: Bitmap, animator: SpeedBoostAnimator, x: Float, y: Float) : GameEntity(image, x, y), PowerUp
+class SpeedBoost(image: Bitmap, animator: SpeedBoostAnimator, x: Float, y: Float) : GameEntity(image, x, y),
+    PowerUp
 {
     var animator: SpeedBoostAnimator
 

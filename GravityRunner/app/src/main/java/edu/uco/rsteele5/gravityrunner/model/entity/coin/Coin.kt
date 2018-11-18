@@ -1,11 +1,11 @@
-package edu.uco.rsteele5.gravityrunner.model.coin
+package edu.uco.rsteele5.gravityrunner.model.entity.coin
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import edu.uco.rsteele5.gravityrunner.control.OrientationManager
-import edu.uco.rsteele5.gravityrunner.model.GameEntity
+import edu.uco.rsteele5.gravityrunner.model.entity.GameEntity
 import edu.uco.rsteele5.gravityrunner.model.PhysicsVector
 
 class Coin (image: Bitmap, animator: CoinAnimator, x: Float, y: Float, rotation: Float)

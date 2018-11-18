@@ -1,10 +1,9 @@
-package edu.uco.rsteele5.gravityrunner.model.spikes
+package edu.uco.rsteele5.gravityrunner.model.entity.enemy.spikes
 
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
-import android.util.Log
 import edu.uco.rsteele5.gravityrunner.R
 
 class SpikesAnimator(resources: Resources?, rotation: Float)

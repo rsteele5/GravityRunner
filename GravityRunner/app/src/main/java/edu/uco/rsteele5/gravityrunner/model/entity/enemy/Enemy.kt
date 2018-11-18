@@ -1,3 +1,3 @@
-package edu.uco.rsteele5.gravityrunner.model
+package edu.uco.rsteele5.gravityrunner.model.entity.enemy
 
 interface Enemy

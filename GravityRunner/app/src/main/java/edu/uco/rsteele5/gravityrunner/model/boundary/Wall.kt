@@ -1,7 +1,8 @@
-package edu.uco.rsteele5.gravityrunner.model
+package edu.uco.rsteele5.gravityrunner.model.boundary
 
 import android.graphics.*
 import edu.uco.rsteele5.gravityrunner.control.OrientationManager.ScreenOrientation
+import edu.uco.rsteele5.gravityrunner.model.PhysicsVector
 import java.util.concurrent.CopyOnWriteArrayList
 
 class Wall(image: Bitmap, x: Float, y: Float, lengthOf: Int, varticalFlag: Boolean): BoundaryObject(image, x, y) {

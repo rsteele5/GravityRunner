@@ -1,11 +1,8 @@
-package edu.uco.rsteele5.gravityrunner.model
+package edu.uco.rsteele5.gravityrunner.model.entity
 
 import android.graphics.*
 import edu.uco.rsteele5.gravityrunner.control.OrientationManager.ScreenOrientation
-import edu.uco.rsteele5.gravityrunner.control.OrientationManager.ScreenOrientation.PORTRAIT
-import edu.uco.rsteele5.gravityrunner.control.OrientationManager.ScreenOrientation.LANDSCAPE
-import edu.uco.rsteele5.gravityrunner.control.OrientationManager.ScreenOrientation.REVERSED_LANDSCAPE
-import edu.uco.rsteele5.gravityrunner.control.OrientationManager.ScreenOrientation.REVERSED_PORTRAIT
+import edu.uco.rsteele5.gravityrunner.model.PhysicsVector
 
 
 class Player(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {

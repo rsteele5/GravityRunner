@@ -1,4 +1,4 @@
-package edu.uco.rsteele5.gravityrunner.model.powerups.armor
+package edu.uco.rsteele5.gravityrunner.model.entity.powerups.armor
 
 import android.content.res.Resources
 import android.graphics.Bitmap

@@ -1,9 +1,11 @@
-package edu.uco.rsteele5.gravityrunner.model
+package edu.uco.rsteele5.gravityrunner.model.entity
 
 import android.graphics.*
 
 import edu.uco.rsteele5.gravityrunner.control.OrientationManager.ScreenOrientation
 import edu.uco.rsteele5.gravityrunner.control.OrientationManager.ScreenOrientation.*
+import edu.uco.rsteele5.gravityrunner.model.GameObject
+import edu.uco.rsteele5.gravityrunner.model.PhysicsVector
 
 
 abstract class GameEntity(image: Bitmap, x: Float, y: Float): GameObject(image) {

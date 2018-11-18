@@ -1,12 +1,12 @@
-package edu.uco.rsteele5.gravityrunner.model.spikes
+package edu.uco.rsteele5.gravityrunner.model.entity.enemy.spikes
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import edu.uco.rsteele5.gravityrunner.control.OrientationManager.ScreenOrientation
-import edu.uco.rsteele5.gravityrunner.model.Enemy
-import edu.uco.rsteele5.gravityrunner.model.GameEntity
+import edu.uco.rsteele5.gravityrunner.model.entity.enemy.Enemy
+import edu.uco.rsteele5.gravityrunner.model.entity.GameEntity
 import edu.uco.rsteele5.gravityrunner.model.PhysicsVector
 
 class Spikes (image: Bitmap, animator: SpikesAnimator, x: Float, y: Float, rotation: Float)
