@@ -13,10 +13,10 @@ class Player(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
     private val SPEED_BOOST_TIME: Long = 4000
 
     var speedBoost = false
-    private var speedBoostTimer: Long = 0
-    private var lastClock: Long = 0
     var jumpBoost = false
     var armorBoost = false
+    private var speedBoostTimer: Long = 0
+    private var lastClock: Long = 0
 
     init {
         width = 52f

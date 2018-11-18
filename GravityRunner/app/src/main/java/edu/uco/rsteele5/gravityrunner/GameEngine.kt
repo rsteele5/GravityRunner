@@ -226,7 +226,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
                     playerController.player!!,
                     levelController.currentLevel!!.gameEntities)
                 //Calculate motion vector
-                motionVector = calculateMotionVector(gravityVector, collisionDetector.getNormalVector(), motionVector)
+                motionVector = calculateMotionVector(gravityVector, collisionDetector.getNormalVector())
             }
         }
 
@@ -249,12 +249,6 @@ class GameEngine : AppCompatActivity(), OrientationListener {
 
 
                 drawUI()
-
-//                canvas!!.rotate(0f, 50f, 50f)
-//                canvas!!.drawText("FPS:$fps", 20f, 40f, paint!!)
-//                canvas!!.drawText("Vector x:${motionVector.x}", 20f, 80f, paint!!)
-//                canvas!!.drawText("Vector y:${motionVector.y}", 20f, 120f, paint!!)
-//                canvas!!.drawText("Vector mag:${motionVector.magnitude}", 20f, 160f, paint!!)
 
                 //Unlock canvas and post is double buffered, kinda cool how it works, check it out
                 ourHolder!!.unlockCanvasAndPost(canvas)
@@ -331,57 +325,47 @@ class GameEngine : AppCompatActivity(), OrientationListener {
         override fun onTouchEvent(motionEvent: MotionEvent): Boolean {
 
             when (motionEvent.action and MotionEvent.ACTION_MASK) {
-                MotionEvent.ACTION_DOWN -> playerController.startJump(orientation)
+                MotionEvent.ACTION_DOWN -> {
+                    if(collisionDetector.getNormalVector()
+                            .add(gravityVector)
+                            .add(playerController.getJumpingVector())
+                            .magnitude == 0f)
+
+                        playerController.startJump(orientation)}
             }
             return true
         }
 
-        private fun calculateMotionVector(gravity: PhysicsVector,
-                                  normal: PhysicsVector,
-                                  previous: PhysicsVector): PhysicsVector{
+        private fun calculateMotionVector(gravity: PhysicsVector, normal: PhysicsVector): PhysicsVector{
 
-            var motion = when {
-                normal.add(gravity).magnitude == 0f -> {getRunningVector()}
-                //TODO:FIX DIS SHIT v
-                normal.add(gravity).magnitude == 0f && playerController.jumping -> {getRunningVector().add(getJumpingVector())}
-                //else falling due to gravity
-                else -> gravity
-            }
+            val ngj = normal.add(gravity).add(playerController.getJumpingVector())
+                if(ngj.magnitude == 0f) {
+                    playerController.startRun(orientation)
+                    playerController.incrementRun()
+                }
+                else
+                    playerController.depricateRun()
 
-//            val vectorGN = normal.add(gravity)
-//            val running = getRunningVector()
-//            val motion = when {
-//                    //On ground Return running
-//                    vectorGN.magnitude == 0f -> vectorGN.add(running)
-//                    //In corner return Zero Vector
-//                    vectorGN.add(running).magnitude == 0f -> PhysicsVector()
-//                    //else falling due to gravity
-//                    else -> vectorGN
-//                }
-//            Log.d(TAG_GR, "Grav- x:${gravity.x}, y:${gravity.y}, mag:${gravity.magnitude}")
-//            Log.d(TAG_GR, "Norm- x:${normal.x}, y:${normal.y}, mag:${normal.magnitude}")
-//            Log.d(TAG_GR, "G+N- x:${vectorGN.x}, y:${vectorGN.y}, mag:${vectorGN.magnitude}")
-//            Log.d(TAG_GR, "Overall- x:${motion.x}, y:${motion.y}, mag:${motion.magnitude}")
+            return ngj.add(playerController.getRunningVector())
 
-            return motion
-        }
 
-        private fun getRunningVector(): PhysicsVector{
-            return when(orientation){
-                PORTRAIT -> PhysicsVector(-1f, 0f, playerController.getSpeed())
-                LANDSCAPE -> PhysicsVector(0f, -1f, playerController.getSpeed())
-                REVERSED_PORTRAIT -> PhysicsVector(1f, 0f, playerController.getSpeed())
-                REVERSED_LANDSCAPE -> PhysicsVector(0f, 1f, playerController.getSpeed())
-            }
-        }
-
-        private fun getJumpingVector(): PhysicsVector{
-            return when(orientation){
-                PORTRAIT -> PhysicsVector(0f, 1f, playerController.getJumpSpeed())
-                LANDSCAPE -> PhysicsVector(-1f, 0f, playerController.getJumpSpeed())
-                REVERSED_PORTRAIT -> PhysicsVector(0f, -1f, playerController.getJumpSpeed())
-                REVERSED_LANDSCAPE -> PhysicsVector(1f, 0f, playerController.getJumpSpeed())
-            }
+////////////////////////////////////Works but poorly//////////////////////////////////////////////////
+//                                                                                                  //
+//            val vectorGN = normal.add(gravity)                                                    //
+//            val running = getRunningVector()                                                      //
+//            val motion = when {                                                                   //
+//                    //On ground Return running                                                    //
+//                    vectorGN.magnitude == 0f -> vectorGN.add(running)                             //
+//                    //In corner return Zero Vector                                                //
+//                    vectorGN.add(running).magnitude == 0f -> PhysicsVector()                      //
+//                    //else falling due to gravity                                                 //
+//                    else -> vectorGN                                                              //
+//                }                                                                                 //
+//            Log.d(TAG_GR, "Grav- x:${gravity.x}, y:${gravity.y}, mag:${gravity.magnitude}")       //
+//            Log.d(TAG_GR, "Norm- x:${normal.x}, y:${normal.y}, mag:${normal.magnitude}")          //
+//            Log.d(TAG_GR, "G+N- x:${vectorGN.x}, y:${vectorGN.y}, mag:${vectorGN.magnitude}")     //
+//            Log.d(TAG_GR, "Overall- x:${motion.x}, y:${motion.y}, mag:${motion.magnitude}")       //
+//////////////////////////////////////////////////////////////////////////////////////////////////////
         }
     }
 }

@@ -36,26 +36,4 @@ class Coin (image: Bitmap, animator: CoinAnimator, x: Float, y: Float, rotation:
     override fun draw(canvas: Canvas, paint: Paint) {
         canvas.drawBitmap(image!!.rotate(currentRotation), null, collisionBox, null)
     }
-
-    override fun updateOrientation(orientation: OrientationManager.ScreenOrientation){
-        currentOrientation = orientation
-        when (currentOrientation) {
-            OrientationManager.ScreenOrientation.PORTRAIT -> {
-                currentRotation = 0f
-                collisionBox.set(xPos + 25, yPos + 25, width + xPos + 25, height + yPos + 25)
-            }
-            OrientationManager.ScreenOrientation.LANDSCAPE -> {
-                currentRotation = 90f
-                collisionBox.set(xPos + 25, yPos + 25, height + xPos + 25, width + yPos + 25)
-            }
-            OrientationManager.ScreenOrientation.REVERSED_PORTRAIT -> {
-                currentRotation = 180f
-                collisionBox.set(xPos + 25, yPos + 25, width + xPos + 25, height + yPos + 25)
-            }
-            OrientationManager.ScreenOrientation.REVERSED_LANDSCAPE -> {
-                currentRotation = 270f
-                collisionBox.set(xPos + 25, yPos + 25, height + xPos + 25, width + yPos + 25)
-            }
-        }
-    }
 }

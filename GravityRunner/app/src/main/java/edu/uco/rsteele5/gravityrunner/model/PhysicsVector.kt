@@ -34,6 +34,23 @@ class PhysicsVector(var x: Float,var y: Float,var magnitude: Float) {
         return (comparable.x < 0.005f && comparable.y < 0.005f)
     }
 
+    fun deprecateMagnitudeBy(value: Float){
+        if(magnitude - value <= 0f)
+            magnitude = 0f
+        else
+            magnitude -= value
+    }
+    fun incrementMagnitudeUpTo(i: Float, max: Float){
+        if(magnitude + i >= max)
+            magnitude = max
+        else
+            magnitude += i
+    }
+
+    fun compareDirection(vector: PhysicsVector): Boolean{
+        return x == vector.x && y == vector.y
+    }
+
     /* Parameters
      * nX: the x component of a vector
      * nY: the y component of a vector

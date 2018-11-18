@@ -87,7 +87,7 @@ class CollisionDetector{
         normalVector.zero()
     }
     //------------------------------------------------------------------------------------------------------------------
-    //TODO: CHange to accept more than speed boost
+    //TODO: Change to accept more than speed boost
     fun processPlayerEntityCollision(player: Player, entities: CopyOnWriteArrayList<GameEntity>){
         for(entity in entities){
             if(RectF.intersects(player.getCollidableBox(), entity.getCollidableBox())) {
