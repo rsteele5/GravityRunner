@@ -2,7 +2,7 @@ package edu.uco.rsteele5.gravityrunner
 
 import android.graphics.Canvas
 import android.graphics.Paint
-import edu.uco.rsteele5.gravityrunner.Control.OrientationManager
+import edu.uco.rsteele5.gravityrunner.control.OrientationManager
 import edu.uco.rsteele5.gravityrunner.model.PhysicsVector
 
 interface Renderable {

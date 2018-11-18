@@ -5,7 +5,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.Log
-import edu.uco.rsteele5.gravityrunner.Control.OrientationManager
+import edu.uco.rsteele5.gravityrunner.control.OrientationManager
 import edu.uco.rsteele5.gravityrunner.R
 import edu.uco.rsteele5.gravityrunner.Renderable
 import java.util.concurrent.CopyOnWriteArrayList
@@ -16,23 +16,25 @@ const val GOAL = 3
 const val SPIKES = 4
 const val BAT = 5
 const val SPEEDBOOST = 6
+const val ARMORBOOST = 7
+const val COIN = 8
 
 const val TAG_LC = "LC"
 
 class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int>>,
             val screenWidth: Float, val screenHeight: Float): Renderable{
 
-    var spawnLocX = 0
-    var spawnLocY = 0
+    private var spawnLocX = 0
+    private var spawnLocY = 0
     var screenCenter = Pair(0f,0f)
-    val tileSize = 100f
+    private val tileSize = 100f
     var resources: Resources? = null
-    var spawnLoaded = false
-    var entitiesLoaded = false
-    var boundariesLoaded = false
-    var loaded = false
+    var isSpawnLoaded = false
+    var areEntitiesLoaded = false
+    var areBoundariesLoaded = false
+    var isLoaded = false
     val boundaryObjects = CopyOnWriteArrayList<BoundaryObject>()
-    val gameEntitys = CopyOnWriteArrayList<GameEntity>()
+    val gameEntities = CopyOnWriteArrayList<GameEntity>()
 
     init {
         resources = r
@@ -41,7 +43,7 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
 
     fun createLevel(){
         scanAndSetSpawnLocation()
-        scanAndSetGameEntitys()
+        scanAndSetGameEntities()
         scanAndCreateBoundaryObj()
     }
 
@@ -56,25 +58,27 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
             }
         }
         Log.d(TAG_LC, "Spawn: x:$spawnLocX, y:$spawnLocY")
-        spawnLoaded = true
+        isSpawnLoaded = true
     }
 
     //Finds and creates the game entities then adds them to the gameEntities array.
-    private fun scanAndSetGameEntitys(){
+    private fun scanAndSetGameEntities(){
         for(y in 0..(map.size - 1)){
             for (x in 0..(map[y].size - 1)){
                 when(map[y][x]){
-                    GOAL -> {/*TODO: Create Goal and at it to gameEntitys*/}
-                    SPIKES -> {/*TODO: Create Spikes and at it to gameEntitys*/}
-                    BAT -> {/*TODO: Create Bat and at it to gameEntitys*/}
+                    GOAL -> {/*TODO: Create Goal and at it to gameEntities*/}
+                    SPIKES -> {/*TODO: Create Spikes and at it to gameEntities*/}
+                    BAT -> {/*TODO: Create Bat and at it to gameEntities*/}
                     SPEEDBOOST ->{
-                        gameEntitys.add(SpeedBoost(BitmapFactory.decodeResource(resources, R.drawable.speed_boost),
+                        gameEntities.add(SpeedBoost(BitmapFactory.decodeResource(resources, R.drawable.speed_boost),
                             getOffsetX(x), getOffsetY(y)))
                     }
+                    ARMORBOOST -> { /*TODO: Create Armor boost and at it to gameEntities*/ }
+                    COIN -> { /*TODO: Create Coin and at it to gameEntities*/ }
                 }
             }
         }
-        entitiesLoaded = true
+        areEntitiesLoaded = true
     }
 
     //Scans for and creates the boundary objects then adds them to the boundaryObjects array.
@@ -88,7 +92,7 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                 }
             }
         }
-        boundariesLoaded = true
+        areBoundariesLoaded = true
     }
 
     //Given a starting point (x,y) on the map, creates the best boundary object starting from that point.
@@ -126,19 +130,30 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
     private fun getOffsetX(x: Int): Float{ return tileSize * (x - spawnLocX) + screenCenter.first}
     private fun getOffsetY(y: Int): Float{ return tileSize * (y - spawnLocY) + screenCenter.second}
 
+    fun checkLoadStatus(): Boolean{
+        isLoaded = isSpawnLoaded && areEntitiesLoaded && areBoundariesLoaded
+        return isLoaded
+    }
+
+    //Update the contents of the level as long as the level is loaded
     override fun update(orientation: OrientationManager.ScreenOrientation, motionVector: PhysicsVector) {
-        loaded = spawnLoaded && entitiesLoaded && boundariesLoaded
-        if(loaded) {
-            for (entity in gameEntitys) { entity.update(orientation, motionVector) }
+        if(isLoaded){
+            for (entity in gameEntities) { entity.update(orientation, motionVector) }
             for (bound in boundaryObjects) { bound.update(orientation, motionVector) }
         }
     }
 
+    //Draw the level if it is loaded
     override fun draw(canvas: Canvas, paint: Paint) {
-        if(loaded) {
-            for (bound in boundaryObjects) { bound.draw(canvas, paint) }
-            for (entity in gameEntitys) { entity.draw(canvas, paint) }
+        if(isLoaded) {
+            for (bound in boundaryObjects) {
+                bound.draw(canvas, paint)
+            }
+            for (entity in gameEntities) {
+                entity.draw(canvas, paint)
+            }
         }
+
     }
 
 }
