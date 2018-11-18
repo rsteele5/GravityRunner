@@ -32,4 +32,6 @@
     <string name="level">Level \t %1$d</string>
     <string name="score">Score \t %1$d</string>
     <string name="coin">Coin \t %1$d</string>
+    <string name="leaderBoard">Leader Board</string>
+    <string name="leaderTitle">Level %1$d\'s rank </string>
 </resources>

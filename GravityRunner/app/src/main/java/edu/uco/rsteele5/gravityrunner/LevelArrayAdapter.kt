@@ -3,6 +3,7 @@ package edu.uco.rsteele5.gravityrunner
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -12,6 +13,8 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+
+const val LEVEL = "level"
 
 class LevelArrayAdapter(val context: Context, var levelList: ArrayList<Level>) :
     RecyclerView.Adapter<LevelArrayAdapter.ViewHolder>() {
@@ -45,27 +48,27 @@ class LevelArrayAdapter(val context: Context, var levelList: ArrayList<Level>) :
                 scoreView.text = "-"
             else
                 scoreView.text = levelList[position].score.toString()
-
-            statusView.text = when (levelList[position].status) {
-                1 -> context.resources.getText(R.string.restart)
-                0 -> context.resources.getText(R.string.play)
-                else -> {
-                    context.resources.getText(R.string.locked)
-                }
-            }
-            if(levelList[position].status==-1) {
-                item.setBackgroundColor(colorId)
-                itemView.setClickable(false)
-            }else {
+            if (levelList[position].status != -1) {
+                statusView.text = context.getString(R.string.leaderBoard)
                 itemView.setOnClickListener {
-                    Toast.makeText(context, context.resources.getText(R.string.click), Toast.LENGTH_SHORT).show()
-                    val i = Intent(context, GameEngine::class.java)
+                    //open each level activity
+                    var lev = Level("","",0,0,levelList[position].level).engine().toString()
+                    var type:Class<*> = Class.forName("edu.uco.rsteele5.gravityrunner."+lev)
+                    val i = Intent(context, type)
                     context.startActivity(i)
-                    //stage click event//버튼이 있는데 굳이??
                 }
+                statusView.setOnClickListener {
+                    //open leader board activity
+
+                    val i = Intent(context, LeaderBoard::class.java)
+                    i.putExtra(LEVEL,levelList[position].level)
+                    context.startActivity(i)
+                }
+            }else {
+                statusView.text = context.getString(R.string.locked)
+                item.setBackgroundColor(colorId)
+                itemView.isClickable = false
             }
-
         }
-
     }
 }

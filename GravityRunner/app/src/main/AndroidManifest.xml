@@ -29,8 +29,13 @@
                 android:name=".UserProfile"
                 android:theme="@style/AppCompat.NoActionBar">
         </activity>
-        <activity android:name=".LevelSelect"
-                  android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+        <activity
+                android:name=".LevelSelect"
+                android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+        </activity>
+        <activity
+                android:name=".LeaderBoard"
+                android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
         </activity>
     </application>
 
