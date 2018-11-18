@@ -4,13 +4,14 @@ import android.graphics.*
 import edu.uco.rsteele5.gravityrunner.control.OrientationManager
 import edu.uco.rsteele5.gravityrunner.model.entity.GameEntity
 import edu.uco.rsteele5.gravityrunner.model.PhysicsVector
+import edu.uco.rsteele5.gravityrunner.model.entity.Animator
 import edu.uco.rsteele5.gravityrunner.model.entity.Player
 import edu.uco.rsteele5.gravityrunner.model.entity.powerups.PowerUp
 
-class SpeedBoost(image: Bitmap, animator: SpeedBoostAnimator, x: Float, y: Float) : GameEntity(image, x, y),
+class SpeedBoost(image: Bitmap, animator: Animator, x: Float, y: Float) : GameEntity(image, x, y),
     PowerUp
 {
-    var animator: SpeedBoostAnimator
+    var animator: Animator
 
     init {
         width = 80f
@@ -22,7 +23,7 @@ class SpeedBoost(image: Bitmap, animator: SpeedBoostAnimator, x: Float, y: Float
     override fun update(orientation: OrientationManager.ScreenOrientation, motionVector: PhysicsVector) {
         translate(motionVector.getDeltaX(), motionVector.getDeltaY())
         updateCollisionBox()
-        image = animator.getCurrentImage()
+        image = animator.getCurrentFrame()
         animator.update()
     }
 

@@ -117,12 +117,12 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                             )
                         )
                     }
-                    BAT -> {/*TODO: Create Bat and at it to gameEntitys*/}
+                    BAT -> {/*TODO: Create Bat and at it to gameEntities*/}
                     SPEEDBOOST -> {
                         gameEntities.add(
                             SpeedBoost(
                                 BitmapFactory.decodeResource(resources, R.drawable.speed_boost),
-                                SpeedBoostAnimator(resources),
+                                SpeedBoostAnimator(resources, 6, 4),
                                 getOffsetX(x), getOffsetY(y)
                             )
                         )

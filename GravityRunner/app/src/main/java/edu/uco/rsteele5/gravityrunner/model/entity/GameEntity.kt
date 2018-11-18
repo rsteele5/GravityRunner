@@ -12,6 +12,7 @@ abstract class GameEntity(image: Bitmap, x: Float, y: Float): GameObject(image) 
 
     protected var currentRotation: Float = 0f
     protected var currentOrientation: ScreenOrientation = PORTRAIT
+    //protected lateinit var animator: Animator
 
     init{
         xPos = x

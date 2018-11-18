@@ -5,7 +5,8 @@ import android.graphics.BitmapFactory
 import edu.uco.rsteele5.gravityrunner.R
 import edu.uco.rsteele5.gravityrunner.model.entity.Animator
 
-class SpeedBoostAnimator(resources: Resources): Animator(resources){
+class SpeedBoostAnimator(resources: Resources?, framesToDisplay: Int, frameTimer: Int)
+    : Animator(resources, framesToDisplay, frameTimer){
 
     private val speedBoost0 = BitmapFactory.decodeResource(resources, R.drawable.speed_boost_0)
     private val speedBoost1 = BitmapFactory.decodeResource(resources, R.drawable.speed_boost_1)
