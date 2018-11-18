@@ -46,11 +46,16 @@ class UserProfile : AppCompatActivity() {
             if (email != null) {
                 db?.collection(email)?.document("Coins")?.get()
                     ?.addOnCompleteListener {
-                        var document = it?.getResult()
-                        var stat = document?.getData().toString()
-                        val index1 = stat.indexOf('=')
-                        val index2 = stat.lastIndexOf('}')
-                        coin = stat.substring(index1+1,index2).toInt()
+                        if(it.isSuccessful) {
+                            var document = it?.getResult()
+                            var stat = document?.getData().toString()
+                            val index1 = stat.indexOf('=')
+                            val index2 = stat.lastIndexOf('}')
+                            coin = stat.substring(index1 + 1, index2).toInt()
+                        }
+                        else{
+                            Toast.makeText(this,"Failed to complete",Toast.LENGTH_LONG).show()
+                        }
                     }
             } else {
                 Toast.makeText(this, getString(R.string.noUser), Toast.LENGTH_SHORT).show()
