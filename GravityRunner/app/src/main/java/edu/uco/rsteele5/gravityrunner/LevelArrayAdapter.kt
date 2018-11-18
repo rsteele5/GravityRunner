@@ -1,6 +1,5 @@
 package edu.uco.rsteele5.gravityrunner
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
