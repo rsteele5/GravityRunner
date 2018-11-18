@@ -46,14 +46,4 @@ class Level(var title:String, var src:String, var score:Int, var status:Int, var
     }
 
     override fun toString(): String = "score = $score"
-
-    public fun engine(): Any?{
-        when(level){
-            2-> return "GameEngine"
-            3-> return "GameEngine3"
-            4-> return "GameEngine4"
-            5-> return "GameEngine5"
-            else -> return "GameEngine"
-        }
-    }
 }
