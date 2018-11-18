@@ -1,4 +1,4 @@
-package edu.uco.rsteele5.gravityrunner
+package edu.uco.rsteele5.gravityrunner.model
 
 import android.graphics.Canvas
 import android.graphics.Paint

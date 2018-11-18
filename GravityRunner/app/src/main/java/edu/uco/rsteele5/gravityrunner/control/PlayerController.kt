@@ -3,13 +3,14 @@ package edu.uco.rsteele5.gravityrunner.control
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
-import edu.uco.rsteele5.gravityrunner.Renderable
+import edu.uco.rsteele5.gravityrunner.model.Renderable
 import edu.uco.rsteele5.gravityrunner.control.OrientationManager.ScreenOrientation
 import edu.uco.rsteele5.gravityrunner.control.OrientationManager.ScreenOrientation.PORTRAIT
 import edu.uco.rsteele5.gravityrunner.model.PhysicsVector
-import edu.uco.rsteele5.gravityrunner.model.Player
+import edu.uco.rsteele5.gravityrunner.model.entity.Player
 
-class PlayerController(image: Bitmap, screenWidth: Float, screenHeight: Float): Renderable{
+class PlayerController(image: Bitmap, screenWidth: Float, screenHeight: Float):
+    Renderable {
 
     var player: Player? = null
     private var previousOrientation = PORTRAIT
@@ -20,7 +21,7 @@ class PlayerController(image: Bitmap, screenWidth: Float, screenHeight: Float): 
     private var runVector = PhysicsVector()
 
     init {
-        player = Player(image, screenWidth/2f, screenHeight/2f)
+        player = Player(image, screenWidth / 2f, screenHeight / 2f)
     }
 
     override fun update(orientation: ScreenOrientation, motionVector: PhysicsVector) {

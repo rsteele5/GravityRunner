@@ -48,7 +48,6 @@ class GameEngine : AppCompatActivity(), OrientationListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //setSupportActionBar(findViewById(R.id.game_engine_toolbar))
 
         gameView = GameView(this, 2)    //TODO: Change to getParcellable
         setContentView(gameView)
@@ -63,7 +62,6 @@ class GameEngine : AppCompatActivity(), OrientationListener {
             showPauseMenu()
             true
         }
-
         else -> {
             // If we got here, the user's action was not recognized.
             // Invoke the superclass to handle it.
@@ -86,13 +84,10 @@ class GameEngine : AppCompatActivity(), OrientationListener {
         }
     }
 
-    //TODO: Need to look into this more, can we use this to pause the game?
     override fun onResume() {
         super.onResume()
         gameView!!.resume()
     }
-
-    //TODO: Need to look into this more, can we use this to pause the game?
     override fun onPause() {
         super.onPause()
         gameView!!.pause()
@@ -101,7 +96,6 @@ class GameEngine : AppCompatActivity(), OrientationListener {
     fun getScreenWidth(): Int {
         return Resources.getSystem().displayMetrics.widthPixels - 52
     }
-
     fun getScreenHeight(): Int {
         return Resources.getSystem().displayMetrics.heightPixels - 100
     }
@@ -146,6 +140,9 @@ class GameEngine : AppCompatActivity(), OrientationListener {
         alert.setMessage(getString(R.string.pause_menu_message))
         alert.setPositiveButton(getString(R.string.pause_menu_btn_restart)){ _: DialogInterface?, _: Int ->
             //Restart the level
+        }
+        alert.setNegativeButton(getString(R.string.pause_menu_btn_resume)) {_: DialogInterface?, _: Int ->
+            gameView!!.resume()
         }
         alert.setNeutralButton(getString(R.string.pause_menu_btn_return_to_level_select)){ _: DialogInterface?, _: Int ->
             finish()
@@ -202,11 +199,6 @@ class GameEngine : AppCompatActivity(), OrientationListener {
                 if (timeThisFrame > 0) {
                     fps = 1000 / timeThisFrame
                 }
-//                if(failed == true){
-//                    showFinishedMenu()
-//                } else if (finished == true){
-//
-//                }
             }
         }
 
@@ -229,6 +221,48 @@ class GameEngine : AppCompatActivity(), OrientationListener {
                 motionVector = calculateMotionVector(collisionDetector.getNormalVector())
 
             }
+        }
+
+        private fun calculateMotionVector(normal: PhysicsVector): PhysicsVector{
+            val ngj = normal.add(gravityVector).add(playerController.getJumpingVector())
+            if(ngj.magnitude == 0f) {
+                playerController.startRun(orientation)
+                playerController.incrementRun()
+            }
+            else
+                playerController.depricateRun()
+            return ngj.add(playerController.getRunningVector())
+////////////////////////////////////Works but poorly//////////////////////////////////////////////////
+//                                                                                                  //
+//            val vectorGN = normal.add(gravity)                                                    //
+//            val running = getRunningVector()                                                      //
+//            val motion = when {                                                                   //
+//                    //On ground Return running                                                    //
+//                    vectorGN.magnitude == 0f -> vectorGN.add(running)                             //
+//                    //In corner return Zero Vector                                                //
+//                    vectorGN.add(running).magnitude == 0f -> PhysicsVector()                      //
+//                    //else falling due to gravity                                                 //
+//                    else -> vectorGN                                                              //
+//                }                                                                                 //
+//                                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+        }
+
+        //Controls when the player can jump
+        override fun onTouchEvent(motionEvent: MotionEvent): Boolean {
+            when (motionEvent.action and MotionEvent.ACTION_MASK) {
+                MotionEvent.ACTION_DOWN -> {
+                    val normal = collisionDetector.getNormalVector()
+                    if(!normal.approximateOpposite(playerController.getRunningVector())){
+                        if(playerController.getJumpingVector().magnitude == 0f
+                            && normal.magnitude > 0f
+                            && playerController.getRunningVector().magnitude > 0f){
+                            playerController.startJump(orientation)
+                        }
+                    }
+                }
+            }
+            return true
         }
 
         fun draw() {
@@ -257,10 +291,10 @@ class GameEngine : AppCompatActivity(), OrientationListener {
 
         }
 
-        fun drawUI() {
+        private fun drawUI() {
             canvas!!.save()
-            var xOffSet = 20f
-            var yOffset = 40f
+            val xOffSet: Float
+            val yOffset: Float
             when (orientation) {
                 LANDSCAPE -> {
                     canvas!!.rotate(90f, canvas!!.width/2f, canvas!!.height/2f)
@@ -302,9 +336,6 @@ class GameEngine : AppCompatActivity(), OrientationListener {
             canvas!!.restore()
         }
 
-
-
-        //TODO: Need to look into this more, can we use this to pause the game?
         fun pause() {
             playing = false
             try {
@@ -313,63 +344,11 @@ class GameEngine : AppCompatActivity(), OrientationListener {
                 Log.e("Error:", "joining thread")
             }
         }
-
-        //TODO: Need to look into this more, can we use this to pause the game?
         fun resume() {
             waitTime = System.currentTimeMillis() + loadingTime
             playing = true
             gameThread = Thread(this)
             gameThread!!.start()
-        }
-
-        //TODO: Use this for jumps and stuff
-        override fun onTouchEvent(motionEvent: MotionEvent): Boolean {
-            when (motionEvent.action and MotionEvent.ACTION_MASK) {
-                MotionEvent.ACTION_DOWN -> {
-                    val normal = collisionDetector.getNormalVector()
-                    if(!normal.approximateOpposite(playerController.getRunningVector())){
-                        if(playerController.getJumpingVector().magnitude == 0f
-                            && normal.magnitude > 0f
-                            && playerController.getRunningVector().magnitude > 0f){
-                            playerController.startJump(orientation)
-                        }
-                    }
-                }
-            }
-            return true
-        }
-
-        private fun calculateMotionVector(normal: PhysicsVector): PhysicsVector{
-
-            val ngj = normal.add(gravityVector).add(playerController.getJumpingVector())
-
-                if(ngj.magnitude == 0f) {
-                    playerController.startRun(orientation)
-                    playerController.incrementRun()
-                }
-                else
-                    playerController.depricateRun()
-
-            return ngj.add(playerController.getRunningVector())
-
-
-////////////////////////////////////Works but poorly//////////////////////////////////////////////////
-//                                                                                                  //
-//            val vectorGN = normal.add(gravity)                                                    //
-//            val running = getRunningVector()                                                      //
-//            val motion = when {                                                                   //
-//                    //On ground Return running                                                    //
-//                    vectorGN.magnitude == 0f -> vectorGN.add(running)                             //
-//                    //In corner return Zero Vector                                                //
-//                    vectorGN.add(running).magnitude == 0f -> PhysicsVector()                      //
-//                    //else falling due to gravity                                                 //
-//                    else -> vectorGN                                                              //
-//                }                                                                                 //
-//            Log.d(TAG_GR, "Grav- x:${gravity.x}, y:${gravity.y}, mag:${gravity.magnitude}")       //
-//            Log.d(TAG_GR, "Norm- x:${normal.x}, y:${normal.y}, mag:${normal.magnitude}")          //
-//            Log.d(TAG_GR, "G+N- x:${vectorGN.x}, y:${vectorGN.y}, mag:${vectorGN.magnitude}")     //
-//            Log.d(TAG_GR, "Overall- x:${motion.x}, y:${motion.y}, mag:${motion.magnitude}")       //
-//////////////////////////////////////////////////////////////////////////////////////////////////////
         }
     }
 }

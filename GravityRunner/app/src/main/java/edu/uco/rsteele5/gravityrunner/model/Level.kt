@@ -5,15 +5,17 @@ import android.graphics.*
 import android.util.Log
 import edu.uco.rsteele5.gravityrunner.control.OrientationManager
 import edu.uco.rsteele5.gravityrunner.R
-import edu.uco.rsteele5.gravityrunner.Renderable
-import edu.uco.rsteele5.gravityrunner.model.coin.Coin
-import edu.uco.rsteele5.gravityrunner.model.coin.CoinAnimator
-import edu.uco.rsteele5.gravityrunner.model.powerups.armor.Armor
-import edu.uco.rsteele5.gravityrunner.model.powerups.armor.ArmorAnimator
-import edu.uco.rsteele5.gravityrunner.model.powerups.speedboost.SpeedBoost
-import edu.uco.rsteele5.gravityrunner.model.powerups.speedboost.SpeedBoostAnimator
-import edu.uco.rsteele5.gravityrunner.model.spikes.SpikesAnimator
-import edu.uco.rsteele5.gravityrunner.model.spikes.Spikes
+import edu.uco.rsteele5.gravityrunner.model.boundary.BoundaryObject
+import edu.uco.rsteele5.gravityrunner.model.boundary.Wall
+import edu.uco.rsteele5.gravityrunner.model.entity.coin.Coin
+import edu.uco.rsteele5.gravityrunner.model.entity.coin.CoinAnimator
+import edu.uco.rsteele5.gravityrunner.model.entity.GameEntity
+import edu.uco.rsteele5.gravityrunner.model.entity.powerups.armor.Armor
+import edu.uco.rsteele5.gravityrunner.model.entity.powerups.armor.ArmorAnimator
+import edu.uco.rsteele5.gravityrunner.model.entity.powerups.speedboost.SpeedBoost
+import edu.uco.rsteele5.gravityrunner.model.entity.powerups.speedboost.SpeedBoostAnimator
+import edu.uco.rsteele5.gravityrunner.model.entity.enemy.spikes.SpikesAnimator
+import edu.uco.rsteele5.gravityrunner.model.entity.enemy.spikes.Spikes
 import java.util.concurrent.CopyOnWriteArrayList
 
 const val SPAWN = 1
@@ -32,7 +34,7 @@ const val JUMPBOOST = 12
 const val TAG_LC = "LC"
 
 class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int>>,
-            val screenWidth: Float, val screenHeight: Float): Renderable{
+            val screenWidth: Float, val screenHeight: Float): Renderable {
 
     private var spawnLocX = 0
     private var spawnLocY = 0
@@ -185,13 +187,21 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
         //Compare lengths and create the optimal wall (Horizontal or Vertical)
         if(lengthX >= lengthY){
             for(i in x..(x+lengthX-1)){ map[y][i] = -boundType }
-            boundaryObjects.add(Wall(BitmapFactory.decodeResource(resources, R.drawable.stone100x80),
-                getOffsetX(x),getOffsetY(y), lengthX))
+            boundaryObjects.add(
+                Wall(
+                    BitmapFactory.decodeResource(resources, R.drawable.stone100x80),
+                    getOffsetX(x), getOffsetY(y), lengthX
+                )
+            )
         }
         else{
             for (i in y..(y+lengthY-1)){ map[i][x] = -boundType }
-            boundaryObjects.add(Wall(BitmapFactory.decodeResource(resources, R.drawable.stone100x80),
-                getOffsetX(x),getOffsetY(y), lengthY, true))
+            boundaryObjects.add(
+                Wall(
+                    BitmapFactory.decodeResource(resources, R.drawable.stone100x80),
+                    getOffsetX(x), getOffsetY(y), lengthY, true
+                )
+            )
         }
     }
 

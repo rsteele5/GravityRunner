@@ -3,12 +3,13 @@ package edu.uco.rsteele5.gravityrunner.control
 import android.content.res.Resources
 import android.graphics.Canvas
 import android.graphics.Paint
-import edu.uco.rsteele5.gravityrunner.Renderable
+import edu.uco.rsteele5.gravityrunner.model.Renderable
 import edu.uco.rsteele5.gravityrunner.model.Level
 import edu.uco.rsteele5.gravityrunner.model.PhysicsVector
 import java.util.concurrent.CopyOnWriteArrayList
 
-class LevelController(r: Resources, private val screenWidth: Float, private val screenHeight: Float) : Renderable {
+class LevelController(r: Resources, private val screenWidth: Float, private val screenHeight: Float) :
+    Renderable {
 
     var currentLevel: Level? = null
     var resources: Resources? = null
