@@ -30,6 +30,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
     var orientation: ScreenOrientation = PORTRAIT
     var fps: Long = 0
 
+    var level = intent.getIntExtra("level",0)//receive int from levelArrayAdapter
     var gravSpeed = 10f
 
     private val portraitGravityVector = PhysicsVector(0f, -1f, gravSpeed)
