@@ -1,4 +1,4 @@
-package edu.uco.rsteele5.gravityrunner.Control
+package edu.uco.rsteele5.gravityrunner.control
 
 import android.graphics.RectF
 import edu.uco.rsteele5.gravityrunner.model.*
