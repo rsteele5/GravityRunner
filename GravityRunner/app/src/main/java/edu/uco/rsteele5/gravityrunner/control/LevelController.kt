@@ -53,25 +53,24 @@ class LevelController(r: Resources, private val screenWidth: Float, private val 
         currentLevel!!.draw(canvas,paint)
     }
 
-    fun loadLevelOne(){
-        val mapArray: Array<Array<Int>> = 
-            arrayOf(
-                arrayOf(2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2),
-                arrayOf(2, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 2),
-                arrayOf(2, 0, 0, 0, 0,10 ,0 ,0, 0, 0, 0, 2),
-                arrayOf(2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2),
-                arrayOf(2, 1, 0, 0, 0, 4, 0, 0, 0, 0,11, 2),
-                arrayOf(2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 2),
-                arrayOf(2, 0, 0, 0, 0, 0, 0, 2, 0,10 ,7 ,2),
-                arrayOf(2, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2),
-                arrayOf(2, 0, 0, 0, 0, 0, 0, 2, 0, 0, 9, 2),
-                arrayOf(2, 2, 2, 2, 2, 2, 2, 2, 0,11, 0, 2),
-                arrayOf(2, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2),
-                arrayOf(2, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 2),
-                arrayOf(2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2),
-                arrayOf(2, 0, 0, 0, 0, 0, 0,10, 0, 0, 0, 2),
-                arrayOf(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 3, 2), //TODO: Change to have goal.
-                arrayOf(2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2))
+    fun loadLevelOne(): Array<Array<Int>> {
+        return arrayOf(
+            arrayOf(2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2),
+            arrayOf(2, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 2),
+            arrayOf(2, 0, 0, 0, 0,10 ,0 ,0, 0, 0, 0, 2),
+            arrayOf(2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2),
+            arrayOf(2, 1, 0, 0, 0, 4, 0, 0, 0, 0,11, 2),
+            arrayOf(2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 2),
+            arrayOf(2, 0, 0, 0, 0, 0, 0, 2, 0,10 ,7 ,2),
+            arrayOf(2, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2),
+            arrayOf(2, 0, 0, 0, 0, 0, 0, 2, 0, 0, 9, 2),
+            arrayOf(2, 2, 2, 2, 2, 2, 2, 2, 0,11, 0, 2),
+            arrayOf(2, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2),
+            arrayOf(2, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 2),
+            arrayOf(2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2),
+            arrayOf(2, 0, 0, 0, 0, 0, 0,10, 0, 0, 0, 2),
+            arrayOf(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 3, 2), //TODO: Change to have goal.
+            arrayOf(2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2))
 
     }
 

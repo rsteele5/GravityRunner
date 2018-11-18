@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
-import edu.uco.rsteele5.gravityrunner.Control.OrientationManager
+import edu.uco.rsteele5.gravityrunner.control.OrientationManager
 import edu.uco.rsteele5.gravityrunner.model.GameEntity
 import edu.uco.rsteele5.gravityrunner.model.PhysicsVector
 import edu.uco.rsteele5.gravityrunner.model.Player
