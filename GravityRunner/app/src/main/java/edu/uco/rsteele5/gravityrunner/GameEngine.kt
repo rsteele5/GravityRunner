@@ -49,7 +49,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
         super.onCreate(savedInstanceState)
 
         var level = intent.getIntExtra("level",0)//receive int from levelArrayAdapter
-        gameView = GameView(this, level)    //TODO: Change to getParcellable
+        gameView = GameView(this, 1)    //TODO: Change to getParcellable
         setContentView(gameView)
 
         orientationManager =
@@ -130,7 +130,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
             alert.setTitle(getString(R.string.fail_menu_title))
             alert.setMessage(getString(R.string.fail_menu_message))
             alert.setPositiveButton(getString(R.string.fail_menu_btn_restart)) { _: DialogInterface?, _: Int ->
-                //Restart the level
+                gameView = GameView(this, 1)
             }
             alert.setNeutralButton(getString(R.string.fail_menu_btn_return_to_level_select)) { _: DialogInterface?, _: Int ->
                 finish()
@@ -146,7 +146,8 @@ class GameEngine : AppCompatActivity(), OrientationListener {
             alert.setTitle(getString(R.string.pause_menu_title))
             alert.setMessage(getString(R.string.pause_menu_message))
             alert.setPositiveButton(getString(R.string.pause_menu_btn_restart)){ _: DialogInterface?, _: Int ->
-                //Restart the level
+                gameView!!.levelController.loadLevel(1)
+                gameView!!.resume()
             }
             alert.setNegativeButton(getString(R.string.pause_menu_btn_resume)) {_: DialogInterface?, _: Int ->
                 gameView!!.resume()
