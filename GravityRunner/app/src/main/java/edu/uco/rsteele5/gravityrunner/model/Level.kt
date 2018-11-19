@@ -84,7 +84,7 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                     GOAL -> {
                         gameEntities.add(
                             Goal(
-                                BitmapFactory.decodeResource(resources, R.drawable.spikes_down),
+                                BitmapFactory.decodeResource(resources, R.drawable.goal),
                                 getOffsetX(x), getOffsetY(y), 0f
                             )
                         )

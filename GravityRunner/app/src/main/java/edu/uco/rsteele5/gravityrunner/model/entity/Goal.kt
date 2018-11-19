@@ -11,8 +11,9 @@ class Goal(image: Bitmap, x: Float, y: Float, rotation: Float)
     : GameEntity(image, x, y) {
 
     init {
-        width = 50f
-        height = 50f
+        width = 100f
+        height = 100f
+        this.currentRotation = rotation
         collisionBox = RectF(xPos, yPos, xPos + width, yPos + height)
     }
 
@@ -22,6 +23,6 @@ class Goal(image: Bitmap, x: Float, y: Float, rotation: Float)
     }
 
     override fun draw(canvas: Canvas, paint: Paint) {
-        canvas.drawBitmap(image, null, collisionBox, null)
+        canvas.drawBitmap(image!!.rotate(currentRotation), null, collisionBox, null)
     }
 }

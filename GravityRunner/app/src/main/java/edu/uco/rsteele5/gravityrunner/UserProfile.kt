@@ -20,7 +20,7 @@ class UserProfile : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_profile)
         setSupportActionBar(toolbar)
-        init()
+        //init()
 
         setTitle(getString(R.string.user_activity))
 
