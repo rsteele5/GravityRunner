@@ -7,9 +7,10 @@ import edu.uco.rsteele5.gravityrunner.control.OrientationManager
 import edu.uco.rsteele5.gravityrunner.R
 import edu.uco.rsteele5.gravityrunner.model.boundary.BoundaryObject
 import edu.uco.rsteele5.gravityrunner.model.boundary.Wall
-import edu.uco.rsteele5.gravityrunner.model.entity.coin.Coin
-import edu.uco.rsteele5.gravityrunner.model.entity.coin.CoinAnimator
+import edu.uco.rsteele5.gravityrunner.model.entity.collectable.coin.Coin
+import edu.uco.rsteele5.gravityrunner.model.entity.collectable.coin.CoinAnimator
 import edu.uco.rsteele5.gravityrunner.model.entity.GameEntity
+import edu.uco.rsteele5.gravityrunner.model.entity.Goal
 import edu.uco.rsteele5.gravityrunner.model.entity.powerups.armor.Armor
 import edu.uco.rsteele5.gravityrunner.model.entity.powerups.armor.ArmorAnimator
 import edu.uco.rsteele5.gravityrunner.model.entity.powerups.speedboost.SpeedBoost
@@ -80,7 +81,14 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
         for(y in 0..(map.size - 1)){
             for (x in 0..(map[y].size - 1)){
                 when(map[y][x]){
-                    GOAL -> {/*TODO: Create Goal and at it to gameEntitys*/}
+                    GOAL -> {
+                        gameEntities.add(
+                            Goal(
+                                BitmapFactory.decodeResource(resources, R.drawable.spikes_down),
+                                getOffsetX(x), getOffsetY(y), 0f
+                            )
+                        )
+                    }
                     SPIKES -> {
                         gameEntities.add(
                             Spikes(
@@ -132,7 +140,7 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                             Coin(
                                 BitmapFactory.decodeResource(resources, R.drawable.coin_0),
                                 CoinAnimator(resources),
-                                getOffsetX(x), getOffsetY(y), 270f
+                                getOffsetX(x), getOffsetY(y), 270f, 1
                             )
                         )
                     }

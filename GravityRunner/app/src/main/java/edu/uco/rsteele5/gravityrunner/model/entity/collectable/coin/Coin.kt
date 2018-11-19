@@ -29,10 +29,6 @@ class Coin (image: Bitmap, animator: CoinAnimator, x: Float, y: Float, rotation:
         image = animator.getCurrentImage()
     }
 
-    override fun getCollidableBox(): RectF {
-        return collisionBox
-    }
-
     override fun draw(canvas: Canvas, paint: Paint) {
         canvas.drawBitmap(image!!.rotate(currentRotation), null, collisionBox, null)
     }

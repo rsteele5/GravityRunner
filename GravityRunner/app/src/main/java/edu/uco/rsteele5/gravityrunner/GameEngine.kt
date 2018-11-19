@@ -1,5 +1,6 @@
 package edu.uco.rsteele5.gravityrunner
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -30,6 +31,8 @@ class GameEngine : AppCompatActivity(), OrientationListener {
     var fps: Long = 0
 
     var gravSpeed = 10f
+    var currentLevel = 0
+    val MAXLEVEL = 5
 
     private val portraitGravityVector = PhysicsVector(0f, -1f, gravSpeed)
     private val landscapeGravityVector = PhysicsVector(1f, 0f, gravSpeed)
@@ -48,8 +51,8 @@ class GameEngine : AppCompatActivity(), OrientationListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        var level = intent.getIntExtra("level",0)//receive int from levelArrayAdapter
-        gameView = GameView(this, 1)    //TODO: Change to getParcellable
+        currentLevel = intent.getIntExtra(LEVEL, 1)//receive int from levelArrayAdapter
+        gameView = GameView(this, currentLevel)    //TODO: Change to getParcellable
         setContentView(gameView)
 
         orientationManager =
@@ -113,7 +116,13 @@ class GameEngine : AppCompatActivity(), OrientationListener {
             alert.setTitle(getString(R.string.finished_menu_title))
             alert.setMessage(getString(R.string.finished_menu_message))
             alert.setPositiveButton(getString(R.string.finished_menu_btn_continue)) { _: DialogInterface?, _: Int ->
-                //Continue to next level
+                if(currentLevel >= MAXLEVEL)
+                    finish()
+                else {
+                    currentLevel++
+                    gameView!!.resetLevel()
+                    gameView!!.resume()
+                }
             }
             alert.setNeutralButton(getString(R.string.finished_menu_btn_return_to_level_select)) { _: DialogInterface?, _: Int ->
                 finish()
@@ -130,7 +139,8 @@ class GameEngine : AppCompatActivity(), OrientationListener {
             alert.setTitle(getString(R.string.fail_menu_title))
             alert.setMessage(getString(R.string.fail_menu_message))
             alert.setPositiveButton(getString(R.string.fail_menu_btn_restart)) { _: DialogInterface?, _: Int ->
-                gameView = GameView(this, 1)
+                gameView!!.resetLevel()
+                gameView!!.resume()
             }
             alert.setNeutralButton(getString(R.string.fail_menu_btn_return_to_level_select)) { _: DialogInterface?, _: Int ->
                 finish()
@@ -146,7 +156,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
             alert.setTitle(getString(R.string.pause_menu_title))
             alert.setMessage(getString(R.string.pause_menu_message))
             alert.setPositiveButton(getString(R.string.pause_menu_btn_restart)){ _: DialogInterface?, _: Int ->
-                gameView!!.levelController.loadLevel(1)
+                gameView!!.resetLevel()
                 gameView!!.resume()
             }
             alert.setNegativeButton(getString(R.string.pause_menu_btn_resume)) {_: DialogInterface?, _: Int ->
@@ -170,12 +180,12 @@ class GameEngine : AppCompatActivity(), OrientationListener {
         var paint: Paint? = null
 
         //Controllers
-        val collisionDetector = CollisionDetector()
-        val playerController = PlayerController(
+        private val collisionDetector = CollisionDetector()
+        private val playerController = PlayerController(
             BitmapFactory.decodeResource(resources, R.drawable.bob),
             (getScreenWidth() - 52).toFloat(),
             (getScreenHeight() - 100).toFloat())
-        val levelController = LevelController(resources,
+        private val levelController = LevelController(resources,
             (getScreenWidth() - 52).toFloat(),
             (getScreenHeight() - 100).toFloat())
 
@@ -201,7 +211,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
 
                 val startFrameTime = System.currentTimeMillis()
 
-                update(gravityVector)
+                update()
 
                 draw()
 
@@ -216,7 +226,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
             }
         }
 
-        fun update(gravityVector: PhysicsVector) {
+        fun update() {
             if(levelController.isCurrentLevelLoaded()) {
                 //Update the player and level
                 playerController.update(orientation, motionVector)
@@ -228,11 +238,13 @@ class GameEngine : AppCompatActivity(), OrientationListener {
                     playerController.player!!,
                     levelController.currentLevel!!.boundaryObjects)
                 //--Entities
-                collisionDetector.processPlayerEntityCollision(
+                if(collisionDetector.processPlayerEntityCollision(
                     playerController.player!!,
-                    levelController.currentLevel!!.gameEntities)
+                    levelController.currentLevel!!.gameEntities)){
+                    showFinishedMenu()
+                }
                 //Calculate motion vector
-                motionVector = calculateMotionVector(collisionDetector.getNormalVector())
+                else motionVector = calculateMotionVector(collisionDetector.getNormalVector())
 
             }
         }
@@ -341,11 +353,15 @@ class GameEngine : AppCompatActivity(), OrientationListener {
             }
 
             canvas!!.drawText("FPS:$fps", xOffSet, yOffset, paint!!)
-            canvas!!.drawText("Vector x:${motionVector.x}", xOffSet, yOffset + 40f , paint!!)
-            canvas!!.drawText("Vector y:${motionVector.y}", xOffSet, yOffset + 80f, paint!!)
-            canvas!!.drawText("Vector mag:${motionVector.magnitude}", xOffSet, yOffset + 120f, paint!!)
-            canvas!!.drawText("Hit Points:${playerController.getHitPoints()}", xOffSet, yOffset + 160f, paint!!)
+            canvas!!.drawText("Hit Points:${playerController.getHitPoints()}", xOffSet, yOffset + 40f, paint!!)
+            canvas!!.drawText("Coins:${playerController.getCoins()}",xOffSet, yOffset + 80f, paint!!)
             canvas!!.restore()
+        }
+
+        fun resetLevel(){
+            levelController.loadLevel(currentLevel)
+            playerController.reset()
+            collisionDetector.resetNormalVector()
         }
 
         fun pause() {

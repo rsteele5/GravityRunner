@@ -4,7 +4,10 @@ import android.graphics.RectF
 import edu.uco.rsteele5.gravityrunner.model.*
 import edu.uco.rsteele5.gravityrunner.model.boundary.BoundaryObject
 import edu.uco.rsteele5.gravityrunner.model.entity.GameEntity
+import edu.uco.rsteele5.gravityrunner.model.entity.Goal
 import edu.uco.rsteele5.gravityrunner.model.entity.Player
+import edu.uco.rsteele5.gravityrunner.model.entity.collectable.Collectable
+import edu.uco.rsteele5.gravityrunner.model.entity.collectable.coin.Coin
 import edu.uco.rsteele5.gravityrunner.model.entity.enemy.Enemy
 import edu.uco.rsteele5.gravityrunner.model.entity.powerups.PowerUp
 import edu.uco.rsteele5.gravityrunner.model.entity.enemy.spikes.Spikes
@@ -93,26 +96,39 @@ class CollisionDetector{
     }
     //------------------------------------------------------------------------------------------------------------------
     //TODO: Change to accept more than speed boost
-    fun processPlayerEntityCollision(player: Player, entities: CopyOnWriteArrayList<GameEntity>){
+    fun processPlayerEntityCollision(player: Player, entities: CopyOnWriteArrayList<GameEntity>): Boolean{
+        var finished = false
         for(entity in entities){
             if(RectF.intersects(player.getCollidableBox(), entity.getCollidableBox())) {
-                if(entity is PowerUp){
-                    collidedEntities.add(entity)
-                    entity.applyPowerUp(player)
-                } else if (entity is Enemy){
-                    if(entity is Spikes){
-                        if(RectF.intersects(player.getCollidableBox(), entity.getTriggerPulledBox())){
-                            entity.playerClose = true
-                            entity.setAnimation(0)
-                            if(RectF.intersects(player.getCollidableBox(), entity.getHitBox())){
-                                player.decrementHitPoints()
-                                if(player.getHitPoint() > 0){
-                                    collidedEntities.add(entity)
+                when(entity){
+                    is PowerUp ->{
+                        collidedEntities.add(entity)
+                        entity.applyPowerUp(player)
+                    }
+                    is Collectable ->{
+                        if(entity is Coin){
+                            collidedEntities.add(entity)
+                            entity.giveTo(player)
+                        }
+                    }
+                    is Goal ->{
+                        finished = true
+                    }
+                    is Enemy ->{
+                        if(entity is Spikes){
+                            if(RectF.intersects(player.getCollidableBox(), entity.getTriggerPulledBox())){
+                                entity.playerClose = true
+                                entity.setAnimation(0)
+                                if(RectF.intersects(player.getCollidableBox(), entity.getHitBox())){
+                                    player.decrementHitPoints()
+                                    if(player.getHitPoint() > 0){
+                                        collidedEntities.add(entity)
+                                    }
                                 }
+                            } else {
+                                entity.playerClose = false
+                                entity.setAnimation(1)
                             }
-                        } else {
-                            entity.playerClose = false
-                            entity.setAnimation(1)
                         }
                     }
                 }
@@ -122,6 +138,8 @@ class CollisionDetector{
         for(entity in collidedEntities){
             entities.remove(entity)
         }
+
+        return finished
     }
 
 }
