@@ -31,21 +31,18 @@ class LeaderBoard : AppCompatActivity() {
         val listViewAdapter = ArrayAdapter<Leader>(this, android.R.layout.simple_list_item_1, LeaderList)
         lLeader.adapter = listViewAdapter
 
-            db?.collection("LeaderBoard/Levels/Level1")
-                ?.orderBy("score", Query.Direction.DESCENDING)
-                ?.get()
-                ?.addOnSuccessListener{
-                    LeaderList.clear()
-                    for(docSnapshot in it){
-                        val leader = docSnapshot.toObject(Leader::class.java)
-                        leader.id = docSnapshot.id
-                        LeaderList.add(leader)
-                    }
-                    val adapter = lLeader.adapter as ArrayAdapter<Leader>
-                    adapter.notifyDataSetChanged()
-                    //
-                    //
-                    //
-        }
+        db?.collection("LeaderBoard/Levels/Level1")
+            ?.orderBy("score", Query.Direction.DESCENDING)
+            ?.get()
+            ?.addOnSuccessListener{
+                LeaderList.clear()
+                for(docSnapshot in it){
+                    val leader = docSnapshot.toObject(Leader::class.java)
+                    leader.id = docSnapshot.id
+                    LeaderList.add(leader)
+                }
+                val adapter = lLeader.adapter as ArrayAdapter<Leader>
+                adapter.notifyDataSetChanged()
+            }
     }
 }

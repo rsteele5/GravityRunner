@@ -115,10 +115,6 @@ class UserProfile : AppCompatActivity() {
             Thread.sleep(5000)
             return coin
         }
-        override fun onPostExecute(result: String?) {
-            if(result != null)
-                tCoin1.text = result
-        }
     }
 }
 
