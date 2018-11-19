@@ -1,4 +1,4 @@
-package edu.uco.rsteele5.gravityrunner.model.entity.coin
+package edu.uco.rsteele5.gravityrunner.model.entity.collectable.coin
 
 import android.content.res.Resources
 import android.graphics.Bitmap
