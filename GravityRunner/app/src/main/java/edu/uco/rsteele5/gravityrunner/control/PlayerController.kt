@@ -66,6 +66,10 @@ class PlayerController(image: Bitmap, screenWidth: Float, screenHeight: Float):
         }
     }
 
+    fun getHitPoints(): Int{
+        return player!!.getHitPoint()
+    }
+
     fun startJump(orientation: ScreenOrientation){
         jumpVector = setJumpingVector(orientation)
     }

@@ -54,13 +54,25 @@ class LevelController(r: Resources, private val screenWidth: Float, private val 
         currentLevel!!.draw(canvas,paint)
     }
 
+    //SPAWN = 1
+    //WALL = 2
+    //GOAL = 3
+    //SPIKES = 4
+    //SPIKES_RIGHT = 5
+    //SPIKES_DOWN = 6
+    //SPIKES_LEFT = 7
+    //BAT = 8
+    //SPEEDBOOST = 9
+    //COIN = 10
+    //ARMOR = 11
+    //JUMPBOOST = 12
     fun loadLevelOne(): Array<Array<Int>> {
         return arrayOf(
             arrayOf(2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2),
             arrayOf(2, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 2),
             arrayOf(2, 0, 0, 0, 0,10 ,0 ,0, 0, 0, 0, 2),
             arrayOf(2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2),
-            arrayOf(2, 1, 0, 0, 0, 4, 0, 0, 0, 0,11, 2),
+            arrayOf(2, 1, 0,11, 0, 0, 0, 4, 0, 0,11, 2),
             arrayOf(2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 2),
             arrayOf(2, 0, 0, 0, 0, 0, 0, 2, 0,10 ,7 ,2),
             arrayOf(2, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2),

@@ -7,6 +7,8 @@ import android.content.res.Resources
 import android.graphics.*
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.*
@@ -47,7 +49,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
         super.onCreate(savedInstanceState)
 
         var level = intent.getIntExtra("level",0)//receive int from levelArrayAdapter
-        gameView = GameView(this, level)    //TODO: Change to getParcellable
+        gameView = GameView(this, 1)    //TODO: Change to getParcellable
         setContentView(gameView)
 
         orientationManager =
@@ -104,48 +106,58 @@ class GameEngine : AppCompatActivity(), OrientationListener {
     }
 
     fun showFinishedMenu(){
-        gameView!!.pause()
-        val alert = AlertDialog.Builder(this@GameEngine)
-        alert.setTitle(getString(R.string.finished_menu_title))
-        alert.setMessage(getString(R.string.finished_menu_message))
-        alert.setPositiveButton(getString(R.string.finished_menu_btn_continue)){ _: DialogInterface?, _: Int ->
-            //Continue to next level
+        runOnUiThread {
+            gameView!!.pause()
+            val alert = AlertDialog.Builder(this@GameEngine)
+            alert.setCancelable(false)
+            alert.setTitle(getString(R.string.finished_menu_title))
+            alert.setMessage(getString(R.string.finished_menu_message))
+            alert.setPositiveButton(getString(R.string.finished_menu_btn_continue)) { _: DialogInterface?, _: Int ->
+                //Continue to next level
+            }
+            alert.setNeutralButton(getString(R.string.finished_menu_btn_return_to_level_select)) { _: DialogInterface?, _: Int ->
+                finish()
+            }
+            alert.show()
         }
-        alert.setNeutralButton(getString(R.string.finished_menu_btn_return_to_level_select)){ _: DialogInterface?, _: Int ->
-            finish()
-        }
-        alert.show()
     }
 
     fun showFailedMenu(){
-        gameView!!.pause()
-        val alert = AlertDialog.Builder(this@GameEngine)
-        alert.setTitle(getString(R.string.fail_menu_title))
-        alert.setMessage(getString(R.string.fail_menu_message))
-        alert.setPositiveButton(getString(R.string.fail_menu_btn_restart)){ _: DialogInterface?, _: Int ->
-            //Restart the level
+        runOnUiThread {
+            gameView!!.pause()
+            val alert = AlertDialog.Builder(this@GameEngine)
+            alert.setCancelable(false)
+            alert.setTitle(getString(R.string.fail_menu_title))
+            alert.setMessage(getString(R.string.fail_menu_message))
+            alert.setPositiveButton(getString(R.string.fail_menu_btn_restart)) { _: DialogInterface?, _: Int ->
+                gameView = GameView(this, 1)
+            }
+            alert.setNeutralButton(getString(R.string.fail_menu_btn_return_to_level_select)) { _: DialogInterface?, _: Int ->
+                finish()
+            }
+            alert.show()
         }
-        alert.setNeutralButton(getString(R.string.fail_menu_btn_return_to_level_select)){ _: DialogInterface?, _: Int ->
-            finish()
-        }
-        alert.show()
     }
 
     private fun showPauseMenu(){
-        gameView!!.pause()
-        val alert = AlertDialog.Builder(this@GameEngine)
-        alert.setTitle(getString(R.string.pause_menu_title))
-        alert.setMessage(getString(R.string.pause_menu_message))
-        alert.setPositiveButton(getString(R.string.pause_menu_btn_restart)){ _: DialogInterface?, _: Int ->
-            //Restart the level
+        runOnUiThread{
+            val alert = AlertDialog.Builder(this@GameEngine)
+            alert.setCancelable(false)
+            alert.setTitle(getString(R.string.pause_menu_title))
+            alert.setMessage(getString(R.string.pause_menu_message))
+            alert.setPositiveButton(getString(R.string.pause_menu_btn_restart)){ _: DialogInterface?, _: Int ->
+                gameView!!.levelController.loadLevel(1)
+                gameView!!.resume()
+            }
+            alert.setNegativeButton(getString(R.string.pause_menu_btn_resume)) {_: DialogInterface?, _: Int ->
+                gameView!!.resume()
+            }
+            alert.setNeutralButton(getString(R.string.pause_menu_btn_return_to_level_select)){ _: DialogInterface?, _: Int ->
+                finish()
+            }
+            alert.show()
+            gameView!!.pause()
         }
-        alert.setNegativeButton(getString(R.string.pause_menu_btn_resume)) {_: DialogInterface?, _: Int ->
-            gameView!!.resume()
-        }
-        alert.setNeutralButton(getString(R.string.pause_menu_btn_return_to_level_select)){ _: DialogInterface?, _: Int ->
-            finish()
-        }
-        alert.show()
     }
 
     internal inner class GameView(context: Context, level: Int) : SurfaceView(context), Runnable {
@@ -153,9 +165,9 @@ class GameEngine : AppCompatActivity(), OrientationListener {
         private var gameThread: Thread? = null
         private var ourHolder: SurfaceHolder? = null
 
+        var background = BitmapFactory.decodeResource(resources, R.drawable.background)
         private var canvas: Canvas? = null
         var paint: Paint? = null
-
 
         //Controllers
         val collisionDetector = CollisionDetector()
@@ -192,6 +204,10 @@ class GameEngine : AppCompatActivity(), OrientationListener {
                 update(gravityVector)
 
                 draw()
+
+                if(playerController.getHitPoints() == 0){
+                    showFailedMenu()
+                }
 
                 timeThisFrame = System.currentTimeMillis() - startFrameTime
                 if (timeThisFrame > 0) {
@@ -268,7 +284,9 @@ class GameEngine : AppCompatActivity(), OrientationListener {
                 canvas = ourHolder!!.lockCanvas()
 
                 //TODO: The background will get done here
-                canvas!!.drawColor(Color.argb(255, 26, 128, 182))
+                canvas!!.drawColor(Color.argb(255, 0, 0, 0))
+                var backgroundRectF = RectF(0f, 0f, 3020f, 1760f)
+                canvas!!.drawBitmap(background, null, backgroundRectF, paint!!)
                 //---------------------------------------
                 paint!!.color = Color.argb(255, 249, 129, 0)
                 if(levelController.isCurrentLevelLoaded()) {
@@ -278,12 +296,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
                     canvas!!.drawCircle(getScreenWidth()/2f, getScreenHeight()/2f, 20f, paint!!)
                 }
                 paint!!.textSize = 40f
-
-
-
                 drawUI()
-
-                //Unlock canvas and post is double buffered, kinda cool how it works, check it out
                 ourHolder!!.unlockCanvasAndPost(canvas)
             }
 
@@ -331,19 +344,16 @@ class GameEngine : AppCompatActivity(), OrientationListener {
             canvas!!.drawText("Vector x:${motionVector.x}", xOffSet, yOffset + 40f , paint!!)
             canvas!!.drawText("Vector y:${motionVector.y}", xOffSet, yOffset + 80f, paint!!)
             canvas!!.drawText("Vector mag:${motionVector.magnitude}", xOffSet, yOffset + 120f, paint!!)
+            canvas!!.drawText("Hit Points:${playerController.getHitPoints()}", xOffSet, yOffset + 160f, paint!!)
             canvas!!.restore()
         }
 
         fun pause() {
             playing = false
-            try {
-                gameThread!!.join()
-            } catch (e: InterruptedException) {
-                Log.e("Error:", "joining thread")
-            }
+            gameThread!!.join()
         }
         fun resume() {
-            waitTime = System.currentTimeMillis() + loadingTime
+            waitTime = System.currentTimeMillis()
             playing = true
             gameThread = Thread(this)
             gameThread!!.start()

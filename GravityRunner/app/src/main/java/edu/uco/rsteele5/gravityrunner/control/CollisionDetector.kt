@@ -105,7 +105,10 @@ class CollisionDetector{
                             entity.playerClose = true
                             entity.setAnimation(0)
                             if(RectF.intersects(player.getCollidableBox(), entity.getHitBox())){
-                                //Kill the player since he hit the inside box
+                                player.decrementHitPoints()
+                                if(player.getHitPoint() > 0){
+                                    collidedEntities.add(entity)
+                                }
                             }
                         } else {
                             entity.playerClose = false
