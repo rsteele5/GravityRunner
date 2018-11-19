@@ -41,13 +41,6 @@ class PlayerController(image: Bitmap, screenWidth: Float, screenHeight: Float):
         player!!.draw(canvas,paint)
     }
 
-    fun getRunningVector(): PhysicsVector{
-        return runVector
-    }
-    fun getJumpingVector(): PhysicsVector{
-        return jumpVector
-    }
-
     private fun setRunningVector(orientation: ScreenOrientation): PhysicsVector{
         return when(orientation){
             PORTRAIT -> PhysicsVector(-1f, 0f, 1f)
@@ -56,7 +49,6 @@ class PlayerController(image: Bitmap, screenWidth: Float, screenHeight: Float):
             ScreenOrientation.REVERSED_LANDSCAPE -> PhysicsVector(0f, 1f, 1f)
         }
     }
-
     private fun setJumpingVector(orientation: ScreenOrientation): PhysicsVector{
         return when(orientation){
             PORTRAIT -> PhysicsVector(0f, 1f, getJumpSpeed())
@@ -64,10 +56,6 @@ class PlayerController(image: Bitmap, screenWidth: Float, screenHeight: Float):
             ScreenOrientation.REVERSED_PORTRAIT -> PhysicsVector(0f, -1f, getJumpSpeed())
             ScreenOrientation.REVERSED_LANDSCAPE -> PhysicsVector(1f, 0f, getJumpSpeed())
         }
-    }
-
-    fun getHitPoints(): Int{
-        return player!!.getHitPoint()
     }
 
     fun startJump(orientation: ScreenOrientation){
@@ -84,9 +72,15 @@ class PlayerController(image: Bitmap, screenWidth: Float, screenHeight: Float):
     fun depricateRun(){
         runVector.deprecateMagnitudeBy(speedDeprecator/8f)
     }
-
     fun incrementRun() {
         runVector.incrementMagnitudeUpTo(getSpeedModifier(), getSpeed())
+    }
+
+    fun getRunningVector(): PhysicsVector{
+        return runVector
+    }
+    fun getJumpingVector(): PhysicsVector{
+        return jumpVector
     }
 
     fun getSpeed(): Float{
@@ -101,5 +95,20 @@ class PlayerController(image: Bitmap, screenWidth: Float, screenHeight: Float):
     }
     private fun getJumpSpeedModifier(): Float{
         return if(player!!.jumpBoost) 2f else 1f
+    }
+
+    fun getHitPoints(): Int{
+        return player!!.getHitPoint()
+    }
+    fun getCoins(): Int{
+        return player!!.getCoins()
+    }
+
+    fun reset(){
+        player!!.resetHitPoints()
+        player!!.resetCoins()
+        jumpVector.zero()
+        runVector.zero()
+        previousOrientation = PORTRAIT
     }
 }

@@ -11,10 +11,10 @@ class Player(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
 
     var speedBoost = false
     var jumpBoost = false
-    var armorBoost = false
     private var speedBoostTimer: Long = 0
     private var lastClock: Long = 0
     private var hitPoints = 1
+    private var coins = 0
 
     init {
         width = 52f
@@ -26,10 +26,6 @@ class Player(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
     override fun update(orientation: ScreenOrientation, motionVector: PhysicsVector) {
         updateOrientation(orientation)
         checkPowerUp()
-    }
-
-    fun getHitPoint(): Int {
-        return hitPoints
     }
 
     fun setSpeedBoost(){
@@ -44,6 +40,16 @@ class Player(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
         }
     }
 
+    fun getCoins(): Int{
+        return coins
+    }
+    fun addCoins(amount: Int){
+        coins += amount
+    }
+    fun resetCoins(){
+        coins = 0
+    }
+
     private fun checkPowerUp() {
         if(speedBoost) {
             speedBoostTimer -= (System.currentTimeMillis() - lastClock)
@@ -55,8 +61,14 @@ class Player(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
         // check other powerups
     }
 
+    fun getHitPoint(): Int {
+        return hitPoints
+    }
     fun decrementHitPoints(){
         hitPoints--
+    }
+    fun resetHitPoints(){
+        hitPoints = 1
     }
 
     override fun updateOrientation(orientation: ScreenOrientation){
