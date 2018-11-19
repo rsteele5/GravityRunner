@@ -2,7 +2,6 @@ package edu.uco.rsteele5.gravityrunner.model
 
 import android.graphics.Bitmap
 import android.graphics.RectF
-import edu.uco.rsteele5.gravityrunner.Renderable
 
 abstract class GameObject(image: Bitmap): CollisionBox, Renderable {
 

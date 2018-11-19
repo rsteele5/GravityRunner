@@ -1,9 +1,16 @@
 package edu.uco.rsteele5.gravityrunner
 
+import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.widget.ArrayAdapter
+import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_level_select.*
+import java.util.*
 
 class LevelSelect : AppCompatActivity() {
 
@@ -17,11 +24,28 @@ class LevelSelect : AppCompatActivity() {
         rLevelView.layoutManager = LinearLayoutManager(this)
         rLevelView.adapter = LevelArrayAdapter(this, levelList)
 
-        levelList.add(Level("title","bob",30,1))
-        levelList.add(Level("title","bob",null,0))
-        levelList.add(Level("title","bob",null,-1))
+        var db = FirebaseFirestore.getInstance()
+        var mAuth = FirebaseAuth.getInstance()
+        var current = mAuth.currentUser?.email
 
-        rLevelView.adapter.notifyDataSetChanged()
 
+        for (i in 1..5) {
+            var docRef = db?.collection("$current/Levels/$i")?.document("Properties")
+            docRef?.get()
+                ?.addOnSuccessListener {
+                    var score = ArrayList<Int>()
+                    var stat = it?.getData().toString()
+                    val index1 = stat.indexOf('=')
+                    val index2 = stat.indexOf(',')
+                    val index3 = stat.lastIndexOf('=')
+                    val index4 = stat.lastIndexOf('}')
+                    score.add(stat.substring(index3 + 1, index4).toInt())
+                    score.add(stat.substring(index1 + 1, index2).toInt())
+                    val level = it.toObject(Level::class.java)
+                    level?.id = it.id
+                    levelList.add(Level("title", "bob", score[0], score[1], i))
+                    rLevelView.adapter.notifyDataSetChanged()
+                }
+        }
     }
 }
