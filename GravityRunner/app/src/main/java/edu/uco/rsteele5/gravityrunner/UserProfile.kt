@@ -15,7 +15,6 @@ import kotlinx.android.synthetic.main.content_user_profile.*
 import kotlinx.android.synthetic.main.toolbar_user_profile.*
 
 class UserProfile : AppCompatActivity() {
-    private var coin = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +33,7 @@ class UserProfile : AppCompatActivity() {
         val db = FirebaseFirestore.getInstance()
         var score = 0
         var level = 1
+        var coin = 0
 
         val currentUser = mAuth?.currentUser
         if (currentUser != null) {
@@ -46,14 +46,15 @@ class UserProfile : AppCompatActivity() {
             emailView.text = email
 
             if (email != null) {
-                userInfo().execute(coin)
+                userInfo().execute()
+                //coin = userInfo().execute().get().toInt()
             } else {
                 Toast.makeText(this, getString(R.string.noUser), Toast.LENGTH_SHORT).show()
             }
 
             levelView.text = getString(R.string.level, level)
             scoreView.text = getString(R.string.score, score)
-            //coinView.text = getString(R.string.coin, coin)
+            coinView.text = getString(R.string.coin, coin)
 
 
             btnLevel.setOnClickListener {
@@ -93,35 +94,30 @@ class UserProfile : AppCompatActivity() {
         toggle.syncState()
     }
 
-    inner class userInfo : AsyncTask<Int, Int, Int>() {
+    inner class userInfo : AsyncTask<Int, Int, String>() {
 
-        override fun doInBackground(vararg params: Int?): Int {
+        override fun doInBackground(vararg params: Int?): String {
             val mAuth = FirebaseAuth.getInstance()
             val db = FirebaseFirestore.getInstance()
             var email = mAuth.currentUser?.email
-            var coin = 0
+            var coin="a"
             if (email != null) {
                 db?.collection(email)?.document("Coins")?.get()
-                    ?.addOnCompleteListener {
-                        if (it.isSuccessful) {
-                            var document = it?.getResult()
-                            var stat = document?.getData().toString()
+                    ?.addOnSuccessListener {
+                            var stat = it?.getData().toString()
                             val index1 = stat.indexOf('=')
                             val index2 = stat.lastIndexOf('}')
-                            coin = stat.substring(index1 + 1, index2).toInt()
-                        }
+                            coin = stat.substring(startIndex = index1 + 1, endIndex = index2)//
+                    }?.addOnFailureListener {
+                        coin = "fail"
                     }
             }
-            Thread.sleep(2000)
+            Thread.sleep(5000)
             return coin
         }
-
-        override fun onPostExecute(result: Int?) {
-            if (result != null) {
-                val headerView = nav_user_profile_navigation_root.getHeaderView(0)
-                val coinView = headerView.findViewById<TextView>(R.id.tCoin)
-                coinView.text= getString(R.string.coin,result)
-            }
+        override fun onPostExecute(result: String?) {
+            if(result != null)
+                tCoin1.text = result
         }
     }
 }

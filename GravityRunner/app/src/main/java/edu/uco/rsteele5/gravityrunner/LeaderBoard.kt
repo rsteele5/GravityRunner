@@ -8,6 +8,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.android.synthetic.main.activity_leader_board.*
 
@@ -16,32 +17,32 @@ class LeaderBoard : AppCompatActivity() {
     private var mAuth: FirebaseAuth? = null
     private var db: FirebaseFirestore? = null
 
+    var LeaderList = ArrayList<Leader>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_leader_board)
         val i = intent.getIntExtra("level", -1)
-        setTitle(getString(R.string.leaderTitle, i))
-
-        val list = ArrayList<String>()
-        var adt: ArrayAdapter<String>? = null
+        tRank.text = getString(R.string.leaderTitle,i)
 
         mAuth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
-        /*if(db!=null) {
-            db?.collection("LeaderBoard/Levels/Level1")?.get()
-                ?.addOnCompleteListener(OnCompleteListener<QuerySnapshot> { task ->
-                    if (task.isSuccessful) {
-                        for (document in task.result) {
-                            list.add(document.data)
-                        }else{
-                            list.add(task.exception)
-                        }
-                    }
-                })
-        }*/ //read data
+        val listViewAdapter = ArrayAdapter<Leader>(this, android.R.layout.simple_list_item_1, LeaderList)
+        lLeader.adapter = listViewAdapter
 
-        adt = ArrayAdapter (this,android.R.layout.simple_list_item_1,list)
-        lLeader.adapter = adt
+            db?.collection("LeaderBoard/Levels/Level1")
+                ?.orderBy("score", Query.Direction.DESCENDING)
+                ?.get()
+                ?.addOnSuccessListener{
+                    LeaderList.clear()
+                    for(docSnapshot in it){
+                        val leader = docSnapshot.toObject(Leader::class.java)
+                        leader.id = docSnapshot.id
+                        LeaderList.add(leader)
+                    }
+                    val adapter = lLeader.adapter as ArrayAdapter<Leader>
+                    adapter.notifyDataSetChanged()
+        }
     }
 }

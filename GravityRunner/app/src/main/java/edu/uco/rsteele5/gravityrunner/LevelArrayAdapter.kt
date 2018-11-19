@@ -50,18 +50,14 @@ class LevelArrayAdapter(val context: Context, var levelList: ArrayList<Level>) :
             if (levelList[position].status != -1) {
                 statusView.text = context.getString(R.string.leaderBoard)
                 itemView.setOnClickListener {
-                    //open each level activity
-                    /*var lev = Level("","",0,0,levelList[position].level).engine().toString()
-                    var type:Class<*> = Class.forName("edu.uco.rsteele5.gravityrunner."+lev)*/
                     val i = Intent(context, GameEngine::class.java)
                     i.putExtra(LEVEL,levelList[position].level)
                     context.startActivity(i)
                 }
                 statusView.setOnClickListener {
                     //open leader board activity
-
                     val i = Intent(context, LeaderBoard::class.java)
-                    i.putExtra(LEVEL,levelList[position].level)
+                    i.putExtra(LEVEL,position+1)
                     context.startActivity(i)
                 }
             }else {

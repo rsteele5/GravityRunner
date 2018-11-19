@@ -17,7 +17,9 @@ class Level(var title:String, var src:String, var score:Int, var status:Int, var
         parcel.readInt(),
         parcel.readInt(),
         parcel.readInt()
-    )
+    ) {
+        id = parcel.readString()
+    }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(title)

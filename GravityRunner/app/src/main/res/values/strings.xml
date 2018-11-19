@@ -47,5 +47,5 @@
     <string name="finished_menu_btn_return_to_level_select">Return To Level Select</string>
     <string name="app_bar_pause">pause</string>
     <string name="leaderBoard">Leader Board</string>
-    <string name="leaderTitle">Level %1$d\'s rank </string>
+    <string name="leaderTitle">Level %1$d</string>
 </resources>
