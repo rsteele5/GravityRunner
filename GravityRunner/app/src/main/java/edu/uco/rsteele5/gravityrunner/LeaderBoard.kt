@@ -43,6 +43,9 @@ class LeaderBoard : AppCompatActivity() {
                     }
                     val adapter = lLeader.adapter as ArrayAdapter<Leader>
                     adapter.notifyDataSetChanged()
+                    //
+                    //
+                    //
         }
     }
 }
