@@ -37,7 +37,7 @@ class Spikes (image: Bitmap, animator: SpikesAnimator, x: Float, y: Float, rotat
     }
 
     fun getHitBox() : RectF {
-        return collisionBox
+        return RectF(xPos, yPos, width+xPos-20,height+yPos-20)
     }
 
     fun getTriggerPulledBox(): RectF {

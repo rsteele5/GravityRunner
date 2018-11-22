@@ -1,8 +1,9 @@
-package edu.uco.rsteele5.gravityrunner.model.entity
+package edu.uco.rsteele5.gravityrunner.model.entity.player
 
 import android.graphics.*
 import edu.uco.rsteele5.gravityrunner.control.OrientationManager.ScreenOrientation
 import edu.uco.rsteele5.gravityrunner.model.PhysicsVector
+import edu.uco.rsteele5.gravityrunner.model.entity.GameEntity
 
 
 class Player(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
@@ -17,7 +18,7 @@ class Player(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
     private var coins = 0
 
     init {
-        width = 52f
+        width = 80f
         height = 100f
         collisionBox = RectF(xPos, yPos, width+xPos, height+yPos)
     }

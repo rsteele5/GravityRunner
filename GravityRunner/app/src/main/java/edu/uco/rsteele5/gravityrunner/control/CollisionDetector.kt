@@ -5,7 +5,7 @@ import edu.uco.rsteele5.gravityrunner.model.*
 import edu.uco.rsteele5.gravityrunner.model.boundary.BoundaryObject
 import edu.uco.rsteele5.gravityrunner.model.entity.GameEntity
 import edu.uco.rsteele5.gravityrunner.model.entity.Goal
-import edu.uco.rsteele5.gravityrunner.model.entity.Player
+import edu.uco.rsteele5.gravityrunner.model.entity.player.Player
 import edu.uco.rsteele5.gravityrunner.model.entity.collectable.Collectable
 import edu.uco.rsteele5.gravityrunner.model.entity.collectable.coin.Coin
 import edu.uco.rsteele5.gravityrunner.model.entity.enemy.Enemy

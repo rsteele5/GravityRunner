@@ -7,7 +7,7 @@ import android.graphics.RectF
 import edu.uco.rsteele5.gravityrunner.control.OrientationManager
 import edu.uco.rsteele5.gravityrunner.model.entity.GameEntity
 import edu.uco.rsteele5.gravityrunner.model.PhysicsVector
-import edu.uco.rsteele5.gravityrunner.model.entity.Player
+import edu.uco.rsteele5.gravityrunner.model.entity.player.Player
 import edu.uco.rsteele5.gravityrunner.model.entity.powerups.PowerUp
 
 class Armor(image: Bitmap, animator: ArmorAnimator, x: Float, y: Float) : GameEntity(image, x, y),

@@ -88,10 +88,10 @@ class UserProfile : AppCompatActivity() {
     }
 
     private fun init() {
-        val toggle =
-            ActionBarDrawerToggle(Activity(), drawer_root, toolbar, R.string.drawer_open, R.string.drawer_close)
-        drawer_root.addDrawerListener(toggle)
-        toggle.syncState()
+//        val toggle =
+//            ActionBarDrawerToggle(Activity(), drawer_root, toolbar, R.string.drawer_open, R.string.drawer_close)
+//        drawer_root.addDrawerListener(toggle)
+//        toggle.syncState()
     }
 
     inner class userInfo : AsyncTask<Int, Int, String>() {

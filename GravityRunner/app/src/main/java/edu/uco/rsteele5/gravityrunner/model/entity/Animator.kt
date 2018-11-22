@@ -8,7 +8,6 @@ abstract class Animator(resources: Resources?, protected var framesToDisplay: In
     protected var currentImage: Bitmap? = null
     protected var imageIndex: Int = 0
 
-
     fun update() {
         frameTimer--
         if(frameTimer == 0) {

@@ -21,6 +21,7 @@ import edu.uco.rsteele5.gravityrunner.control.OrientationManager.OrientationList
 import edu.uco.rsteele5.gravityrunner.control.OrientationManager.ScreenOrientation
 import edu.uco.rsteele5.gravityrunner.control.OrientationManager.ScreenOrientation.*
 import edu.uco.rsteele5.gravityrunner.model.PhysicsVector
+import edu.uco.rsteele5.gravityrunner.model.entity.player.PlayerAnimator
 
 const val TAG_GR = "GR"
 
@@ -183,6 +184,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
         private val collisionDetector = CollisionDetector()
         private val playerController = PlayerController(
             BitmapFactory.decodeResource(resources, R.drawable.bob),
+            PlayerAnimator(resources,4,4),
             (getScreenWidth() - 52).toFloat(),
             (getScreenHeight() - 100).toFloat())
         private val levelController = LevelController(resources,
