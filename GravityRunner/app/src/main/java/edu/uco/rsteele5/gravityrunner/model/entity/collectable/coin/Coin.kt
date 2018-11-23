@@ -30,7 +30,7 @@ class Coin (image: Bitmap, animator: CoinAnimator, x: Float, y: Float, rotation:
         translate(motionVector.getDeltaX(), motionVector.getDeltaY())
         updateCollisionBox()
         animator.update()
-        image = animator.getCurrentImage()
+        image = animator.getCurrentFrame()
     }
 
     override fun draw(canvas: Canvas, paint: Paint) {

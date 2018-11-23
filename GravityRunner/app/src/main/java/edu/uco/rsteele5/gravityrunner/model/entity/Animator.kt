@@ -4,19 +4,28 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 
 abstract class Animator(resources: Resources?, protected var framesToDisplay: Int, protected var frameTimer: Int) {
-    protected var animation: ArrayList<Bitmap> = ArrayList()
+
+    protected var animations: ArrayList<ArrayList<Bitmap>> = ArrayList()
+    protected var currentAnimation: ArrayList<Bitmap> = ArrayList()
     protected var currentImage: Bitmap? = null
     protected var imageIndex: Int = 0
 
-    fun update() {
+    open fun update() {
         frameTimer--
         if(frameTimer == 0) {
             imageIndex++
-            if(imageIndex > animation.size - 1){
+            if(imageIndex > currentAnimation.size - 1){
                 imageIndex = 0
             }
-            currentImage = animation[imageIndex]
+            currentImage = currentAnimation[imageIndex]
             frameTimer = framesToDisplay
+        }
+    }
+
+    fun setAnimation(index: Int) {
+        if(currentAnimation != animations[index]){
+            imageIndex = 0
+            currentAnimation = animations[index]
         }
     }
 
@@ -24,5 +33,6 @@ abstract class Animator(resources: Resources?, protected var framesToDisplay: In
         return currentImage!!
     }
 
-    abstract fun initializeAnimation()
+    //call in the init of child class!!
+    abstract fun initializeAnimations()
 }

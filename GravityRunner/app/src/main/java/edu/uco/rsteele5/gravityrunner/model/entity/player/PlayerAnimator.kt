@@ -18,35 +18,35 @@ class PlayerAnimator(resources: Resources?, framesToDisplay: Int, frameTimer: In
     private val running5 = BitmapFactory.decodeResource(resources, R.drawable.player_running_1)
     private val running6 = BitmapFactory.decodeResource(resources, R.drawable.player_running_2)
     private val running7 = BitmapFactory.decodeResource(resources, R.drawable.player_running_3)
-    private val playerAnimations = ArrayList<ArrayList<Bitmap>>()
-    //private var currentAnimation: ArrayList<Bitmap>
+    private val jumping0 = BitmapFactory.decodeResource(resources, R.drawable.player_jumping_0)
+    private val jumping1 = BitmapFactory.decodeResource(resources, R.drawable.player_jumping_1)
+    private val jumping2 = BitmapFactory.decodeResource(resources, R.drawable.player_jumping_2)
+
 
     init{
-        initializeAnimation()
-        //currentAnimation = animation[0]
-        //currentImage = currentAnimation[0]
-        imageIndex = 0
+        initializeAnimations()
+        setAnimation(0)
     }
 
-//    fun setAnimation(index: Int) {
-//        if(currentAnimation != playerAnimations[index]){
-//            currentAnimation = playerAnimations[index]
-//        }
-//    }
-
-    override fun initializeAnimation() {
+    override fun initializeAnimations() {
         currentImage = running0
         val playerRunningAnimation = ArrayList<Bitmap>()
-        animation.add(running0)
-        animation.add(running1)
-        animation.add(running2)
-        animation.add(running3)
-        animation.add(running4)
-        animation.add(running5)
-        animation.add(running6)
-        animation.add(running7)
+        playerRunningAnimation.add(running0)
+        playerRunningAnimation.add(running1)
+        playerRunningAnimation.add(running2)
+        playerRunningAnimation.add(running3)
+        playerRunningAnimation.add(running4)
+        playerRunningAnimation.add(running5)
+        playerRunningAnimation.add(running6)
+        playerRunningAnimation.add(running7)
 
-        //animation.add(playerRunningAnimation)
+        val playerJumpingAnimation = ArrayList<Bitmap>()
+        playerJumpingAnimation.add(jumping0)
+        playerJumpingAnimation.add(jumping1)
+        playerJumpingAnimation.add(jumping2)
+
+        animations.add(playerRunningAnimation)
+        animations.add(playerJumpingAnimation)
     }
 
     private fun Bitmap.rotate(degrees: Float): Bitmap {

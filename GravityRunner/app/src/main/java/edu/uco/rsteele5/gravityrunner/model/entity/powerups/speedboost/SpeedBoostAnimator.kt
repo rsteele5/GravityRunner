@@ -1,6 +1,7 @@
 package edu.uco.rsteele5.gravityrunner.model.entity.powerups.speedboost
 
 import android.content.res.Resources
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import edu.uco.rsteele5.gravityrunner.R
 import edu.uco.rsteele5.gravityrunner.model.entity.Animator
@@ -14,14 +15,18 @@ class SpeedBoostAnimator(resources: Resources?, framesToDisplay: Int, frameTimer
     private val speedBoost3 = BitmapFactory.decodeResource(resources, R.drawable.speed_boost_3)
 
     init {
-        initializeAnimation()
-        currentImage = animation[0]
+        initializeAnimations()
+        setAnimation(0)
     }
 
-    override fun initializeAnimation() {
-        animation.add(speedBoost0)
-        animation.add(speedBoost1)
-        animation.add(speedBoost2)
-        animation.add(speedBoost3)
+    override fun initializeAnimations() {
+        currentImage = speedBoost0
+        val speedBoostAnimation = ArrayList<Bitmap>()
+        speedBoostAnimation.add(speedBoost0)
+        speedBoostAnimation.add(speedBoost1)
+        speedBoostAnimation.add(speedBoost2)
+        speedBoostAnimation.add(speedBoost3)
+
+        animations.add(speedBoostAnimation)
     }
 }

@@ -69,9 +69,10 @@ class PlayerController(image: Bitmap, private var animator: PlayerAnimator, scre
     }
 
     fun startRun(orientation: ScreenOrientation){
-        //animator.setAnimation(0)
-        if(runVector.magnitude == 0f)
+        if(runVector.magnitude == 0f){
             runVector = setRunningVector(orientation)
+        }
+
     }
     fun depricateRun(){
         runVector.deprecateMagnitudeBy(speedDeprecator/8f)
@@ -114,5 +115,9 @@ class PlayerController(image: Bitmap, private var animator: PlayerAnimator, scre
         jumpVector.zero()
         runVector.zero()
         previousOrientation = PORTRAIT
+    }
+
+    fun setAnimation(animationIndex: Int){
+        animator.setAnimation(animationIndex)
     }
 }

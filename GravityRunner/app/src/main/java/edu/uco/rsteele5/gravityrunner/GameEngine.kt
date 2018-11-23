@@ -184,7 +184,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
         private val collisionDetector = CollisionDetector()
         private val playerController = PlayerController(
             BitmapFactory.decodeResource(resources, R.drawable.bob),
-            PlayerAnimator(resources,4,4),
+            PlayerAnimator(resources,6,6),
             (getScreenWidth() - 52).toFloat(),
             (getScreenHeight() - 100).toFloat())
         private val levelController = LevelController(resources,
@@ -255,10 +255,16 @@ class GameEngine : AppCompatActivity(), OrientationListener {
             val ngj = normal.add(gravityVector).add(playerController.getJumpingVector())
             if(ngj.magnitude == 0f) {
                 playerController.startRun(orientation)
+                playerController.setAnimation(0)
                 playerController.incrementRun()
             }
-            else
+            else {
                 playerController.depricateRun()
+                if(normal.x == 0f || normal.y == 0f){
+                    playerController.setAnimation(1) // Jump animation
+                }
+            }
+
             return ngj.add(playerController.getRunningVector())
 ////////////////////////////////////Works but poorly//////////////////////////////////////////////////
 //                                                                                                  //

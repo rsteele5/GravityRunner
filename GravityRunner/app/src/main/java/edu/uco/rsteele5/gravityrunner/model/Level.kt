@@ -54,8 +54,6 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
         screenCenter = Pair(screenWidth/2f, screenHeight/2f)
     }
 
-
-
     fun createLevel(){
         scanAndSetSpawnLocation()
         scanAndSetGameEntities()
@@ -84,7 +82,7 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                     GOAL -> {
                         gameEntities.add(
                             Goal(
-                                BitmapFactory.decodeResource(resources, R.drawable.spikes_down),
+                                BitmapFactory.decodeResource(resources, R.drawable.goal),
                                 getOffsetX(x), getOffsetY(y), 0f
                             )
                         )
@@ -93,7 +91,7 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                         gameEntities.add(
                             Spikes(
                                 BitmapFactory.decodeResource(resources, R.drawable.spikes_down),
-                                SpikesAnimator(resources, 0f),
+                                SpikesAnimator(resources, 0f, 4,4),
                                 getOffsetX(x), getOffsetY(y), 0f
                             )
                         )
@@ -102,7 +100,7 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                         gameEntities.add(
                             Spikes(
                                 BitmapFactory.decodeResource(resources, R.drawable.spikes_down),
-                                SpikesAnimator(resources, 90f),
+                                SpikesAnimator(resources, 90f, 4,4),
                                 getOffsetX(x), getOffsetY(y), 90f
                             )
                         )
@@ -111,7 +109,7 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                         gameEntities.add(
                             Spikes(
                                 BitmapFactory.decodeResource(resources, R.drawable.spikes_down),
-                                SpikesAnimator(resources, 180f),
+                                SpikesAnimator(resources, 180f, 4,4),
                                 getOffsetX(x), getOffsetY(y),180f
                             )
                         )
@@ -120,7 +118,7 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                         gameEntities.add(
                             Spikes(
                                 BitmapFactory.decodeResource(resources, R.drawable.spikes_down),
-                                SpikesAnimator(resources, 270f),
+                                SpikesAnimator(resources, 270f, 4,4),
                                 getOffsetX(x), getOffsetY(y), 270f
                             )
                         )
@@ -130,7 +128,7 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                         gameEntities.add(
                             SpeedBoost(
                                 BitmapFactory.decodeResource(resources, R.drawable.speed_boost),
-                                SpeedBoostAnimator(resources, 6, 4),
+                                SpeedBoostAnimator(resources, 6, 6),
                                 getOffsetX(x), getOffsetY(y)
                             )
                         )
@@ -139,7 +137,7 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                         gameEntities.add(
                             Coin(
                                 BitmapFactory.decodeResource(resources, R.drawable.coin_0),
-                                CoinAnimator(resources),
+                                CoinAnimator(resources,6,6),
                                 getOffsetX(x), getOffsetY(y), 270f, 1
                             )
                         )
@@ -148,7 +146,7 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                         gameEntities.add(
                             Armor(
                                 BitmapFactory.decodeResource(resources, R.drawable.armor_0),
-                                ArmorAnimator(resources),
+                                ArmorAnimator(resources, 6,6),
                                 getOffsetX(x), getOffsetY(y)
                             )
                         )

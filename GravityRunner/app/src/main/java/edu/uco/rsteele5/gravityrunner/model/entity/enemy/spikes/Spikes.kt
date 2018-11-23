@@ -1,9 +1,6 @@
 package edu.uco.rsteele5.gravityrunner.model.entity.enemy.spikes
 
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.RectF
+import android.graphics.*
 import edu.uco.rsteele5.gravityrunner.control.OrientationManager.ScreenOrientation
 import edu.uco.rsteele5.gravityrunner.model.entity.enemy.Enemy
 import edu.uco.rsteele5.gravityrunner.model.entity.GameEntity
@@ -12,15 +9,15 @@ import edu.uco.rsteele5.gravityrunner.model.PhysicsVector
 class Spikes (image: Bitmap, animator: SpikesAnimator, x: Float, y: Float, rotation: Float)
     : GameEntity(image, x, y), Enemy {
 
-    var playerClose: Boolean = false
     var animator: SpikesAnimator
     var rotation: Float
 
     init {
-        width = 100f
-        height = 100f
+        width = 60f
+        height = 60f
         this.rotation = rotation
         collisionBox = RectF(xPos, yPos, width+xPos, height+yPos)
+        moveSpikesToFloor()
         this.animator = animator
         setAnimation(0)
     }
@@ -28,8 +25,15 @@ class Spikes (image: Bitmap, animator: SpikesAnimator, x: Float, y: Float, rotat
     override fun update(orientation: ScreenOrientation, motionVector: PhysicsVector) {
         translate(motionVector.getDeltaX(), motionVector.getDeltaY())
         updateCollisionBox()
-        image = animator.getCurrentImage()
+        image = animator.getCurrentFrame()
         animator.update()
+    }
+
+    private fun moveSpikesToFloor() {
+        when (rotation) {
+            0f -> yPos += 40
+            270f -> xPos += 40
+        }
     }
 
     override fun getCollidableBox(): RectF {
@@ -43,28 +47,28 @@ class Spikes (image: Bitmap, animator: SpikesAnimator, x: Float, y: Float, rotat
     fun getTriggerPulledBox(): RectF {
         when (rotation) {
             0f -> return RectF(
-                collisionBox.left - 200,
-                collisionBox.top - 200,
-                collisionBox.right + 200,
+                collisionBox.left - 250,
+                collisionBox.top - 250,
+                collisionBox.right + 250,
                 collisionBox.bottom
             )
             90f -> return RectF(
                 collisionBox.left,
-                collisionBox.top - 200,
-                collisionBox.right + 200,
-                collisionBox.bottom + 200
+                collisionBox.top - 250,
+                collisionBox.right + 250,
+                collisionBox.bottom + 250
             )
             180f -> return RectF(
-                collisionBox.left - 200,
+                collisionBox.left - 250,
                 collisionBox.top,
-                collisionBox.right + 200,
-                collisionBox.bottom + 200
+                collisionBox.right + 250,
+                collisionBox.bottom + 250
             )
             else -> return RectF(
-                collisionBox.left - 200,
-                collisionBox.top - 200,
+                collisionBox.left - 250,
+                collisionBox.top - 250,
                 collisionBox.right,
-                collisionBox.bottom + 200
+                collisionBox.bottom + 250
             )
         }
     }
@@ -72,28 +76,28 @@ class Spikes (image: Bitmap, animator: SpikesAnimator, x: Float, y: Float, rotat
     fun getTriggerReleaseBox(): RectF {
         when (rotation) {
             0f -> return RectF(
-                collisionBox.left - 250,
-                collisionBox.top - 250,
-                collisionBox.right + 250,
+                collisionBox.left - 300,
+                collisionBox.top - 300,
+                collisionBox.right + 300,
                 collisionBox.bottom
             )
             90f -> return RectF(
                 collisionBox.left,
-                collisionBox.top - 250,
-                collisionBox.right + 250,
-                collisionBox.bottom + 250
+                collisionBox.top - 300,
+                collisionBox.right + 300,
+                collisionBox.bottom + 300
             )
             180f -> return RectF(
-                collisionBox.left - 250,
+                collisionBox.left - 300,
                 collisionBox.top,
-                collisionBox.right + 250,
-                collisionBox.bottom + 250
+                collisionBox.right + 300,
+                collisionBox.bottom + 300
             )
             else -> return RectF(
-                collisionBox.left - 250,
-                collisionBox.top - 250,
+                collisionBox.left - 300,
+                collisionBox.top - 300,
                 collisionBox.right,
-                collisionBox.bottom + 250
+                collisionBox.bottom + 300
             )
         }
     }

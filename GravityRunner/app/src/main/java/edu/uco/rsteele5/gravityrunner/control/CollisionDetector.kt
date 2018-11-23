@@ -117,8 +117,7 @@ class CollisionDetector{
                     is Enemy ->{
                         if(entity is Spikes){
                             if(RectF.intersects(player.getCollidableBox(), entity.getTriggerPulledBox())){
-                                entity.playerClose = true
-                                entity.setAnimation(0)
+                                entity.setAnimation(1) // going up
                                 if(RectF.intersects(player.getCollidableBox(), entity.getHitBox())){
                                     player.decrementHitPoints()
                                     if(player.getHitPoint() > 0){
@@ -126,8 +125,7 @@ class CollisionDetector{
                                     }
                                 }
                             } else {
-                                entity.playerClose = false
-                                entity.setAnimation(1)
+                                entity.setAnimation(0) // going down
                             }
                         }
                     }
