@@ -18,44 +18,44 @@ class UserProfile : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_user_profile)
-        setSupportActionBar(toolbar)
-        init()
-
+        setContentView(R.layout.content_user_profile)
         setTitle(getString(R.string.user_activity))
-
-        val headerView = nav_user_profile_navigation_root.getHeaderView(0)
-        val coinView = headerView.findViewById<TextView>(R.id.tCoin)
-        val levelView = headerView.findViewById<TextView>(R.id.tLevel)
-        val scoreView = headerView.findViewById<TextView>(R.id.tScore)
 
         var mAuth = FirebaseAuth.getInstance()
         val db = FirebaseFirestore.getInstance()
-        var score = 0
-        var level = 1
-        var coin = 0
 
         val currentUser = mAuth?.currentUser
         if (currentUser != null) {
-            val userView = headerView.findViewById<TextView>(R.id.tName)
-            val emailView = headerView.findViewById<TextView>(R.id.tEmail)
             val email = currentUser.email
             val index = email?.indexOf('@')
             if (index != null)
-                userView.text = email.substring(0, index)
-            emailView.text = email
+                tName.text = email.substring(0, index)
+            tEmail.text = email
 
-            if (email != null) {
-                userInfo().execute()
-                //coin = userInfo().execute().get().toInt()
-            } else {
-                Toast.makeText(this, getString(R.string.noUser), Toast.LENGTH_SHORT).show()
+
+            var docRefCoin = db?.collection("$email")?.document("Coins")
+            var docRefCostume = db?.collection("$email")?.document("Costumes")
+            docRefCoin?.get()
+                ?.addOnSuccessListener {
+                    //var score = ArrayList<Int>()
+                    var stat = it?.getDouble("amount")?.toInt()
+                    tCoin.text = "Coin: $stat"
+                }
+                    docRefCostume?.get()?.addOnSuccessListener {
+                        var stat1 = it.getDouble("Dragon")?.toInt()
+                        var stat2 = it.getDouble("Knight")?.toInt()
+                        var stat3 = it.getDouble("Wizard")?.toInt()
+
+                        if(stat1==1)
+                            tCostume.text = "Costume: Dragon"
+                        else if(stat2 == 1)
+                            tCostume.text = "Costume: Knight"
+                        else if(stat3 == 1)
+                            tCostume.text = "Costume: Wizard"
+                        else
+                            tCostume.text = "Costume: Nothing"
+                    }
             }
-
-            levelView.text = getString(R.string.level, level)
-            scoreView.text = getString(R.string.score, score)
-            coinView.text = getString(R.string.coin, coin)
-
 
             btnLevel.setOnClickListener {
                 val i = Intent(this, LevelSelect::class.java)
@@ -63,8 +63,8 @@ class UserProfile : AppCompatActivity() {
             }
 
             btnStore.setOnClickListener {
-                //val i = Intent(this, Store::class.java)
-                //            startActivity(i)
+                val i = Intent(this, StoreActivity::class.java)
+                startActivity(i)
             }
 
             btnOut.setOnClickListener {
@@ -87,34 +87,4 @@ class UserProfile : AppCompatActivity() {
         }
     }
 
-    private fun init() {
-        val toggle =
-            ActionBarDrawerToggle(Activity(), drawer_root, toolbar, R.string.drawer_open, R.string.drawer_close)
-        drawer_root.addDrawerListener(toggle)
-        toggle.syncState()
-    }
-
-    inner class userInfo : AsyncTask<Int, Int, String>() {
-
-        override fun doInBackground(vararg params: Int?): String {
-            val mAuth = FirebaseAuth.getInstance()
-            val db = FirebaseFirestore.getInstance()
-            var email = mAuth.currentUser?.email
-            var coin="a"
-            if (email != null) {
-                db?.collection(email)?.document("Coins")?.get()
-                    ?.addOnSuccessListener {
-                            var stat = it?.getData().toString()
-                            val index1 = stat.indexOf('=')
-                            val index2 = stat.lastIndexOf('}')
-                            coin = stat.substring(startIndex = index1 + 1, endIndex = index2)//
-                    }?.addOnFailureListener {
-                        coin = "fail"
-                    }
-            }
-            Thread.sleep(5000)
-            return coin
-        }
-    }
-}
 

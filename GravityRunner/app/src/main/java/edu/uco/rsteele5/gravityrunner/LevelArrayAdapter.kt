@@ -2,7 +2,6 @@ package edu.uco.rsteele5.gravityrunner
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -11,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 
 const val LEVEL = "level"
 
@@ -36,10 +34,10 @@ class LevelArrayAdapter(val context: Context, var levelList: ArrayList<Level>) :
             val resourceId = context.resources.getIdentifier(levelList[position].src, "drawable", context.packageName)
             val colorId = context.resources.getColor(R.color.disable)
             val item = itemView.findViewById<ConstraintLayout>(R.id.cView)
-            val imgView = itemView.findViewById<ImageView>(R.id.imgLevel)
-            val titleView = itemView.findViewById<TextView>(R.id.tStageName)
+            val imgView = itemView.findViewById<ImageView>(R.id.imgCostume)
+            val titleView = itemView.findViewById<TextView>(R.id.tCostumeName)
             val scoreView = itemView.findViewById<TextView>(R.id.tHighScore)
-            val statusView = itemView.findViewById<Button>(R.id.btnStatus)
+            val statusView = itemView.findViewById<Button>(R.id.btnCostumeStatus)
 
             imgView.setImageResource(resourceId)
             titleView.text = levelList[position].title
@@ -48,7 +46,10 @@ class LevelArrayAdapter(val context: Context, var levelList: ArrayList<Level>) :
             else
                 scoreView.text = levelList[position].score.toString()
             if (levelList[position].status != -1) {
-                statusView.text = context.getString(R.string.leaderBoard)
+                if(levelList[position].status > 0)
+                    statusView.text = context.getString(R.string.leaderBoard)
+                else
+                    statusView.text = context.getString(R.string.uncleared)
                 itemView.setOnClickListener {
                     val i = Intent(context, GameEngine::class.java)
                     i.putExtra(LEVEL,levelList[position].level)

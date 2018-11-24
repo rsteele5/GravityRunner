@@ -1,13 +1,9 @@
 package edu.uco.rsteele5.gravityrunner
 
-import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
-import android.widget.ArrayAdapter
-import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_level_select.*
 import java.util.*
@@ -33,17 +29,12 @@ class LevelSelect : AppCompatActivity() {
             var docRef = db?.collection("$current/Levels/$i")?.document("Properties")
             docRef?.get()
                 ?.addOnSuccessListener {
-                    var score = ArrayList<Int>()
-                    var stat = it?.getData().toString()
-                    val index1 = stat.indexOf('=')
-                    val index2 = stat.indexOf(',')
-                    val index3 = stat.lastIndexOf('=')
-                    val index4 = stat.lastIndexOf('}')
-                    score.add(stat.substring(index3 + 1, index4).toInt())
-                    score.add(stat.substring(index1 + 1, index2).toInt())
+                    var score = it?.getDouble("Score")
+                    var status = it?.getDouble("Status")
                     val level = it.toObject(Level::class.java)
                     level?.id = it.id
-                    levelList.add(Level("title", "bob", score[0], score[1], i))
+                    if(score!=null && status != null)
+                        levelList.add(Level("title", "bob", score.toInt(), status.toInt(), i))
                     rLevelView.adapter.notifyDataSetChanged()
                 }
         }
