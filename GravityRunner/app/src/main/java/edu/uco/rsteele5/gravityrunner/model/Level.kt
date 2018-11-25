@@ -35,7 +35,7 @@ const val JUMPBOOST = 12
 const val TAG_LC = "LC"
 
 class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int>>,
-            val screenWidth: Float, val screenHeight: Float): Renderable {
+            val screenWidth: Float, val screenHeight: Float, val pointMax: Long): Renderable {
 
     private var spawnLocX = 0
     private var spawnLocY = 0

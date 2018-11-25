@@ -13,21 +13,24 @@ class LevelController(r: Resources, private val screenWidth: Float, private val 
 
     var currentLevel: Level? = null
     var resources: Resources? = null
+    var currentPoints: Long = 0
 
     init {
         this.resources = r
     }
 
-    fun loadLevel(num: Int){
+    fun loadLevel(num: Int): Long{
+        var pointMax: Long
         val map = CopyOnWriteArrayList<CopyOnWriteArrayList<Int>>()
         val mapArray: Array<Array<Int>> =
         when(num){
-            1 -> {loadLevelOne()}
-            2 -> {loadLevelTwo()}
-            3 -> {loadLevelThree()}
-            4 -> {loadLevelFour()}
-            5 -> {loadLevelFive()}
-            else -> {arrayOf(
+            1 -> {pointMax = 120000; loadLevelOne()}
+            2 -> {pointMax = 120000; loadLevelTwo()}
+            3 -> {pointMax = 120000; loadLevelThree()}
+            4 -> {pointMax = 120000; loadLevelFour()}
+            5 -> {pointMax = 120000; loadLevelFive()}
+            else -> {pointMax = 120000
+                arrayOf(
                 arrayOf(2,2,2),
                 arrayOf(2,1,2),
                 arrayOf(2,2,2))}
@@ -38,8 +41,9 @@ class LevelController(r: Resources, private val screenWidth: Float, private val 
             map[i].addAll(mapArray[i])
         }
 
-        currentLevel = Level(resources!!, map, screenWidth, screenHeight)
+        currentLevel = Level(resources!!, map, screenWidth, screenHeight, pointMax)
         currentLevel!!.createLevel()
+        return pointMax
     }
 
     fun isCurrentLevelLoaded(): Boolean{
