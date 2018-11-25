@@ -213,9 +213,11 @@ class GameEngine : AppCompatActivity(), OrientationListener {
             while (playing && waitTime <= System.currentTimeMillis() + loadingTime) {
 
                 val startFrameTime = System.currentTimeMillis()
+
                 if(playerController.getHitPoints() <= 0){
                     showFailedMenu()
                 }
+
                 update()
 
                 draw()
