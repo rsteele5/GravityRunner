@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.android.synthetic.main.store_item.view.*
 
 //TODO: FILL ADAPTER FIELD
 const val EQUIP = "equipment"
@@ -58,6 +59,23 @@ class StoreArrayAdapter(val context: Context, var storeList: ArrayList<Store>) :
                     statusView.text = "unlocked"
                     statusView.setOnClickListener {
                         cosRef.update("Equipped", storeList[position].title)
+                        statusView.text = "equipped"
+                        var currentCostume = "nothing"
+                        for (i in 0..2) {
+                            if (storeList[i].status == 1) {
+                                currentCostume =
+                                        when (i) {
+                                            0 -> "Dragon"
+                                            1 -> "Knight"
+                                            else -> "Wizard"
+                                        }
+                                if (storeList[position].title != "nothing" && storeList[position].title != currentCostume) {
+                                    cosRef.update("${storeList[position].title}", 1)
+                                    cosRef.update("$currentCostume", 0)
+                                    storeList[i].status = 0
+                                }
+                            }
+                        }
                     }
                 }
                 1 -> {
