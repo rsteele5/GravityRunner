@@ -1,7 +1,7 @@
 package edu.uco.rsteele5.gravityrunner
 
+import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -10,9 +10,11 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 //TODO: FILL ADAPTER FIELD
-const val EQUIP ="equipment"
+const val EQUIP = "equipment"
 
 class StoreArrayAdapter(val context: Context, var storeList: ArrayList<Store>) :
     RecyclerView.Adapter<StoreArrayAdapter.ViewHolder>() {
@@ -38,8 +40,10 @@ class StoreArrayAdapter(val context: Context, var storeList: ArrayList<Store>) :
             val imgView = itemView.findViewById<ImageView>(R.id.imgCostume)
             val titleView = itemView.findViewById<TextView>(R.id.tCostumeName)
             val statusView = itemView.findViewById<Button>(R.id.btnCostumeStatus)
-            var equiped:String? = "basic"
-            var i = Intent(context,StoreActivity::class.java)
+            val db = FirebaseFirestore.getInstance()
+            val mAuth = FirebaseAuth.getInstance()
+            val current = mAuth.currentUser?.email
+            val cosRef = db?.collection("$current")?.document("Costumes")
 
             imgView.setImageResource(resourceId)
             titleView.text = storeList[position].title
@@ -48,18 +52,18 @@ class StoreArrayAdapter(val context: Context, var storeList: ArrayList<Store>) :
                 -1 -> {
                     statusView.text = "locked"
                     item.setBackgroundColor(colorId)
+                    //todo: can buy this item
                 }
                 0 -> {
                     statusView.text = "unlocked"
-                    item.setOnClickListener {
-                        equiped = storeList[position].title
+                    statusView.setOnClickListener {
+                        cosRef.update("Equipped", storeList[position].title)
                     }
                 }
                 1 -> {
                     statusView.text = "equipped"
                 }
             }
-            i.putExtra(EQUIP,equiped)
         }
     }
 }

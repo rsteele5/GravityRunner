@@ -67,6 +67,7 @@ class LoginActivity : Activity() {
             costume.put("Drgon",-1)
             costume.put("Knight",-1)
             costume.put("Wizard",-1)
+            costume.put("Equipped","nothing")
             level.put("Score",0)
             level.put("Status",-1)
             level1.put("Score",0)

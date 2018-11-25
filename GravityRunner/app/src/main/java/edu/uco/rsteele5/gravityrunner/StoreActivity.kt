@@ -20,6 +20,7 @@ class StoreActivity : AppCompatActivity() {
         var db = FirebaseFirestore.getInstance()
         var mAuth = FirebaseAuth.getInstance()
         var current = mAuth.currentUser?.email
+        var equipped:String?
 
         var status = ArrayList<Int?>()
         var title = ArrayList<String?>()
@@ -36,9 +37,9 @@ class StoreActivity : AppCompatActivity() {
                 status.add(it?.getDouble("Dragon")?.toInt())
                 status.add(it?.getDouble("Knight")?.toInt())
                 status.add(it?.getDouble("Wizard")?.toInt())
+                equipped = it.getString("Equipped")
 
-                var stat = intent.getStringExtra(EQUIP)
-                var currentCostume: String
+                var currentCostume: String = "nothing"
 
                 //todo make costume field in db
                 //todo status from db
@@ -53,18 +54,15 @@ class StoreActivity : AppCompatActivity() {
                                     1 -> "Knight"
                                     else -> "Wizard"
                                 }
+                        if(equipped != "nothing" && equipped != currentCostume){
+
+                            cosRef.update("$equipped",1)
+                            cosRef.update("$currentCostume",0)
                     }
-                }/*
-                lStore.setOnClickListener {
-                    if(){
-                        cosRef?.update("Wizard",1)
-                        cosRef?.update("$currentCostume",0)
 
                     }
-                }*/
+                }
                 lStore.adapter.notifyDataSetChanged()
             }
-
-
     }
 }
