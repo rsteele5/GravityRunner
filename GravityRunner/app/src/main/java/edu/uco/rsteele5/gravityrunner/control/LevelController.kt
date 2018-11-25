@@ -53,7 +53,7 @@ class LevelController(r: Resources,private val screenWidth: Float,private val sc
             map[i].addAll(mapArray[i])
         }
 
-        currentLevel = Level(resources!!, map, screenWidth, screenHeight, pointMax)
+        currentLevel = Level(resources!!, map, screenWidth, screenHeight, background)
         currentLevel!!.createLevel()
         return pointMax
     }

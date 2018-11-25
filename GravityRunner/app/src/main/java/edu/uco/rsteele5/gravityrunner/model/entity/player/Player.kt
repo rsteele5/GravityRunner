@@ -16,6 +16,7 @@ class Player(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
     private var lastClock: Long = 0
     private var hitPoints = 1
     private var coins = 0
+    private var costume: Bitmap? = null
 
     init {
         width = 80f
@@ -27,6 +28,17 @@ class Player(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
     override fun update(orientation: ScreenOrientation, motionVector: PhysicsVector) {
         updateOrientation(orientation)
         checkPowerUp()
+    }
+
+    override fun draw(canvas: Canvas, paint: Paint) {
+        super.draw(canvas, paint)
+        if (costume != null) {
+            canvas.drawBitmap(costume!!.rotate(currentRotation), null, collisionBox, null)
+        }
+    }
+
+    fun setCostume(newCostume: Bitmap){
+        costume = newCostume
     }
 
     fun setSpeedBoost(){
