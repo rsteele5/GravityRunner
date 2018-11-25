@@ -9,6 +9,7 @@ import edu.uco.rsteele5.gravityrunner.model.entity.player.Player
 import edu.uco.rsteele5.gravityrunner.model.entity.collectable.Collectable
 import edu.uco.rsteele5.gravityrunner.model.entity.collectable.coin.Coin
 import edu.uco.rsteele5.gravityrunner.model.entity.enemy.Enemy
+import edu.uco.rsteele5.gravityrunner.model.entity.enemy.bat.Bat
 import edu.uco.rsteele5.gravityrunner.model.entity.powerups.PowerUp
 import edu.uco.rsteele5.gravityrunner.model.entity.enemy.spikes.Spikes
 import java.util.concurrent.CopyOnWriteArrayList
@@ -126,6 +127,12 @@ class CollisionDetector{
                                 }
                             } else {
                                 entity.setAnimation(0) // going down
+                            }
+                        }
+                        if(entity is Bat){
+                            if(RectF.intersects(player.getCollidableBox(), entity.getCollidableBox())) {
+                                collidedEntities.add(entity)
+                                player.decrementHitPoints()
                             }
                         }
                     }

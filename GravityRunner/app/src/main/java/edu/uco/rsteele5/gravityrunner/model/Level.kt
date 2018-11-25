@@ -11,6 +11,8 @@ import edu.uco.rsteele5.gravityrunner.model.entity.collectable.coin.Coin
 import edu.uco.rsteele5.gravityrunner.model.entity.collectable.coin.CoinAnimator
 import edu.uco.rsteele5.gravityrunner.model.entity.GameEntity
 import edu.uco.rsteele5.gravityrunner.model.entity.Goal
+import edu.uco.rsteele5.gravityrunner.model.entity.enemy.bat.Bat
+import edu.uco.rsteele5.gravityrunner.model.entity.enemy.bat.BatAnimator
 import edu.uco.rsteele5.gravityrunner.model.entity.powerups.armor.Armor
 import edu.uco.rsteele5.gravityrunner.model.entity.powerups.armor.ArmorAnimator
 import edu.uco.rsteele5.gravityrunner.model.entity.powerups.speedboost.SpeedBoost
@@ -27,15 +29,17 @@ const val SPIKES_RIGHT = 5
 const val SPIKES_DOWN = 6
 const val SPIKES_LEFT = 7
 const val BAT = 8
-const val SPEEDBOOST = 9
-const val COIN = 10
+const val BAT_DESTINATION = 9
+const val SPEED_BOOST = 10
 const val ARMOR = 11
-const val JUMPBOOST = 12
+const val JUMP_BOOST = 12
+const val COIN = 13
 
 const val TAG_LC = "LC"
 
 class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int>>,
-            val screenWidth: Float, val screenHeight: Float): Renderable {
+            val screenWidth: Float, val screenHeight: Float, var background: Bitmap
+): Renderable {
 
     private var spawnLocX = 0
     private var spawnLocY = 0
@@ -86,6 +90,7 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                                 getOffsetX(x), getOffsetY(y), 0f
                             )
                         )
+                        map[y][x] = -GOAL
                     }
                     SPIKES -> {
                         gameEntities.add(
@@ -95,6 +100,7 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                                 getOffsetX(x), getOffsetY(y), 0f
                             )
                         )
+                        map[y][x] = -SPIKES
                     }
                     SPIKES_RIGHT -> {
                         gameEntities.add(
@@ -104,6 +110,7 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                                 getOffsetX(x), getOffsetY(y), 90f
                             )
                         )
+                        map[y][x] = -SPIKES_RIGHT
                     }
                     SPIKES_DOWN -> {
                         gameEntities.add(
@@ -113,6 +120,7 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                                 getOffsetX(x), getOffsetY(y),180f
                             )
                         )
+                        map[y][x] = -SPIKES_DOWN
                     }
                     SPIKES_LEFT -> {
                         gameEntities.add(
@@ -122,9 +130,40 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                                 getOffsetX(x), getOffsetY(y), 270f
                             )
                         )
+                        map[y][x] = -SPIKES_LEFT
                     }
-                    BAT -> {/*TODO: Create Bat and at it to gameEntities*/}
-                    SPEEDBOOST -> {
+                    BAT -> {
+                        var vertical = false
+                        var size = 0
+                        for(yd in 0..(map.size - 1)){
+                            if(map[yd][x] == BAT_DESTINATION){
+                                map[yd][x] = -BAT_DESTINATION
+                                vertical = true
+                                size = yd - y
+                                break
+                            }
+                        }
+
+                        if(!vertical){
+                            for(xd in 0..(map[y].size - 1)){
+                                if(map[y][xd] == BAT_DESTINATION){
+                                    map[y][xd] = -BAT_DESTINATION
+                                    size = xd - x
+                                    break
+                                }
+                            }
+                        }
+
+                        gameEntities.add(
+                            Bat(
+                                BitmapFactory.decodeResource(resources, R.drawable.bat_0),
+                                BatAnimator(resources, 4,4),
+                                getOffsetX(x), getOffsetY(y), vertical, size
+                            )
+                        )
+                        map[y][x] = -BAT
+                    }
+                    SPEED_BOOST -> {
                         gameEntities.add(
                             SpeedBoost(
                                 BitmapFactory.decodeResource(resources, R.drawable.speed_boost),
@@ -230,6 +269,8 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
     //Draw the level if it is loaded
     override fun draw(canvas: Canvas, paint: Paint) {
         if(isLoaded) {
+            var backgroundRectF = RectF(-100f, -100f, 2920f, 1660f)
+            canvas!!.drawBitmap(background, null, backgroundRectF, paint!!)
             for (bound in boundaryObjects) {
                 bound.draw(canvas, paint)
             }

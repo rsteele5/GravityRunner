@@ -112,6 +112,7 @@ class PlayerController(image: Bitmap, private var animator: PlayerAnimator, scre
     fun reset(){
         player!!.resetHitPoints()
         player!!.resetCoins()
+        player!!.speedBoost = false
         jumpVector.zero()
         runVector.zero()
         previousOrientation = PORTRAIT

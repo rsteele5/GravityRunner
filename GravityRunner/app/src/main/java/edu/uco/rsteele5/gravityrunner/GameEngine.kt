@@ -52,7 +52,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        currentLevel = intent.getIntExtra(LEVEL, 1)//receive int from levelArrayAdapter
+        currentLevel = intent.getIntExtra(LEVEL, 4)//receive int from levelArrayAdapter
         gameView = GameView(this, currentLevel)    //TODO: Change to getParcellable
         setContentView(gameView)
 
@@ -176,7 +176,6 @@ class GameEngine : AppCompatActivity(), OrientationListener {
         private var gameThread: Thread? = null
         private var ourHolder: SurfaceHolder? = null
 
-        var background = BitmapFactory.decodeResource(resources, R.drawable.background)
         private var canvas: Canvas? = null
         var paint: Paint? = null
 
@@ -208,18 +207,16 @@ class GameEngine : AppCompatActivity(), OrientationListener {
         }
 
         override fun run() {
-            Thread.sleep(1000)
+            Thread.sleep(2000)
             while (playing && waitTime <= System.currentTimeMillis() + loadingTime) {
 
                 val startFrameTime = System.currentTimeMillis()
-
+                if(playerController.getHitPoints() <= 0){
+                    showFailedMenu()
+                }
                 update()
 
                 draw()
-
-                if(playerController.getHitPoints() == 0){
-                    showFailedMenu()
-                }
 
                 timeThisFrame = System.currentTimeMillis() - startFrameTime
                 if (timeThisFrame > 0) {
@@ -305,13 +302,11 @@ class GameEngine : AppCompatActivity(), OrientationListener {
 
                 //TODO: The background will get done here
                 canvas!!.drawColor(Color.argb(255, 0, 0, 0))
-                var backgroundRectF = RectF(0f, 0f, 3020f, 1760f)
-                canvas!!.drawBitmap(background, null, backgroundRectF, paint!!)
                 //---------------------------------------
                 paint!!.color = Color.argb(255, 249, 129, 0)
                 if(levelController.isCurrentLevelLoaded()) {
-                    playerController.draw(canvas!!, paint!!)
                     levelController.draw(canvas!!, paint!!)
+                    playerController.draw(canvas!!, paint!!)
                 }else{
                     canvas!!.drawCircle(getScreenWidth()/2f, getScreenHeight()/2f, 20f, paint!!)
                 }
@@ -377,7 +372,6 @@ class GameEngine : AppCompatActivity(), OrientationListener {
             gameThread!!.join()
         }
         fun resume() {
-            waitTime = System.currentTimeMillis()
             playing = true
             gameThread = Thread(this)
             gameThread!!.start()
