@@ -1,6 +1,5 @@
 package edu.uco.rsteele5.gravityrunner
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -8,10 +7,7 @@ import android.content.res.Resources
 import android.graphics.*
 import android.hardware.SensorManager
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.*
 import edu.uco.rsteele5.gravityrunner.control.CollisionDetector
 import edu.uco.rsteele5.gravityrunner.control.LevelController
@@ -22,7 +18,7 @@ import edu.uco.rsteele5.gravityrunner.control.OrientationManager.ScreenOrientati
 import edu.uco.rsteele5.gravityrunner.control.OrientationManager.ScreenOrientation.*
 import edu.uco.rsteele5.gravityrunner.model.PhysicsVector
 
-const val TAG_GR = "GR"
+const val COSTUME = "costume"
 
 class GameEngine : AppCompatActivity(), OrientationListener {
 
@@ -33,6 +29,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
     var gravSpeed = 10f
     var currentLevel = 0
     val MAXLEVEL = 5
+    var playerCostume: Bitmap? = null
 
     private val portraitGravityVector = PhysicsVector(0f, -1f, gravSpeed)
     private val landscapeGravityVector = PhysicsVector(1f, 0f, gravSpeed)
@@ -52,7 +49,8 @@ class GameEngine : AppCompatActivity(), OrientationListener {
         super.onCreate(savedInstanceState)
 
         currentLevel = intent.getIntExtra(LEVEL, 1)//receive int from levelArrayAdapter
-        gameView = GameView(this, currentLevel)    //TODO: Change to getParcellable
+        playerCostume = intent.getParcelableExtra("costume")
+        gameView = GameView(this, currentLevel)
         setContentView(gameView)
 
         orientationManager =
@@ -116,6 +114,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
             alert.setTitle(getString(R.string.finished_menu_title))
             alert.setMessage(getString(R.string.finished_menu_message))
             alert.setPositiveButton(getString(R.string.finished_menu_btn_continue)) { _: DialogInterface?, _: Int ->
+                val levelData = LevelData(currentLevel, gameView!!.getCurrentScore(), gameView!!.getCoinsCollected())
                 if(currentLevel >= MAXLEVEL)
                     finish()
                 else {
@@ -175,6 +174,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
         private var gameThread: Thread? = null
         private var ourHolder: SurfaceHolder? = null
 
+        //Drawing materials
         var background = BitmapFactory.decodeResource(resources, R.drawable.background)
         private var canvas: Canvas? = null
         var paint: Paint? = null
@@ -192,13 +192,16 @@ class GameEngine : AppCompatActivity(), OrientationListener {
         @Volatile
         var playing: Boolean = false
 
+        private var currentScore: Long = 0
+
         private var timeThisFrame: Long = 0
 
         init {
             ourHolder = holder
             paint = Paint()
 
-            levelController.loadLevel(level)
+            currentScore = levelController.loadLevel(level)
+            playerController.setCostume(BitmapFactory.decodeResource(resources, R.drawable.dragon))      //TODO: Change back to playerCostume
 
             playing = true
             gameThread = Thread(this)
@@ -219,9 +222,11 @@ class GameEngine : AppCompatActivity(), OrientationListener {
                     showFailedMenu()
                 }
 
+                //Calculate FPS and Score
                 timeThisFrame = System.currentTimeMillis() - startFrameTime
                 if (timeThisFrame > 0) {
                     fps = 1000 / timeThisFrame
+                    currentScore -= fps
                 }
             }
         }
@@ -353,10 +358,15 @@ class GameEngine : AppCompatActivity(), OrientationListener {
             }
 
             canvas!!.drawText("FPS:$fps", xOffSet, yOffset, paint!!)
-            canvas!!.drawText("Hit Points:${playerController.getHitPoints()}", xOffSet, yOffset + 40f, paint!!)
-            canvas!!.drawText("Coins:${playerController.getCoins()}",xOffSet, yOffset + 80f, paint!!)
+            canvas!!.drawText("Score:$currentScore", xOffSet, yOffset + 40f, paint!!)
+            canvas!!.drawText("Hit Points:${playerController.getHitPoints()}",xOffSet, yOffset + 80f, paint!!)
+            canvas!!.drawText("Coins:${playerController.getCoins()}",xOffSet, yOffset + 120f, paint!!)
             canvas!!.restore()
         }
+
+        fun getCoinsCollected(): Int {return playerController.getCoins()}
+
+        fun getCurrentScore(): Long {return currentScore}
 
         fun resetLevel(){
             levelController.loadLevel(currentLevel)

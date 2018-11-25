@@ -41,6 +41,11 @@ class PlayerController(image: Bitmap, screenWidth: Float, screenHeight: Float):
         player!!.draw(canvas,paint)
     }
 
+    fun setCostume(costume: Bitmap?){
+        if(costume != null)
+            player!!.setCostume(costume)
+    }
+
     private fun setRunningVector(orientation: ScreenOrientation): PhysicsVector{
         return when(orientation){
             PORTRAIT -> PhysicsVector(-1f, 0f, 1f)
