@@ -8,7 +8,7 @@ import edu.uco.rsteele5.gravityrunner.control.OrientationManager
 import edu.uco.rsteele5.gravityrunner.model.entity.collectable.Collectable
 import edu.uco.rsteele5.gravityrunner.model.entity.GameEntity
 import edu.uco.rsteele5.gravityrunner.model.PhysicsVector
-import edu.uco.rsteele5.gravityrunner.model.entity.Player
+import edu.uco.rsteele5.gravityrunner.model.entity.player.Player
 
 class Coin (image: Bitmap, animator: CoinAnimator, x: Float, y: Float, rotation: Float, worth: Int)
     : GameEntity(image, x, y), Collectable
@@ -30,7 +30,7 @@ class Coin (image: Bitmap, animator: CoinAnimator, x: Float, y: Float, rotation:
         translate(motionVector.getDeltaX(), motionVector.getDeltaY())
         updateCollisionBox()
         animator.update()
-        image = animator.getCurrentImage()
+        image = animator.getCurrentFrame()
     }
 
     override fun draw(canvas: Canvas, paint: Paint) {

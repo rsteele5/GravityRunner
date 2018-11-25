@@ -17,6 +17,7 @@ import edu.uco.rsteele5.gravityrunner.control.OrientationManager.OrientationList
 import edu.uco.rsteele5.gravityrunner.control.OrientationManager.ScreenOrientation
 import edu.uco.rsteele5.gravityrunner.control.OrientationManager.ScreenOrientation.*
 import edu.uco.rsteele5.gravityrunner.model.PhysicsVector
+import edu.uco.rsteele5.gravityrunner.model.entity.player.PlayerAnimator
 
 const val COSTUME = "costume"
 
@@ -174,8 +175,6 @@ class GameEngine : AppCompatActivity(), OrientationListener {
         private var gameThread: Thread? = null
         private var ourHolder: SurfaceHolder? = null
 
-        //Drawing materials
-        var background = BitmapFactory.decodeResource(resources, R.drawable.background)
         private var canvas: Canvas? = null
         var paint: Paint? = null
 
@@ -183,6 +182,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
         private val collisionDetector = CollisionDetector()
         private val playerController = PlayerController(
             BitmapFactory.decodeResource(resources, R.drawable.bob),
+            PlayerAnimator(resources,6,6),
             (getScreenWidth() - 52).toFloat(),
             (getScreenHeight() - 100).toFloat())
         private val levelController = LevelController(resources,
@@ -209,18 +209,16 @@ class GameEngine : AppCompatActivity(), OrientationListener {
         }
 
         override fun run() {
-            Thread.sleep(1000)
+            Thread.sleep(2000)
             while (playing && waitTime <= System.currentTimeMillis() + loadingTime) {
 
                 val startFrameTime = System.currentTimeMillis()
-
+                if(playerController.getHitPoints() <= 0){
+                    showFailedMenu()
+                }
                 update()
 
                 draw()
-
-                if(playerController.getHitPoints() == 0){
-                    showFailedMenu()
-                }
 
                 //Calculate FPS and Score
                 timeThisFrame = System.currentTimeMillis() - startFrameTime
@@ -258,10 +256,16 @@ class GameEngine : AppCompatActivity(), OrientationListener {
             val ngj = normal.add(gravityVector).add(playerController.getJumpingVector())
             if(ngj.magnitude == 0f) {
                 playerController.startRun(orientation)
+                playerController.setAnimation(0)
                 playerController.incrementRun()
             }
-            else
+            else {
                 playerController.depricateRun()
+                if(normal.x == 0f || normal.y == 0f){
+                    playerController.setAnimation(1) // Jump animation
+                }
+            }
+
             return ngj.add(playerController.getRunningVector())
 ////////////////////////////////////Works but poorly//////////////////////////////////////////////////
 //                                                                                                  //
@@ -302,13 +306,11 @@ class GameEngine : AppCompatActivity(), OrientationListener {
 
                 //TODO: The background will get done here
                 canvas!!.drawColor(Color.argb(255, 0, 0, 0))
-                var backgroundRectF = RectF(0f, 0f, 3020f, 1760f)
-                canvas!!.drawBitmap(background, null, backgroundRectF, paint!!)
                 //---------------------------------------
                 paint!!.color = Color.argb(255, 249, 129, 0)
                 if(levelController.isCurrentLevelLoaded()) {
-                    playerController.draw(canvas!!, paint!!)
                     levelController.draw(canvas!!, paint!!)
+                    playerController.draw(canvas!!, paint!!)
                 }else{
                     canvas!!.drawCircle(getScreenWidth()/2f, getScreenHeight()/2f, 20f, paint!!)
                 }
@@ -379,7 +381,6 @@ class GameEngine : AppCompatActivity(), OrientationListener {
             gameThread!!.join()
         }
         fun resume() {
-            waitTime = System.currentTimeMillis()
             playing = true
             gameThread = Thread(this)
             gameThread!!.start()

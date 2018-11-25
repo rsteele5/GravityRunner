@@ -7,10 +7,11 @@ import edu.uco.rsteele5.gravityrunner.model.Renderable
 import edu.uco.rsteele5.gravityrunner.control.OrientationManager.ScreenOrientation
 import edu.uco.rsteele5.gravityrunner.control.OrientationManager.ScreenOrientation.PORTRAIT
 import edu.uco.rsteele5.gravityrunner.model.PhysicsVector
-import edu.uco.rsteele5.gravityrunner.model.entity.Player
+import edu.uco.rsteele5.gravityrunner.model.entity.player.Player
+import edu.uco.rsteele5.gravityrunner.model.entity.player.PlayerAnimator
 
-class PlayerController(image: Bitmap, screenWidth: Float, screenHeight: Float):
-    Renderable {
+class PlayerController(image: Bitmap, private var animator: PlayerAnimator, screenWidth: Float, screenHeight: Float)
+    : Renderable {
 
     var player: Player? = null
     private var previousOrientation = PORTRAIT
@@ -35,9 +36,11 @@ class PlayerController(image: Bitmap, screenWidth: Float, screenHeight: Float):
 
         player!!.update(orientation,motionVector)
         previousOrientation = orientation
+        animator.update()
     }
 
     override fun draw(canvas: Canvas, paint: Paint) {
+        player!!.setImg(animator.getCurrentFrame())
         player!!.draw(canvas,paint)
     }
 
@@ -71,8 +74,10 @@ class PlayerController(image: Bitmap, screenWidth: Float, screenHeight: Float):
     }
 
     fun startRun(orientation: ScreenOrientation){
-        if(runVector.magnitude == 0f)
+        if(runVector.magnitude == 0f){
             runVector = setRunningVector(orientation)
+        }
+
     }
     fun depricateRun(){
         runVector.deprecateMagnitudeBy(speedDeprecator/8f)
@@ -112,8 +117,13 @@ class PlayerController(image: Bitmap, screenWidth: Float, screenHeight: Float):
     fun reset(){
         player!!.resetHitPoints()
         player!!.resetCoins()
+        player!!.speedBoost = false
         jumpVector.zero()
         runVector.zero()
         previousOrientation = PORTRAIT
+    }
+
+    fun setAnimation(animationIndex: Int){
+        animator.setAnimation(animationIndex)
     }
 }
