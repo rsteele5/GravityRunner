@@ -379,7 +379,6 @@ class GameEngine : AppCompatActivity(), OrientationListener {
             gameThread!!.join()
         }
         fun resume() {
-            TODO("Score recalc on resume")
             waitTime = System.currentTimeMillis()
             playing = true
             gameThread = Thread(this)
