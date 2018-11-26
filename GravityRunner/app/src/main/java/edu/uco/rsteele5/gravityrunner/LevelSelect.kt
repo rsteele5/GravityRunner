@@ -64,7 +64,7 @@ class LevelSelect : AppCompatActivity() {
             docRef2.get().addOnSuccessListener {
                 var stat = it.getDouble("Status")?.toInt()
                 if (stat != null) {
-                    if (currentLevel < 5 || stat != 1) {
+                    if (currentLevel < 5 && stat != 1) {
 
                         docRef.update("Status", 1)
                         docRef2.update("Status", 0)
@@ -105,24 +105,6 @@ class LevelSelect : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        var db = FirebaseFirestore.getInstance()
-        var mAuth = FirebaseAuth.getInstance()
-        var current = mAuth.currentUser?.email
-
-
-        levelList.clear()
-        for (i in 1..5) {
-            var docRef = db?.collection("$current/Levels/$i")?.document("Properties")
-            docRef?.get()
-                ?.addOnSuccessListener {
-                    var score = it?.getDouble("Score")
-                    var status = it?.getDouble("Status")
-                    val level = it.toObject(Level::class.java)
-                    level?.id = it.id
-                    if(score!=null && status != null)
-                        levelList.add(Level("Level $i", "bob", score.toInt(), status.toInt(), i))
-                    rLevelView.adapter.notifyDataSetChanged()
-                }
-        }
+        rLevelView.adapter.notifyDataSetChanged()
     }
 }

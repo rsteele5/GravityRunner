@@ -75,6 +75,24 @@ class StoreActivity : AppCompatActivity() {
                 }
             }
         }
+
+        val thread = object : Thread() {
+
+            override fun run() {
+                try {
+                    while (!this.isInterrupted) {
+                        Thread.sleep(1000)
+                        runOnUiThread {
+                            lStore.adapter.notifyDataSetChanged()
+                        }
+                    }
+                } catch (e: InterruptedException) {
+                }
+
+            }
+        }
+
+        thread.start()
     }
 
     override fun onBackPressed() {
