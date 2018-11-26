@@ -1,5 +1,7 @@
 package edu.uco.rsteele5.gravityrunner
 
+import android.app.Activity
+import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -7,6 +9,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_level_select.*
 import java.util.*
+import android.content.Intent
+import android.util.Log
+
 
 class LevelSelect : AppCompatActivity() {
 
@@ -37,6 +42,28 @@ class LevelSelect : AppCompatActivity() {
                         levelList.add(Level("title", "bob", score.toInt(), status.toInt(), i))
                     rLevelView.adapter.notifyDataSetChanged()
                 }
+        }
+    }
+
+    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        super.onActivityResult(requestCode, resultCode, data)
+        val levelDataArray = ArrayList<LevelData>()
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                levelDataArray.addAll(data.getParcelableArrayListExtra(LEVEL))
+            }
+        }
+        for(levelData in levelDataArray){
+            /*
+             * levelData.level TODO: get the properties of the completed level
+             * If the level is locked, unlock it.
+             *
+             * if(levelData.score > levelHighScore) TODO: if the score is higher than the current high score
+             *      TODO: make this score the high score
+             *
+             * levelData.coins TODO: Add to players current total coins
+             */
+            Log.d(LEVEL,"--->$levelData")
         }
     }
 }

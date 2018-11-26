@@ -29,4 +29,8 @@ class LevelData(val level: Int, val score: Long, val coins: Int): Parcelable {
             return arrayOfNulls(size)
         }
     }
+
+    override fun toString(): String {
+        return "Level: $level, Score: $score, Coins Collected: $coins"
+    }
 }

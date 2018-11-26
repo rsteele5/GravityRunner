@@ -11,8 +11,8 @@ class Goal(image: Bitmap, x: Float, y: Float, rotation: Float)
     : GameEntity(image, x, y) {
 
     init {
-        width = 50f
-        height = 50f
+        width = 100f
+        height = 100f
         collisionBox = RectF(xPos, yPos, xPos + width, yPos + height)
     }
 
