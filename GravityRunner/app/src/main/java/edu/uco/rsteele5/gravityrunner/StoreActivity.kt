@@ -1,6 +1,5 @@
 package edu.uco.rsteele5.gravityrunner
 
-import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -8,7 +7,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_store.*
-import java.io.File
 
 class StoreActivity : AppCompatActivity() {
 
@@ -38,13 +36,14 @@ class StoreActivity : AppCompatActivity() {
 
         storeRef1.downloadUrl.addOnSuccessListener {
             imgList.add(it.toString())
+            storeRef2.downloadUrl.addOnSuccessListener {
+                imgList.add(it.toString())
+                storeRef3.downloadUrl.addOnSuccessListener {
+                    imgList.add(it.toString())
+                }
+            }
         }
-        storeRef2.downloadUrl.addOnSuccessListener {
-            imgList.add(it.toString())
-        }
-        storeRef3.downloadUrl.addOnSuccessListener {
-            imgList.add(it.toString())
-        }
+
 
         val thread = object : Thread() {
 
