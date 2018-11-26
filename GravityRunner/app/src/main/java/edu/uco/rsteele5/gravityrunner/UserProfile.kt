@@ -35,56 +35,88 @@ class UserProfile : AppCompatActivity() {
 
             var docRefCoin = db?.collection("$email")?.document("Coins")
             var docRefCostume = db?.collection("$email")?.document("Costumes")
+
             docRefCoin?.get()
                 ?.addOnSuccessListener {
                     //var score = ArrayList<Int>()
                     var stat = it?.getDouble("amount")?.toInt()
                     tCoin.text = "Coin: $stat"
                 }
-                    docRefCostume?.get()?.addOnSuccessListener {
-                        var stat1 = it.getDouble("Dragon")?.toInt()
-                        var stat2 = it.getDouble("Knight")?.toInt()
-                        var stat3 = it.getDouble("Wizard")?.toInt()
+            docRefCostume?.get()?.addOnSuccessListener {
+                var stat1 = it.getDouble("Dragon")?.toInt()
+                var stat2 = it.getDouble("Knight")?.toInt()
+                var stat3 = it.getDouble("Wizard")?.toInt()
 
-                        if(stat1==1)
-                            tCostume.text = "Costume: Dragon"
-                        else if(stat2 == 1)
-                            tCostume.text = "Costume: Knight"
-                        else if(stat3 == 1)
-                            tCostume.text = "Costume: Wizard"
-                        else
-                            tCostume.text = "Costume: Nothing"
-                    }
-            }
-
-            btnLevel.setOnClickListener {
-                val i = Intent(this, LevelSelect::class.java)
-                startActivity(i)
-            }
-
-            btnStore.setOnClickListener {
-                val i = Intent(this, StoreActivity::class.java)
-                startActivity(i)
-            }
-
-            btnOut.setOnClickListener {
-                mAuth?.signOut()
-                if (mAuth.currentUser == null)
-                    Toast.makeText(this, getString(R.string.logout), Toast.LENGTH_SHORT).show()
+                if (stat1 == 1)
+                    tCostume.text = "Costume: Dragon"
+                else if (stat2 == 1)
+                    tCostume.text = "Costume: Knight"
+                else if (stat3 == 1)
+                    tCostume.text = "Costume: Wizard"
                 else
-                    Toast.makeText(this, getString(R.string.fail_logout), Toast.LENGTH_SHORT).show()
-                finish()
-            }
-
-            btnQuit.setOnClickListener {
-                mAuth?.signOut()
-                if (mAuth.currentUser == null)
-                    Toast.makeText(this, getString(R.string.logout), Toast.LENGTH_SHORT).show()
-                else
-                    Toast.makeText(this, getString(R.string.fail_logout), Toast.LENGTH_SHORT).show()
-                finishAffinity()
+                    tCostume.text = "Costume: Nothing"
             }
         }
+
+        btnLevel.setOnClickListener {
+            val i = Intent(this, LevelSelect::class.java)
+            startActivity(i)
+        }
+
+        btnStore.setOnClickListener {
+            val i = Intent(this, StoreActivity::class.java)
+            startActivity(i)
+        }
+
+        btnOut.setOnClickListener {
+            mAuth?.signOut()
+            if (mAuth.currentUser == null)
+                Toast.makeText(this, getString(R.string.logout), Toast.LENGTH_SHORT).show()
+            else
+                Toast.makeText(this, getString(R.string.fail_logout), Toast.LENGTH_SHORT).show()
+            finish()
+        }
+
+        btnQuit.setOnClickListener {
+            mAuth?.signOut()
+            if (mAuth.currentUser == null)
+                Toast.makeText(this, getString(R.string.logout), Toast.LENGTH_SHORT).show()
+            else
+                Toast.makeText(this, getString(R.string.fail_logout), Toast.LENGTH_SHORT).show()
+            finishAffinity()
+        }
     }
+
+    override fun onResume() {
+        super.onResume()
+        var mAuth = FirebaseAuth.getInstance()
+        val db = FirebaseFirestore.getInstance()
+        val email = mAuth.currentUser?.email
+        var docRefCoin = db?.collection("$email")?.document("Coins")
+        var docRefCostume = db?.collection("$email")?.document("Costumes")
+
+        docRefCoin?.get()
+            ?.addOnSuccessListener {
+                //var score = ArrayList<Int>()
+                var stat = it?.getDouble("amount")?.toInt()
+                tCoin.text = "Coin: $stat"
+            }
+        docRefCostume?.get()?.addOnSuccessListener {
+            var stat1 = it.getDouble("Dragon")?.toInt()
+            var stat2 = it.getDouble("Knight")?.toInt()
+            var stat3 = it.getDouble("Wizard")?.toInt()
+
+            if (stat1 == 1)
+                tCostume.text = "Costume: Dragon"
+            else if (stat2 == 1)
+                tCostume.text = "Costume: Knight"
+            else if (stat3 == 1)
+                tCostume.text = "Costume: Wizard"
+            else
+                tCostume.text = "Costume: Nothing"
+        }
+
+    }
+}
 
 
