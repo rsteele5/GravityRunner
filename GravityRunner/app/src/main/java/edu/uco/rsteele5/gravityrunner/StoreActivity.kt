@@ -6,11 +6,14 @@ import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_store.*
+import java.io.File
 
 class StoreActivity : AppCompatActivity() {
 
     private var storeList = ArrayList<Store>()
+    private var imgList = ArrayList<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,13 +24,27 @@ class StoreActivity : AppCompatActivity() {
         var db = FirebaseFirestore.getInstance()
         var mAuth = FirebaseAuth.getInstance()
         var current = mAuth.currentUser?.email
+        var storage = FirebaseStorage.getInstance()
+        var storeRef1 = storage.reference.child("Costumes/dragon.png")
+        var storeRef2 = storage.reference.child("Costumes/knight.png")
+        var storeRef3 = storage.reference.child("Costumes/wizard.png")
         var equipped: String?
 
         var status = ArrayList<Int?>()
         var title = ArrayList<String?>()
 
         var cosRef = db?.collection("$current")?.document("Costumes")
+        
 
+        storeRef1.downloadUrl.addOnSuccessListener {
+            imgList.add(it.toString())
+        }
+        storeRef2.downloadUrl.addOnSuccessListener {
+            imgList.add(it.toString())
+        }
+        storeRef3.downloadUrl.addOnSuccessListener {
+            imgList.add(it.toString())
+        }
 
         val thread = object : Thread() {
 
@@ -57,7 +74,7 @@ class StoreActivity : AppCompatActivity() {
                                     storeList.clear()
                                     for (i in 0..2) {
 
-                                        storeList.add(Store("bob", title[i], status[i]))
+                                        storeList.add(Store(imgList[i], title[i], status[i]))
                                         lStore.adapter.notifyDataSetChanged()
                                     }
                                     lStore.adapter.notifyDataSetChanged()

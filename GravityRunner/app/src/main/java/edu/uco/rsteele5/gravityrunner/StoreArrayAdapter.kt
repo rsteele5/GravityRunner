@@ -1,9 +1,6 @@
 package edu.uco.rsteele5.gravityrunner
 
-import android.app.Activity
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -12,11 +9,9 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.android.synthetic.main.store_item.view.*
-
-const val EQUIP = "equipment"
 
 class StoreArrayAdapter(val context: Context, var storeList: ArrayList<Store>) :
     RecyclerView.Adapter<StoreArrayAdapter.ViewHolder>() {
@@ -36,7 +31,6 @@ class StoreArrayAdapter(val context: Context, var storeList: ArrayList<Store>) :
 
     inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         fun bindItem(position: Int) {
-            val resourceId = context.resources.getIdentifier(storeList[position].src, "drawable", context.packageName)
             val colorId = context.resources.getColor(R.color.disable)
             val colorId2 = context.resources.getColor(R.color.basic)
             val item = itemView.findViewById<ConstraintLayout>(R.id.cCostumeView)
@@ -50,8 +44,10 @@ class StoreArrayAdapter(val context: Context, var storeList: ArrayList<Store>) :
             val coinRef = db.collection("$current").document("Coins")
             val price:Int = 200
 
-            imgView.setImageResource(resourceId)
-            //imgView.setImageBitmap(storeList[position].src)
+            Glide.with(context).load("${storeList[position].src}").into(imgView)
+            item.removeView(imgView)
+            item.addView(imgView)
+
             titleView.text = storeList[position].title
 
             when (storeList[position].status) {
