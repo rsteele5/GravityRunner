@@ -10,8 +10,11 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 const val LEVEL = "level"
+const val CURRENTCOSTUME = "currentCostume"
 
 class LevelArrayAdapter(val context: Context, var levelList: ArrayList<Level>) :
     RecyclerView.Adapter<LevelArrayAdapter.ViewHolder>() {
@@ -38,6 +41,9 @@ class LevelArrayAdapter(val context: Context, var levelList: ArrayList<Level>) :
             val titleView = itemView.findViewById<TextView>(R.id.tCostumeName)
             val scoreView = itemView.findViewById<TextView>(R.id.tHighScore)
             val statusView = itemView.findViewById<Button>(R.id.btnCostumeStatus)
+            val db = FirebaseFirestore.getInstance()
+            val mAuth = FirebaseAuth.getInstance()
+            val current = mAuth.currentUser?.email
 
             imgView.setImageResource(resourceId)
             titleView.text = levelList[position].title
@@ -51,9 +57,20 @@ class LevelArrayAdapter(val context: Context, var levelList: ArrayList<Level>) :
                 else
                     statusView.text = context.getString(R.string.uncleared)
                 itemView.setOnClickListener {
-                    val i = Intent(context, GameEngine::class.java)
-                    i.putExtra(LEVEL,levelList[position].level)
-                    context.startActivity(i)
+                    db.collection("$current").document("Costume").get()
+                        .addOnSuccessListener {
+                            var currentCostume = it.getString("Equipped")
+                            var curCostumeNum = -1
+                            when (currentCostume) {
+                                "Dragon" -> 0
+                                "Knight" -> 1
+                                "Wizard" -> 2
+                            }
+                            val i = Intent(context, GameEngine::class.java)
+                            i.putExtra(LEVEL, levelList[position].level)
+                            i.putExtra(CURRENTCOSTUME,currentCostume)
+                            context.startActivity(i)
+                        }
                 }
                 statusView.setOnClickListener {
                     //open leader board activity

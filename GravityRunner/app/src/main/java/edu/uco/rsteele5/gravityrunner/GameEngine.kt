@@ -31,6 +31,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
     var currentLevel = 0
     val MAXLEVEL = 5
     var playerCostume: Bitmap? = null
+    var currentCostume = intent.getIntExtra(CURRENTCOSTUME,-1) // get current costume as int
 
     private val portraitGravityVector = PhysicsVector(0f, -1f, gravSpeed)
     private val landscapeGravityVector = PhysicsVector(1f, 0f, gravSpeed)
