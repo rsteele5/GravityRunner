@@ -110,6 +110,7 @@ class LevelSelect : AppCompatActivity() {
         var current = mAuth.currentUser?.email
 
 
+        levelList.clear()
         for (i in 1..5) {
             var docRef = db?.collection("$current/Levels/$i")?.document("Properties")
             docRef?.get()
