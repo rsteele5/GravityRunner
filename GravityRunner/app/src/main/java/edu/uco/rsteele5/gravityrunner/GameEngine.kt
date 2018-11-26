@@ -361,6 +361,19 @@ class GameEngine : AppCompatActivity(), OrientationListener {
                 )
             }
 
+            if(playerController.player!!.jumpBoost) {
+                var jumpBoostRectF = RectF(
+                    canvas!!.width/2 - 170f,
+                    yOffset,
+                    canvas!!.width/2 - 110f,
+                    yOffset + 60
+                )
+                canvas!!.drawBitmap(
+                    BitmapFactory.decodeResource(resources, R.drawable.jump_boost_0), null,
+                    jumpBoostRectF, paint
+                )
+            }
+
             canvas!!.drawText("FPS:$fps", xOffSet, yOffset, paint!!)
             canvas!!.drawText("Score:$currentScore", xOffSet, yOffset + 40f, paint!!)
             canvas!!.drawText("Hit Points:${playerController.getHitPoints()}",xOffSet, yOffset + 80f, paint!!)

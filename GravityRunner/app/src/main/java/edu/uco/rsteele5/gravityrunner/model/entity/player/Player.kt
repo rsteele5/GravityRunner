@@ -13,7 +13,9 @@ class Player(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
     var speedBoost = false
     var jumpBoost = false
     private var speedBoostTimer: Long = 0
-    private var lastClock: Long = 0
+    private var jumpBoostTimer: Long = 0
+    private var lastClockSpeedBoost: Long = 0
+    private var lastClockJumpBoost: Long = 0
     private var hitPoints = 1
     private var coins = 0
     private var costume: Bitmap? = null
@@ -44,7 +46,13 @@ class Player(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
     fun setSpeedBoost(){
         speedBoost = true
         speedBoostTimer = SPEED_BOOST_TIME
-        lastClock = System.currentTimeMillis()
+        lastClockSpeedBoost = System.currentTimeMillis()
+    }
+
+    fun setJumpBoost(){
+        jumpBoost = true
+        jumpBoostTimer = SPEED_BOOST_TIME
+        lastClockJumpBoost = System.currentTimeMillis()
     }
 
     fun setArmor(){
@@ -65,10 +73,17 @@ class Player(image: Bitmap, x: Float, y: Float) : GameEntity(image, x, y) {
 
     private fun checkPowerUp() {
         if(speedBoost) {
-            speedBoostTimer -= (System.currentTimeMillis() - lastClock)
-            lastClock = System.currentTimeMillis()
+            speedBoostTimer -= (System.currentTimeMillis() - lastClockSpeedBoost)
+            lastClockSpeedBoost = System.currentTimeMillis()
             if(speedBoostTimer < 0) {
                 speedBoost = false
+            }
+        }
+        if(jumpBoost) {
+            jumpBoostTimer -= (System.currentTimeMillis() - lastClockJumpBoost)
+            lastClockJumpBoost = System.currentTimeMillis()
+            if(jumpBoostTimer < 0) {
+                jumpBoost = false
             }
         }
         // check other powerups

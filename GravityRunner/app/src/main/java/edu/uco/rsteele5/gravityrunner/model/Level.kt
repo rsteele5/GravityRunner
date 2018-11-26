@@ -19,6 +19,8 @@ import edu.uco.rsteele5.gravityrunner.model.entity.powerups.speedboost.SpeedBoos
 import edu.uco.rsteele5.gravityrunner.model.entity.powerups.speedboost.SpeedBoostAnimator
 import edu.uco.rsteele5.gravityrunner.model.entity.enemy.spikes.SpikesAnimator
 import edu.uco.rsteele5.gravityrunner.model.entity.enemy.spikes.Spikes
+import edu.uco.rsteele5.gravityrunner.model.entity.powerups.jumpboost.JumpBoost
+import edu.uco.rsteele5.gravityrunner.model.entity.powerups.jumpboost.JumpBoostAnimator
 import java.util.concurrent.CopyOnWriteArrayList
 
 const val SPAWN = 1
@@ -186,6 +188,15 @@ class Level(r: Resources, val map: CopyOnWriteArrayList<CopyOnWriteArrayList<Int
                             Armor(
                                 BitmapFactory.decodeResource(resources, R.drawable.armor_0),
                                 ArmorAnimator(resources, 6,6),
+                                getOffsetX(x), getOffsetY(y)
+                            )
+                        )
+                    }
+                    JUMP_BOOST -> {
+                        gameEntities.add(
+                            JumpBoost(
+                                BitmapFactory.decodeResource(resources, R.drawable.jump_boost_0),
+                                JumpBoostAnimator(resources, 6,6),
                                 getOffsetX(x), getOffsetY(y)
                             )
                         )
