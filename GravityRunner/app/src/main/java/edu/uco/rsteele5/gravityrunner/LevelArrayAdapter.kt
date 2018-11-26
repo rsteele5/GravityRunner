@@ -62,14 +62,15 @@ class LevelArrayAdapter(val context: Context, var levelList: ArrayList<Level>) :
                 itemView.setOnClickListener {
                     db.collection("$current").document("Costume").get()
                         .addOnSuccessListener {
-                            var currentCostume = it.getString("Equipped")
-                            var curCostumeNum = -1
+                            val currentCostume = it.getString("Equipped")
+                            var curCostumeNum =
                             when (currentCostume) {
                                 "Dragon" -> 0
                                 "Knight" -> 1
                                 "Wizard" -> 2
+                                else -> -1
                             }
-                    context.myStartActivityForResult<GameEngine>(1, levelList[position].level, null)//TODO: Put Costume here
+                    context.myStartActivityForResult<GameEngine>(1, levelList[position].level, curCostumeNum)//TODO: Put Costume here
                         }
                 }
                 statusView.setOnClickListener {
@@ -86,10 +87,10 @@ class LevelArrayAdapter(val context: Context, var levelList: ArrayList<Level>) :
         }
     }
 
-    inline fun <reified T: Activity> Context.myStartActivityForResult(requestCode: Int, level: Int, costume: Int?) {
+    inline fun <reified T: Activity> Context.myStartActivityForResult(requestCode: Int, level: Int, costume: Int) {
         val intent = Intent(this, T::class.java)
         intent.putExtra(LEVEL, level)
-        if(costume != null)
+        if(costume != -1)
             intent.putExtra(COSTUME, costume)
         startActivityForResult(context as Activity, intent, requestCode, null)
     }
