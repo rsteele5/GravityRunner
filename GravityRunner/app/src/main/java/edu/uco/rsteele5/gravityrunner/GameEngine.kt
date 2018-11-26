@@ -106,6 +106,9 @@ class GameEngine : AppCompatActivity(), OrientationListener {
 
     override fun onBackPressed() {
         super.onBackPressed()
+        val intent = Intent()
+        intent.putExtra(LEVEL, levelDataArray)
+        setResult(RESULT_OK, intent)
         this.finish()
     }
 
@@ -156,6 +159,9 @@ class GameEngine : AppCompatActivity(), OrientationListener {
                 gameView!!.resume()
             }
             alert.setNeutralButton(getString(R.string.fail_menu_btn_return_to_level_select)) { _: DialogInterface?, _: Int ->
+                val intent = Intent()
+                intent.putExtra(LEVEL, levelDataArray)
+                setResult(RESULT_OK, intent)
                 finish()
             }
             alert.show()
@@ -183,7 +189,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
         }
     }
 
-    internal inner class GameView(context: Context, level: Int) : SurfaceView(context), Runnable {
+    internal inner class GameView(context: Context) : SurfaceView(context), Runnable {
 
         private var gameThread: Thread? = null
         private var ourHolder: SurfaceHolder? = null
@@ -213,9 +219,19 @@ class GameEngine : AppCompatActivity(), OrientationListener {
             ourHolder = holder
             paint = Paint()
 
-            currentScore = levelController.loadLevel(level)
-            playerController.setCostume(BitmapFactory.decodeResource(resources, R.drawable.dragon_hat))      //TODO: Change back to playerCostume
-
+            currentScore = levelController.loadLevel(currentLevel)
+            if(playerCostume != -1) {
+                playerController.setCostume(
+                    BitmapFactory.decodeResource(
+                        resources,
+                        when (playerCostume) {
+                            0 -> R.drawable.dragon_hat
+                            1 -> R.drawable.knight_hat
+                            else -> R.drawable.wizard_hat
+                        }
+                    )
+                )
+            }
             playing = true
             gameThread = Thread(this)
 
@@ -362,7 +378,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
                 }
             }
             if(playerController.player!!.speedBoost) {
-                var speedBoostRectF = RectF(
+                val speedBoostRectF = RectF(
                     canvas!!.width/2 - 120f,
                     yOffset,
                     canvas!!.width/2 - 60f,

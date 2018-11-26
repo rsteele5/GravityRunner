@@ -1,9 +1,12 @@
 package edu.uco.rsteele5.gravityrunner
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.support.constraint.ConstraintLayout
+import android.support.v4.app.ActivityCompat.startActivityForResult
+import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -50,9 +53,7 @@ class LevelArrayAdapter(val context: Context, var levelList: ArrayList<Level>) :
             if (levelList[position].status != -1) {
                 statusView.text = context.getString(R.string.leaderBoard)
                 itemView.setOnClickListener {
-                    val i = Intent(context, GameEngine::class.java)
-                    i.putExtra(LEVEL,levelList[position].level)
-                    context.startActivity(i)
+                    context.myStartActivityForResult<GameEngine>(1, levelList[position].level, null)//TODO: Put Costume here
                 }
                 statusView.setOnClickListener {
                     //open leader board activity
@@ -66,5 +67,13 @@ class LevelArrayAdapter(val context: Context, var levelList: ArrayList<Level>) :
                 itemView.isClickable = false
             }
         }
+    }
+
+    inline fun <reified T: Activity> Context.myStartActivityForResult(requestCode: Int, level: Int, costume: Int?) {
+        val intent = Intent(this, T::class.java)
+        intent.putExtra(LEVEL, level)
+        if(costume != null)
+            intent.putExtra(COSTUME, costume)
+        startActivityForResult(context as Activity, intent, requestCode, null)
     }
 }
