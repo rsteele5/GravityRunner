@@ -3,6 +3,7 @@ package edu.uco.rsteele5.gravityrunner
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.res.Resources
 import android.graphics.*
 import android.hardware.SensorManager
@@ -30,7 +31,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
     var gravSpeed = 10f
     var currentLevel = 0
     val MAXLEVEL = 5
-    var playerCostume: Bitmap? = null
+    var playerCostume: Int = -1
 
     private val portraitGravityVector = PhysicsVector(0f, -1f, gravSpeed)
     private val landscapeGravityVector = PhysicsVector(1f, 0f, gravSpeed)
@@ -42,6 +43,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
     var gravityVector = portraitGravityVector
 
     private var gameView: GameView? = null
+    private val levelDataArray = ArrayList<LevelData>()
 
     val loadingTime: Long = 4000
     var waitTime: Long = System.currentTimeMillis() + loadingTime
@@ -49,9 +51,9 @@ class GameEngine : AppCompatActivity(), OrientationListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        currentLevel = intent.getIntExtra(LEVEL, 1)//receive int from levelArrayAdapter
-        playerCostume = intent.getParcelableExtra("costume")
-        gameView = GameView(this, currentLevel)
+        currentLevel = intent.getIntExtra(LEVEL, 1)         //receive int from levelArrayAdapter
+        playerCostume = intent.getIntExtra(COSTUME, -1)//Receive the players costume
+        gameView = GameView(this)
         setContentView(gameView)
 
         orientationManager =
@@ -110,14 +112,22 @@ class GameEngine : AppCompatActivity(), OrientationListener {
     fun showFinishedMenu(){
         runOnUiThread {
             gameView!!.pause()
+
+            //Create parcelable level data
+            val levelData = LevelData(currentLevel, gameView!!.getCurrentScore(), gameView!!.getCoinsCollected())
+            levelDataArray.add(levelData)
+
             val alert = AlertDialog.Builder(this@GameEngine)
             alert.setCancelable(false)
             alert.setTitle(getString(R.string.finished_menu_title))
             alert.setMessage(getString(R.string.finished_menu_message))
             alert.setPositiveButton(getString(R.string.finished_menu_btn_continue)) { _: DialogInterface?, _: Int ->
-                val levelData = LevelData(currentLevel, gameView!!.getCurrentScore(), gameView!!.getCoinsCollected())
-                if(currentLevel >= MAXLEVEL)
+                if(currentLevel >= MAXLEVEL) {
+                    val intent = Intent()
+                    intent.putExtra(LEVEL, levelDataArray)
+                    setResult(RESULT_OK, intent)
                     finish()
+                }
                 else {
                     currentLevel++
                     gameView!!.resetLevel()
@@ -125,6 +135,9 @@ class GameEngine : AppCompatActivity(), OrientationListener {
                 }
             }
             alert.setNeutralButton(getString(R.string.finished_menu_btn_return_to_level_select)) { _: DialogInterface?, _: Int ->
+                val intent = Intent()
+                intent.putExtra(LEVEL, levelDataArray)
+                setResult(RESULT_OK, intent)
                 finish()
             }
             alert.show()
@@ -201,7 +214,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
             paint = Paint()
 
             currentScore = levelController.loadLevel(level)
-            playerController.setCostume(BitmapFactory.decodeResource(resources, R.drawable.dragon))      //TODO: Change back to playerCostume
+            playerController.setCostume(BitmapFactory.decodeResource(resources, R.drawable.dragon_hat))      //TODO: Change back to playerCostume
 
             playing = true
             gameThread = Thread(this)
@@ -373,7 +386,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
         fun getCurrentScore(): Long {return currentScore}
 
         fun resetLevel(){
-            levelController.loadLevel(currentLevel)
+            currentScore = levelController.loadLevel(currentLevel)
             playerController.reset()
             collisionDetector.resetNormalVector()
         }
