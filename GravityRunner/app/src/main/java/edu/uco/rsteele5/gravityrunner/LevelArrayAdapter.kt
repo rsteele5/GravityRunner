@@ -7,6 +7,7 @@ import android.support.constraint.ConstraintLayout
 import android.support.v4.app.ActivityCompat.startActivityForResult
 import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -60,9 +61,10 @@ class LevelArrayAdapter(val context: Context, var levelList: ArrayList<Level>) :
                 else
                     statusView.text = context.getString(R.string.uncleared)
                 itemView.setOnClickListener {
-                    db.collection("$current").document("Costume").get()
+                    db.collection("$current").document("Costumes").get()
                         .addOnSuccessListener {
                             val currentCostume = it.getString("Equipped")
+                            Log.d("costume", "$currentCostume")
                             var curCostumeNum =
                             when (currentCostume) {
                                 "Dragon" -> 0
@@ -70,6 +72,7 @@ class LevelArrayAdapter(val context: Context, var levelList: ArrayList<Level>) :
                                 "Wizard" -> 2
                                 else -> -1
                             }
+                            Log.d("costume", "$curCostumeNum")
                     context.myStartActivityForResult<GameEngine>(1, levelList[position].level, curCostumeNum)//TODO: Put Costume here
                         }
                 }

@@ -3,6 +3,7 @@ package edu.uco.rsteele5.gravityrunner
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -40,18 +41,8 @@ class StoreActivity : AppCompatActivity() {
                 imgList.add(it.toString())
                 storeRef3.downloadUrl.addOnSuccessListener {
                     imgList.add(it.toString())
-                }
-            }
-        }
 
-
-        val thread = object : Thread() {
-
-            override fun run() {
-                try {
-                    while (!this.isInterrupted) {
-                        Thread.sleep(1000)
-                        runOnUiThread {
+                    try {
                             // update TextView here!
                             db.collection("CostumeTitle").document("Properties").get().addOnSuccessListener {
                                 title.clear()
@@ -72,18 +63,23 @@ class StoreActivity : AppCompatActivity() {
                                     //todo make costume field in db
                                     storeList.clear()
                                     for (i in 0..2) {
-
+                                        Log.d("s", "${imgList.size}")
+                                        Log.d("s", "${title.size}")
+                                        Log.d("s", "${status.size}")
                                         storeList.add(Store(imgList[i], title[i], status[i]))
                                         lStore.adapter.notifyDataSetChanged()
                                     }
                                     lStore.adapter.notifyDataSetChanged()
                                 }
-                        }
+                    } catch (e: InterruptedException) {
                     }
-                } catch (e: InterruptedException) {
                 }
             }
         }
-        thread.start()
+    }
+
+    override fun onBackPressed() {
+
+        finish()
     }
 }

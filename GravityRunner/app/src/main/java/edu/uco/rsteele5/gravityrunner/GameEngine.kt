@@ -105,11 +105,10 @@ class GameEngine : AppCompatActivity(), OrientationListener {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
         val intent = Intent()
         intent.putExtra(LEVEL, levelDataArray)
         setResult(RESULT_OK, intent)
-        this.finish()
+        finish()
     }
 
     fun showFinishedMenu(){
