@@ -69,7 +69,6 @@ class StoreActivity : AppCompatActivity() {
 
                                     var currentCostume: String = "nothing"
 
-                                    //todo make costume field in db
                                     storeList.clear()
                                     for (i in 0..2) {
 

@@ -42,7 +42,7 @@ class StoreArrayAdapter(val context: Context, var storeList: ArrayList<Store>) :
             val current = mAuth.currentUser?.email
             val cosRef = db?.collection("$current")?.document("Costumes")
             val coinRef = db.collection("$current").document("Coins")
-            val price:Int = 200
+            val price: Int = 200
 
             Glide.with(context).load("${storeList[position].src}").into(imgView)
             item.removeView(imgView)
@@ -56,16 +56,15 @@ class StoreArrayAdapter(val context: Context, var storeList: ArrayList<Store>) :
                     item.setBackgroundColor(colorId)
 
                     statusView.setOnClickListener {
-                        var currentCoin: Int? = 0
-                        coinRef.get().addOnSuccessListener {
-                            currentCoin = it.getDouble("amount")?.toInt()
-                            currentCoin?.minus(price)
-                            cosRef.update("${storeList[position].title}", 0)
-                            coinRef.update("amount", currentCoin)
-                            storeList[position].status = 0
+                        coinRef?.get()?.addOnSuccessListener {
+                            var currentCoin = it?.getDouble("amount")?.toInt()
+                            if (currentCoin != null) {
+                                cosRef.update("${storeList[position].title}", 0)
+                                coinRef.update("amount", currentCoin - 10)
+                                storeList[position].status = 0
+                            }
                         }
                     }
-
                 }
                 0 -> {
                     statusView.text = "unlocked"
