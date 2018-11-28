@@ -1,60 +1,54 @@
 package edu.uco.rsteele5.gravityrunner
 
-import android.app.Activity
 import android.content.Intent
-import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v7.app.ActionBarDrawerToggle
-import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.android.synthetic.main.activity_user_profile.*
 import kotlinx.android.synthetic.main.content_user_profile.*
-import kotlinx.android.synthetic.main.toolbar_user_profile.*
 
 class UserProfile : AppCompatActivity() {
+
+    private val db = FirebaseFirestore.getInstance()
+    private val mAuth = FirebaseAuth.getInstance()
+    private val currentUser = mAuth?.currentUser
+    var email: String? = null
+    var docRefCoin: DocumentReference? = null
+    var docRefCostume: DocumentReference? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.content_user_profile)
-        setTitle(getString(R.string.user_activity))
 
-        var mAuth = FirebaseAuth.getInstance()
-        val db = FirebaseFirestore.getInstance()
+        title = getString(R.string.user_activity)
 
-        val currentUser = mAuth?.currentUser
         if (currentUser != null) {
-            val email = currentUser.email
+            email = currentUser.email
             val index = email?.indexOf('@')
             if (index != null)
-                tName.text = email.substring(0, index)
+                tName.text = email?.substring(0, index)
             tEmail.text = email
 
+            docRefCoin = db.collection("$email").document("Coins")
+            docRefCostume = db.collection("$email").document("Costumes")
 
-            var docRefCoin = db?.collection("$email")?.document("Coins")
-            var docRefCostume = db?.collection("$email")?.document("Costumes")
 
             docRefCoin?.get()
                 ?.addOnSuccessListener {
-                    //var score = ArrayList<Int>()
-                    var stat = it?.getDouble("amount")?.toInt()
+                    val stat = it?.getDouble("amount")?.toInt()
                     tCoin.text = "Coin: $stat"
                 }
             docRefCostume?.get()?.addOnSuccessListener {
-                var stat1 = it.getDouble("Dragon")?.toInt()
-                var stat2 = it.getDouble("Knight")?.toInt()
-                var stat3 = it.getDouble("Wizard")?.toInt()
-
-                if (stat1 == 1)
-                    tCostume.text = "Costume: Dragon"
-                else if (stat2 == 1)
-                    tCostume.text = "Costume: Knight"
-                else if (stat3 == 1)
-                    tCostume.text = "Costume: Wizard"
+                tCostume.text = if (it.getDouble("Dragon")?.toInt() == 1)
+                    "Costume: Dragon"
+                else if (it.getDouble("Knight")?.toInt() == 1)
+                    "Costume: Knight"
+                else if (it.getDouble("Wizard")?.toInt() == 1)
+                    "Costume: Wizard"
                 else
-                    tCostume.text = "Costume: Nothing"
+                    "Costume: Nothing"
             }
         }
 
@@ -89,33 +83,22 @@ class UserProfile : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        var mAuth = FirebaseAuth.getInstance()
-        val db = FirebaseFirestore.getInstance()
-        val email = mAuth.currentUser?.email
-        var docRefCoin = db?.collection("$email")?.document("Coins")
-        var docRefCostume = db?.collection("$email")?.document("Costumes")
 
         docRefCoin?.get()
             ?.addOnSuccessListener {
-                //var score = ArrayList<Int>()
-                var stat = it?.getDouble("amount")?.toInt()
+                val stat = it?.getDouble("amount")?.toInt()
                 tCoin.text = "Coin: $stat"
             }
         docRefCostume?.get()?.addOnSuccessListener {
-            var stat1 = it.getDouble("Dragon")?.toInt()
-            var stat2 = it.getDouble("Knight")?.toInt()
-            var stat3 = it.getDouble("Wizard")?.toInt()
-
-            if (stat1 == 1)
-                tCostume.text = "Costume: Dragon"
-            else if (stat2 == 1)
-                tCostume.text = "Costume: Knight"
-            else if (stat3 == 1)
-                tCostume.text = "Costume: Wizard"
+            tCostume.text = if (it.getDouble("Dragon")?.toInt() == 1)
+                "Costume: Dragon"
+            else if (it.getDouble("Knight")?.toInt() == 1)
+                "Costume: Knight"
+            else if (it.getDouble("Wizard")?.toInt() == 1)
+                "Costume: Wizard"
             else
-                tCostume.text = "Costume: Nothing"
+                "Costume: Nothing"
         }
-
     }
 }
 

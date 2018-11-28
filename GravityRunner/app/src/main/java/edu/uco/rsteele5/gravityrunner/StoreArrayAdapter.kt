@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -30,76 +31,52 @@ class StoreArrayAdapter(val context: Context, var storeList: ArrayList<Store>) :
     }
 
     inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
+
         fun bindItem(position: Int) {
-            val colorId = context.resources.getColor(R.color.disable)
-            val colorId2 = context.resources.getColor(R.color.basic)
+            val colorId = context.resources.getColor(R.color.disable, context.theme)
+            val colorId2 = context.resources.getColor(R.color.basic, context.theme)
+            val colorId3 = context.resources.getColor(R.color.equipped, context.theme)
             val item = itemView.findViewById<ConstraintLayout>(R.id.cCostumeView)
             val imgView = itemView.findViewById<ImageView>(R.id.imgCostume)
             val titleView = itemView.findViewById<TextView>(R.id.tCostumeName)
             val statusView = itemView.findViewById<Button>(R.id.btnCostumeStatus)
-            val db = FirebaseFirestore.getInstance()
-            val mAuth = FirebaseAuth.getInstance()
-            val current = mAuth.currentUser?.email
-            val cosRef = db?.collection("$current")?.document("Costumes")
-            val coinRef = db.collection("$current").document("Coins")
-            val price: Int = 200
 
-            Glide.with(context).load("${storeList[position].src}").into(imgView)
-            item.removeView(imgView)
-            item.addView(imgView)
+            Glide.with(context).load(storeList[position].src).into(imgView)
 
             titleView.text = storeList[position].title
 
             when (storeList[position].status) {
                 -1 -> {
-                    statusView.text = "locked"
+                    statusView.text = "Buy"
                     item.setBackgroundColor(colorId)
-
                     statusView.setOnClickListener {
-                        coinRef?.get()?.addOnSuccessListener {
-                            var currentCoin = it?.getDouble("amount")?.toInt()
-                            if (currentCoin != null) {
-                                cosRef.update("${storeList[position].title}", 0)
-                                coinRef.update("amount", currentCoin - 10)
-                                storeList[position].status = 0
-                            }
+                        if((context as StoreActivity).subtractCoins(10)){
+                            storeList[position].status = 0
+                            context.updateDataSet()
+                        } else {
+                            Toast.makeText(context, "You don't have enough money", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
                 0 -> {
-                    statusView.text = "unlocked"
+                    statusView.text = "Equip"
                     item.setBackgroundColor(colorId2)
                     statusView.setOnClickListener {
-                        cosRef.update("Equipped", storeList[position].title)
-                        statusView.text = "equipped"
-                        var currentCostume = "nothing"
                         for (i in 0..2) {
                             if (storeList[i].status == 1) {
-                                currentCostume =
-                                        when (i) {
-                                            0 -> "Dragon"
-                                            1 -> "Knight"
-                                            else -> "Wizard"
-                                        }
-                                if (storeList[position].title != "nothing" && storeList[position].title != currentCostume) {
-                                    cosRef.update("${storeList[position].title}", 1)
-                                    cosRef.update("$currentCostume", 0)
-                                    storeList[i].status = 0
-                                }
-                            } else {
-                                cosRef.update("${storeList[position].title}", 1)
-                                storeList[position].status = 1
+                                storeList[i].status = 0
                             }
                         }
+                        storeList[position].status = 1
+                        (context as StoreActivity).updateDataSet()
                     }
                 }
                 1 -> {
-                    statusView.text = "equipped"
+                    statusView.text = "Unequip"
+                    item.setBackgroundColor(colorId3)
                     statusView.setOnClickListener {
-                        cosRef.update("Equipped", "nothing")
-                        statusView.text = "unlocked"
-                        cosRef.update("${storeList[position].title}", 0)
                         storeList[position].status = 0
+                        (context as StoreActivity).updateDataSet()
                     }
                 }
             }

@@ -1,7 +1,6 @@
 package edu.uco.rsteele5.gravityrunner
 
 import android.app.Activity
-import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -75,7 +74,7 @@ class LevelSelect : AppCompatActivity() {
             docRef.get().addOnSuccessListener {
                 var currentScore = it.getDouble("Score")
                 if (currentScore != null) {
-                    if(currentScore<levelData.score)
+                    if(currentScore < levelData.score)
                     {
                         docRef.update("Score",levelData.score)
                     }
@@ -105,6 +104,24 @@ class LevelSelect : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        rLevelView.adapter.notifyDataSetChanged()
+        var db = FirebaseFirestore.getInstance()
+        var mAuth = FirebaseAuth.getInstance()
+        var current = mAuth.currentUser?.email
+
+
+        levelList.clear()
+        for (i in 1..5) {
+            var docRef = db?.collection("$current/Levels/$i")?.document("Properties")
+            docRef?.get()
+                ?.addOnSuccessListener {
+                    var score = it?.getDouble("Score")
+                    var status = it?.getDouble("Status")
+                    val level = it.toObject(Level::class.java)
+                    level?.id = it.id
+                    if(score!=null && status != null)
+                        levelList.add(Level("Level $i", "bob", score.toInt(), status.toInt(), i))
+                    rLevelView.adapter.notifyDataSetChanged()
+                }
+        }
     }
 }
