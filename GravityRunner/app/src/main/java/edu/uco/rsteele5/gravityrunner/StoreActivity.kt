@@ -112,12 +112,12 @@ class StoreActivity : AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        costumeReference.update("${storeList[0].title}", storeList[0].status)
-        costumeReference.update("${storeList[1].title}", storeList[1].status)
-        costumeReference.update("${storeList[2].title}", storeList[2].status)
+    override fun onPause() {
+        super.onPause()
+        for(i in 0 until storeList.size) {
+            costumeReference.update("${storeList[i].title}", storeList[i].status)
+        }
         coinsReference.update("amount", id_coinAmount.text.toString().toInt())
-        finish()
     }
 
     fun subtractCoins(cost: Int): Boolean {
