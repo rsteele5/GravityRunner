@@ -1,5 +1,6 @@
 package edu.uco.rsteele5.gravityrunner
 
+import android.app.Dialog
 import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.RecyclerView
@@ -9,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -58,10 +60,12 @@ class StoreArrayAdapter(val context: Context, var storeList: ArrayList<Store>) :
                     statusView.setOnClickListener {
                         coinRef?.get()?.addOnSuccessListener {
                             var currentCoin = it?.getDouble("amount")?.toInt()
-                            if (currentCoin != null) {
+                            if (currentCoin != null && currentCoin >= 10) {
                                 cosRef.update("${storeList[position].title}", 0)
                                 coinRef.update("amount", currentCoin - 10)
                                 storeList[position].status = 0
+                            }else{
+                                Toast.makeText(context,"You don't have enough money",Toast.LENGTH_SHORT).show()
                             }
                         }
                     }

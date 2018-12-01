@@ -18,7 +18,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 const val LEVEL = "level"
-const val CURRENTCOSTUME = "currentCostume"
 
 class LevelArrayAdapter(val context: Context, var levelList: ArrayList<Level>) :
     RecyclerView.Adapter<LevelArrayAdapter.ViewHolder>() {
@@ -56,8 +55,15 @@ class LevelArrayAdapter(val context: Context, var levelList: ArrayList<Level>) :
             else
                 scoreView.text = levelList[position].score.toString()
             if (levelList[position].status != -1) {
-                if(levelList[position].status > 0)
+                if(levelList[position].status > 0) {
                     statusView.text = context.getString(R.string.leaderBoard)
+                    statusView.setOnClickListener {
+                        //open leader board activity
+                        val i = Intent(context, LeaderBoard::class.java)
+                        i.putExtra(LEVEL,position+1)
+                        context.startActivity(i)
+                    }
+                }
                 else
                     statusView.text = context.getString(R.string.uncleared)
                 itemView.setOnClickListener {
@@ -75,12 +81,6 @@ class LevelArrayAdapter(val context: Context, var levelList: ArrayList<Level>) :
                             Log.d("costume", "$curCostumeNum")
                     context.myStartActivityForResult<GameEngine>(1, levelList[position].level, curCostumeNum)//TODO: Put Costume here
                         }
-                }
-                statusView.setOnClickListener {
-                    //open leader board activity
-                    val i = Intent(context, LeaderBoard::class.java)
-                    i.putExtra(LEVEL,position+1)
-                    context.startActivity(i)
                 }
             }else {
                 statusView.text = context.getString(R.string.locked)

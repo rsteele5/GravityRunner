@@ -1,7 +1,6 @@
 package edu.uco.rsteele5.gravityrunner
 
 import android.app.Activity
-import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -11,7 +10,10 @@ import kotlinx.android.synthetic.main.activity_level_select.*
 import java.util.*
 import android.content.Intent
 import android.util.Log
+import kotlin.collections.HashMap
 
+const val ACCOUNT = "account"
+const val PATH = "path"
 
 class LevelSelect : AppCompatActivity() {
 
@@ -61,6 +63,7 @@ class LevelSelect : AppCompatActivity() {
             val docRef =  db?.collection("$current/Levels/$currentLevel")?.document("Properties")
             val docRef2 =  db?.collection("$current/Levels/${currentLevel+1}")?.document("Properties")
             val coinRef = db?.collection("$current")?.document("Coins")
+            val levelRef = db?.collection("LeaderBoard/Levels/Level$currentLevel")
             docRef2.get().addOnSuccessListener {
                 var stat = it.getDouble("Status")?.toInt()
                 if (stat != null) {
@@ -83,6 +86,23 @@ class LevelSelect : AppCompatActivity() {
 
             }
 
+            levelRef?.get()?.addOnSuccessListener {
+                levelRef?.document("$current")?.get()?.addOnSuccessListener {
+                    var currentScore = it.getDouble("score")?.toInt()
+                    if (currentScore != null && currentScore < levelData.score) {
+                        levelRef.document("$current").update("score",levelData.score)
+                    }
+                    else{
+                        var levelField: HashMap<String,Any> = HashMap()
+                        var name: String
+                        var index = current!!.indexOf("@")
+                        name = current!!.substring(0,index)
+                        levelField.put("name",name)
+                        levelField.put("score",levelData.score)
+                        levelRef?.document("$current")?.set(levelField)
+                    }
+                }
+            }
             coinRef.get().addOnSuccessListener {
                 var currentCoin = it.getDouble("amount")
                 var earnedCoin = levelData.coins
