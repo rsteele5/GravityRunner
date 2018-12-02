@@ -10,6 +10,8 @@ import kotlinx.android.synthetic.main.activity_level_select.*
 import java.util.*
 import android.content.Intent
 import android.util.Log
+import android.view.View
+import android.widget.ProgressBar
 import kotlin.collections.HashMap
 
 const val ACCOUNT = "account"
@@ -21,7 +23,9 @@ class LevelSelect : AppCompatActivity() {
     private val db = FirebaseFirestore.getInstance()
     private val mAuth = FirebaseAuth.getInstance()
     private val current = mAuth.currentUser?.email
+    private var spinner: ProgressBar? = null
     private var addedCoins = 0
+    private var addedItems = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +34,10 @@ class LevelSelect : AppCompatActivity() {
 
         rLevelView.layoutManager = LinearLayoutManager(this)
         rLevelView.adapter = LevelArrayAdapter(this, levelList)
+
+        spinner = findViewById(R.id.progressBarLS)
+        //Start the DB calls and show the spinner
+        spinner!!.visibility = View.VISIBLE
 
         val levelName = R.string.level1-1
         for (i in 1..5) {
@@ -41,9 +49,17 @@ class LevelSelect : AppCompatActivity() {
                     levelList.add(Level(getString(levelName + i),
                             "background$i", score.toLong(), status.toInt(), i))
                     levelList.sortBy { lev -> lev.level }
-                    rLevelView.adapter.notifyDataSetChanged()
+                    checkLoaded()
                 }
             }
+        }
+    }
+
+    private fun checkLoaded(){
+        addedItems++
+        if(addedItems >= 5){
+            spinner!!.visibility = View.GONE
+            rLevelView.adapter.notifyDataSetChanged()
         }
     }
 
@@ -78,7 +94,7 @@ class LevelSelect : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        //Update levels on Firebase
+        //Update levels
         for (level in levelList) {
             val docRef = db.collection("$current/Levels/${level.level}").document("Properties")
             docRef.get().addOnSuccessListener { it ->
@@ -91,6 +107,25 @@ class LevelSelect : AppCompatActivity() {
                         if (currentScore != null) {
                             if (currentScore < level.score)
                                 docRef.update("Score", level.score)
+                        }
+                    }
+                }
+                //Update High Scores
+                if(level.status > 0) {
+                    val leaderBoardRef = db.collection("LeaderBoard/Levels/Level${level.level}")
+                    leaderBoardRef.get().addOnSuccessListener {
+                        val levelRef = leaderBoardRef.document("$current")
+                        levelRef.get().addOnSuccessListener { _it ->
+                            val currentHighScore = _it.getDouble("score")?.toLong()
+                            if (currentHighScore != null && currentHighScore < level.score) {
+                                levelRef.update("score", level.score)
+                            } else {
+                                val levelField: HashMap<String, Any> = HashMap()
+                                levelField["name"] = current!!.substring(0, current.indexOf("@"))
+                                levelField["score"] = level.score
+                                Log.d(LEVEL, levelField.toString())
+                                leaderBoardRef.document("$current").set(levelField)
+                            }
                         }
                     }
                 }
