@@ -10,7 +10,10 @@ import kotlinx.android.synthetic.main.activity_level_select.*
 import java.util.*
 import android.content.Intent
 import android.util.Log
+import kotlin.collections.HashMap
 
+const val ACCOUNT = "account"
+const val PATH = "path"
 
 class LevelSelect : AppCompatActivity() {
 

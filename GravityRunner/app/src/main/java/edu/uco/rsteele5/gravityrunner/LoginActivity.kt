@@ -64,7 +64,7 @@ class LoginActivity : Activity() {
             var level: HashMap<String, Any> = HashMap()
             var level1: HashMap<String, Any> = HashMap()
             amount.put("amount",0)
-            costume.put("Drgon",-1)
+            costume.put("Dragon",-1)
             costume.put("Knight",-1)
             costume.put("Wizard",-1)
             costume.put("Equipped","nothing")
