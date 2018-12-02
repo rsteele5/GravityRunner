@@ -114,9 +114,16 @@ class StoreActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
+        //Update costume data
+        var costume = "nothing"
         for(i in 0 until storeList.size) {
             costumeReference.update("${storeList[i].title}", storeList[i].status)
+            if(storeList[i].status == 1)
+                costume =  storeList[i].title!!
         }
+        //Update Equipped Costume
+        costumeReference.update("Equipped", costume)
+        //Update coin count
         coinsReference.update("amount", id_coinAmount.text.toString().toInt())
     }
 

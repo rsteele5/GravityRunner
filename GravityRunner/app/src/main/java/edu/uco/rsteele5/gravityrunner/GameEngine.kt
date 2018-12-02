@@ -181,6 +181,9 @@ class GameEngine : AppCompatActivity(), OrientationListener {
                 gameView!!.resume()
             }
             alert.setNeutralButton(getString(R.string.pause_menu_btn_return_to_level_select)){ _: DialogInterface?, _: Int ->
+                val intent = Intent()
+                intent.putExtra(LEVEL, levelDataArray)
+                setResult(RESULT_OK, intent)
                 finish()
             }
             alert.show()
@@ -254,7 +257,9 @@ class GameEngine : AppCompatActivity(), OrientationListener {
                 timeThisFrame = System.currentTimeMillis() - startFrameTime
                 if (timeThisFrame > 0) {
                     fps = 1000 / timeThisFrame
-                    currentScore -= fps
+                    if(currentScore- fps > 0)
+                        currentScore -= fps
+                    else currentScore = 0
                 }
             }
         }

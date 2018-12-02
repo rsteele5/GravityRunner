@@ -4,7 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import com.google.firebase.firestore.Exclude
 
-class Level(var title:String, var src:String, var score:Int, var status:Int, var level: Int): Parcelable {
+class Level(var title:String, var src:String, var score:Long, var status:Int, var level: Int): Parcelable {
 
     constructor() : this("", "", 0, 0, 1)
 
@@ -14,7 +14,7 @@ class Level(var title:String, var src:String, var score:Int, var status:Int, var
     constructor(parcel: Parcel) : this(
         parcel.readString(),
         parcel.readString(),
-        parcel.readInt(),
+        parcel.readLong(),
         parcel.readInt(),
         parcel.readInt()
     ) {
@@ -24,7 +24,7 @@ class Level(var title:String, var src:String, var score:Int, var status:Int, var
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(title)
         parcel.writeString(src)
-        parcel.writeInt(score)
+        parcel.writeLong(score)
         parcel.writeInt(status)
         parcel.writeInt(level)
     }

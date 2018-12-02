@@ -50,4 +50,10 @@
     <string name="leaderTitle">Level %1$d</string>
     <string name="uncleared">Uncleared</string>
     <string name="lbl_coins">Coins:</string>
+    <!-- Level Names 1,2,3,4, and 5-->
+    <string name="level1">Introduction</string>
+    <string name="level2">Hidden Point</string>
+    <string name="level3">The Right Path</string>
+    <string name="level4">Sea of Teeth</string>
+    <string name="level5">Finale</string>
 </resources>
