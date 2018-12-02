@@ -18,7 +18,7 @@ class LeaderBoard : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_leader_board)
-        val i = intent.getIntExtra("level", -1)
+        val i = intent.getIntExtra(LEVEL, 0)
         tRank.text = getString(R.string.leaderTitle,i)
 
         mAuth = FirebaseAuth.getInstance()
@@ -40,5 +40,17 @@ class LeaderBoard : AppCompatActivity() {
                 val adapter = lLeader.adapter as ArrayAdapter<Leader>
                 adapter.notifyDataSetChanged()
             }
+        db?.collection("LeaderBoard/Levels/Level$i")?.get()?.addOnSuccessListener {
+            var num = it.size() - 1
+            var numList = ArrayList<Int>()
+            for(i in 0..num)
+            {
+                numList.add(i+1)
+            }
+            var adapter2 = ArrayAdapter<Int>(this, android.R.layout.simple_list_item_1, numList)
+            lNumber.adapter = adapter2
+            adapter2.notifyDataSetChanged()
+        }
+
     }
 }

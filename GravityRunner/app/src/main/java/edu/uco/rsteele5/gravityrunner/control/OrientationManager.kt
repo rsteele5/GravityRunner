@@ -1,9 +1,7 @@
 package edu.uco.rsteele5.gravityrunner.control
 
 import android.content.Context
-import android.util.Log
 import android.view.OrientationEventListener
-import edu.uco.rsteele5.gravityrunner.TAG_GR
 
 class OrientationManager(context: Context, rate: Int, listener: OrientationListener) : OrientationEventListener(context, rate) {
 
@@ -23,8 +21,6 @@ class OrientationManager(context: Context, rate: Int, listener: OrientationListe
         if (orientation == -1) {
             return
         }
-
-        Log.d(TAG_GR, orientation.toString())
 
         val newOrientation: ScreenOrientation = when (orientation) {
             in 60..140 -> ScreenOrientation.REVERSED_LANDSCAPE

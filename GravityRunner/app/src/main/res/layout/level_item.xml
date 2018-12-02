@@ -29,7 +29,7 @@
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     tools:srcCompat="@tools:sample/avatars"
-                    android:id="@+id/imgLevel"
+                    android:id="@+id/imgCostume"
                     android:layout_marginTop="10dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
@@ -41,11 +41,11 @@
                     android:textSize="14sp"
                     android:paddingTop="3dp"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/tStageName" android:layout_weight="1"
-                    app:layout_constraintStart_toEndOf="@+id/imgLevel"
+                    android:layout_height="wrap_content" android:id="@+id/tCostumeName" android:layout_weight="1"
+                    app:layout_constraintStart_toEndOf="@+id/imgCostume"
                     android:layout_marginStart="8dp" android:layout_marginTop="12dp"
                     app:layout_constraintTop_toTopOf="parent" android:layout_marginEnd="8dp"
-                    app:layout_constraintEnd_toEndOf="@+id/btnStatus" app:layout_constraintHorizontal_bias="0.013"/>
+                    app:layout_constraintEnd_toEndOf="@+id/btnCostumeStatus" app:layout_constraintHorizontal_bias="0.013"/>
 
             <TextView
                     android:text="TextView"
@@ -53,22 +53,22 @@
                     android:paddingTop="3dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:id="@+id/tHighScore" android:layout_weight="1"
-                    app:layout_constraintStart_toEndOf="@+id/imgLevel"
+                    app:layout_constraintStart_toEndOf="@+id/imgCostume"
                     android:layout_marginStart="8dp" android:layout_marginTop="4dp"
-                    app:layout_constraintTop_toBottomOf="@+id/tStageName" android:layout_marginEnd="8dp"
-                    app:layout_constraintEnd_toEndOf="@+id/btnStatus" app:layout_constraintHorizontal_bias="0.013"
+                    app:layout_constraintTop_toBottomOf="@+id/tCostumeName" android:layout_marginEnd="8dp"
+                    app:layout_constraintEnd_toEndOf="@+id/btnCostumeStatus" app:layout_constraintHorizontal_bias="0.013"
                     android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"/>
 
             <Button
                     android:paddingTop="5dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/btnStatus"
+                    android:id="@+id/btnCostumeStatus"
                     android:layout_weight="1"
                     app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_marginBottom="8dp" android:layout_marginTop="8dp"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/imgLevel"
+                    app:layout_constraintStart_toEndOf="@+id/imgCostume"
                     android:layout_marginStart="124dp"/>
         </android.support.constraint.ConstraintLayout>
 

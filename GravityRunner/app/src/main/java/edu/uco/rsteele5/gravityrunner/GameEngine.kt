@@ -1,17 +1,14 @@
 package edu.uco.rsteele5.gravityrunner
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.res.Resources
 import android.graphics.*
 import android.hardware.SensorManager
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.*
 import edu.uco.rsteele5.gravityrunner.control.CollisionDetector
 import edu.uco.rsteele5.gravityrunner.control.LevelController
@@ -21,8 +18,9 @@ import edu.uco.rsteele5.gravityrunner.control.OrientationManager.OrientationList
 import edu.uco.rsteele5.gravityrunner.control.OrientationManager.ScreenOrientation
 import edu.uco.rsteele5.gravityrunner.control.OrientationManager.ScreenOrientation.*
 import edu.uco.rsteele5.gravityrunner.model.PhysicsVector
+import edu.uco.rsteele5.gravityrunner.model.entity.player.PlayerAnimator
 
-const val TAG_GR = "GR"
+const val COSTUME = "costume"
 
 class GameEngine : AppCompatActivity(), OrientationListener {
 
@@ -33,6 +31,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
     var gravSpeed = 10f
     var currentLevel = 0
     val MAXLEVEL = 5
+    var playerCostume: Int = -1
 
     private val portraitGravityVector = PhysicsVector(0f, -1f, gravSpeed)
     private val landscapeGravityVector = PhysicsVector(1f, 0f, gravSpeed)
@@ -44,6 +43,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
     var gravityVector = portraitGravityVector
 
     private var gameView: GameView? = null
+    private val levelDataArray = ArrayList<LevelData>()
 
     val loadingTime: Long = 4000
     var waitTime: Long = System.currentTimeMillis() + loadingTime
@@ -51,8 +51,9 @@ class GameEngine : AppCompatActivity(), OrientationListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        currentLevel = intent.getIntExtra(LEVEL, 1)//receive int from levelArrayAdapter
-        gameView = GameView(this, currentLevel)    //TODO: Change to getParcellable
+        currentLevel = intent.getIntExtra(LEVEL, 1)         //receive int from levelArrayAdapter
+        playerCostume = intent.getIntExtra(COSTUME, -1)//Receive the players costume
+        gameView = GameView(this)
         setContentView(gameView)
 
         orientationManager =
@@ -104,20 +105,31 @@ class GameEngine : AppCompatActivity(), OrientationListener {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        this.finish()
+        val intent = Intent()
+        intent.putExtra(LEVEL, levelDataArray)
+        setResult(RESULT_OK, intent)
+        finish()
     }
 
     fun showFinishedMenu(){
         runOnUiThread {
             gameView!!.pause()
+
+            //Create parcelable level data
+            val levelData = LevelData(currentLevel, gameView!!.getCurrentScore(), gameView!!.getCoinsCollected())
+            levelDataArray.add(levelData)
+
             val alert = AlertDialog.Builder(this@GameEngine)
             alert.setCancelable(false)
             alert.setTitle(getString(R.string.finished_menu_title))
             alert.setMessage(getString(R.string.finished_menu_message))
             alert.setPositiveButton(getString(R.string.finished_menu_btn_continue)) { _: DialogInterface?, _: Int ->
-                if(currentLevel >= MAXLEVEL)
+                if(currentLevel >= MAXLEVEL) {
+                    val intent = Intent()
+                    intent.putExtra(LEVEL, levelDataArray)
+                    setResult(RESULT_OK, intent)
                     finish()
+                }
                 else {
                     currentLevel++
                     gameView!!.resetLevel()
@@ -125,6 +137,9 @@ class GameEngine : AppCompatActivity(), OrientationListener {
                 }
             }
             alert.setNeutralButton(getString(R.string.finished_menu_btn_return_to_level_select)) { _: DialogInterface?, _: Int ->
+                val intent = Intent()
+                intent.putExtra(LEVEL, levelDataArray)
+                setResult(RESULT_OK, intent)
                 finish()
             }
             alert.show()
@@ -143,6 +158,9 @@ class GameEngine : AppCompatActivity(), OrientationListener {
                 gameView!!.resume()
             }
             alert.setNeutralButton(getString(R.string.fail_menu_btn_return_to_level_select)) { _: DialogInterface?, _: Int ->
+                val intent = Intent()
+                intent.putExtra(LEVEL, levelDataArray)
+                setResult(RESULT_OK, intent)
                 finish()
             }
             alert.show()
@@ -163,6 +181,9 @@ class GameEngine : AppCompatActivity(), OrientationListener {
                 gameView!!.resume()
             }
             alert.setNeutralButton(getString(R.string.pause_menu_btn_return_to_level_select)){ _: DialogInterface?, _: Int ->
+                val intent = Intent()
+                intent.putExtra(LEVEL, levelDataArray)
+                setResult(RESULT_OK, intent)
                 finish()
             }
             alert.show()
@@ -170,12 +191,11 @@ class GameEngine : AppCompatActivity(), OrientationListener {
         }
     }
 
-    internal inner class GameView(context: Context, level: Int) : SurfaceView(context), Runnable {
+    internal inner class GameView(context: Context) : SurfaceView(context), Runnable {
 
         private var gameThread: Thread? = null
         private var ourHolder: SurfaceHolder? = null
 
-        var background = BitmapFactory.decodeResource(resources, R.drawable.background)
         private var canvas: Canvas? = null
         var paint: Paint? = null
 
@@ -183,6 +203,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
         private val collisionDetector = CollisionDetector()
         private val playerController = PlayerController(
             BitmapFactory.decodeResource(resources, R.drawable.bob),
+            PlayerAnimator(resources,6,6),
             (getScreenWidth() - 52).toFloat(),
             (getScreenHeight() - 100).toFloat())
         private val levelController = LevelController(resources,
@@ -192,36 +213,53 @@ class GameEngine : AppCompatActivity(), OrientationListener {
         @Volatile
         var playing: Boolean = false
 
+        private var currentScore: Long = 0
+
         private var timeThisFrame: Long = 0
 
         init {
             ourHolder = holder
             paint = Paint()
 
-            levelController.loadLevel(level)
-
+            currentScore = levelController.loadLevel(currentLevel)
+            if(playerCostume != -1) {
+                playerController.setCostume(
+                    BitmapFactory.decodeResource(
+                        resources,
+                        when (playerCostume) {
+                            0 -> R.drawable.dragon_hat
+                            1 -> R.drawable.knight_hat
+                            else -> R.drawable.wizard_hat
+                        }
+                    )
+                )
+            }
             playing = true
             gameThread = Thread(this)
 
         }
 
         override fun run() {
-            Thread.sleep(1000)
+            Thread.sleep(2000)
             while (playing && waitTime <= System.currentTimeMillis() + loadingTime) {
 
                 val startFrameTime = System.currentTimeMillis()
+
+                if(playerController.getHitPoints() <= 0){
+                    showFailedMenu()
+                }
 
                 update()
 
                 draw()
 
-                if(playerController.getHitPoints() == 0){
-                    showFailedMenu()
-                }
-
+                //Calculate FPS and Score
                 timeThisFrame = System.currentTimeMillis() - startFrameTime
                 if (timeThisFrame > 0) {
                     fps = 1000 / timeThisFrame
+                    if(currentScore- fps > 0)
+                        currentScore -= fps
+                    else currentScore = 0
                 }
             }
         }
@@ -253,10 +291,16 @@ class GameEngine : AppCompatActivity(), OrientationListener {
             val ngj = normal.add(gravityVector).add(playerController.getJumpingVector())
             if(ngj.magnitude == 0f) {
                 playerController.startRun(orientation)
+                playerController.setAnimation(0)
                 playerController.incrementRun()
             }
-            else
+            else {
                 playerController.depricateRun()
+                if(normal.x == 0f || normal.y == 0f){
+                    playerController.setAnimation(1) // Jump animation
+                }
+            }
+
             return ngj.add(playerController.getRunningVector())
 ////////////////////////////////////Works but poorly//////////////////////////////////////////////////
 //                                                                                                  //
@@ -297,13 +341,11 @@ class GameEngine : AppCompatActivity(), OrientationListener {
 
                 //TODO: The background will get done here
                 canvas!!.drawColor(Color.argb(255, 0, 0, 0))
-                var backgroundRectF = RectF(0f, 0f, 3020f, 1760f)
-                canvas!!.drawBitmap(background, null, backgroundRectF, paint!!)
                 //---------------------------------------
                 paint!!.color = Color.argb(255, 249, 129, 0)
                 if(levelController.isCurrentLevelLoaded()) {
-                    playerController.draw(canvas!!, paint!!)
                     levelController.draw(canvas!!, paint!!)
+                    playerController.draw(canvas!!, paint!!)
                 }else{
                     canvas!!.drawCircle(getScreenWidth()/2f, getScreenHeight()/2f, 20f, paint!!)
                 }
@@ -340,7 +382,7 @@ class GameEngine : AppCompatActivity(), OrientationListener {
                 }
             }
             if(playerController.player!!.speedBoost) {
-                var speedBoostRectF = RectF(
+                val speedBoostRectF = RectF(
                     canvas!!.width/2 - 120f,
                     yOffset,
                     canvas!!.width/2 - 60f,
@@ -352,14 +394,32 @@ class GameEngine : AppCompatActivity(), OrientationListener {
                 )
             }
 
+            if(playerController.player!!.jumpBoost) {
+                var jumpBoostRectF = RectF(
+                    canvas!!.width/2 - 170f,
+                    yOffset,
+                    canvas!!.width/2 - 110f,
+                    yOffset + 60
+                )
+                canvas!!.drawBitmap(
+                    BitmapFactory.decodeResource(resources, R.drawable.jump_boost_0), null,
+                    jumpBoostRectF, paint
+                )
+            }
+
             canvas!!.drawText("FPS:$fps", xOffSet, yOffset, paint!!)
-            canvas!!.drawText("Hit Points:${playerController.getHitPoints()}", xOffSet, yOffset + 40f, paint!!)
-            canvas!!.drawText("Coins:${playerController.getCoins()}",xOffSet, yOffset + 80f, paint!!)
+            canvas!!.drawText("Score:$currentScore", xOffSet, yOffset + 40f, paint!!)
+            canvas!!.drawText("Hit Points:${playerController.getHitPoints()}",xOffSet, yOffset + 80f, paint!!)
+            canvas!!.drawText("Coins:${playerController.getCoins()}",xOffSet, yOffset + 120f, paint!!)
             canvas!!.restore()
         }
 
+        fun getCoinsCollected(): Int {return playerController.getCoins()}
+
+        fun getCurrentScore(): Long {return currentScore}
+
         fun resetLevel(){
-            levelController.loadLevel(currentLevel)
+            currentScore = levelController.loadLevel(currentLevel)
             playerController.reset()
             collisionDetector.resetNormalVector()
         }
@@ -369,7 +429,6 @@ class GameEngine : AppCompatActivity(), OrientationListener {
             gameThread!!.join()
         }
         fun resume() {
-            waitTime = System.currentTimeMillis()
             playing = true
             gameThread = Thread(this)
             gameThread!!.start()
